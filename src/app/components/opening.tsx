@@ -4,9 +4,9 @@ import React from "react";
 export default function Opening() {
   return (
     <section className="bg-[url('/images/opening-bg.png')] bg-cover bg-no-repeat bg-center text-white my-16">
-      <div className="bg-[#000000cb]">
-        <div className="px-6 sm:px-10 md:px-16 lg:px-28 xl:px-36 2xl:px-44 flex items-center py-12 flex-col justify-center gap-y-12 md:flex-row md:gap-y-0">
-          <div className="flex-1 space-y-2">
+      <div className="bg-[#000000cb] flex justify-center px-6 sm:px-10 md:px-16 lg:px-40 2xl:px-44 py-12">
+        <div className="flex items-center flex-col gap-y-12 md:flex-row md:gap-y-0 w-full justify-between max-w-[1200px]">
+          <div className="space-y-2">
             <TextWithLine
               text="RESERVATION"
               className="before:w-[50px] before:left-0 before:translate-x-0 before:-bottom-0.5 before:h-[2px] text-xs"
