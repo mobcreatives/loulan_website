@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
-import { TMenuButtonPros } from "../types";
 import { cloneElement } from "react";
+import { TMenuButtonPros } from "./types";
 
 export default function MenuButton({
   activeTab,
