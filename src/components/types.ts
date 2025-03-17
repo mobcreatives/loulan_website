@@ -10,3 +10,9 @@ export type TFloatingNavProps = {
   navItems: TFloatingItem[];
   className?: string;
 };
+
+export type TIconComponentProps = {
+  className?: string;
+};
+
+export type TTextWithLineProps = { className?: string; text: string };

@@ -1,5 +1,19 @@
+import HeroSection from "./components/hero-section";
+import RateYourExperience from "./components/rate-your-experience";
+import Menu from "./components/menu/menu";
+import Special from "./components/special/special";
+import Featured from "./components/featured/featured";
+import Opening from "./components/opening";
+
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)] h-[200dvh]"></div>
+    <main>
+      <HeroSection />
+      <RateYourExperience />
+      <Menu />
+      <Special />
+      <Featured />
+      <Opening />
+    </main>
   );
 }
