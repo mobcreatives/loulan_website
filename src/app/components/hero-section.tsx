@@ -1,4 +1,5 @@
 import { TextWithLine } from "@/components";
+import ButtonWithBorder from "@/components/buttons/button-with-border";
 import { ArrowRightIcon } from "lucide-react";
 import React from "react";
 
@@ -14,12 +15,7 @@ export default function HeroSection() {
           Reserve Your Table
         </h3>
         <div className="mt-2 flex gap-x-5 items-center ">
-          <button
-            className="bg-primary text-black px-6 py-2 rounded-[12px] font-medium capitalize font-fredoka relative before:content-[''] before:absolute before:inset-0 before:left-2.5 before:scale-y-125 before:scale-x-[107%] before:rounded-[12px] before:border-2 before:border-primary before:-z-1 isolate cursor-pointer"
-            type="button"
-          >
-            Book a Table
-          </button>
+          <ButtonWithBorder text="Book a Table" />
           <button
             className="capitalize text-black py-2 px-4 font-medium font-fredoka bg-primary flex items-center gap-x-3 hover:[&>p>svg]:translate-x-0.5 rounded-full text-[clamp(0.75rem,0.7192rem+0.1299vw,0.875rem)] cursor-pointer"
             type="button"

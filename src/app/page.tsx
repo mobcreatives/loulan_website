@@ -4,6 +4,7 @@ import Menu from "./components/menu/menu";
 import Special from "./components/special/special";
 import Featured from "./components/featured/featured";
 import Opening from "./components/opening";
+import Reservation from "./components/reservation/reservation";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <Special />
       <Featured />
       <Opening />
+      <Reservation />
     </main>
   );
 }
