@@ -9,7 +9,7 @@ import {
 } from "motion/react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { TFloatingNavProps } from "./types";
+import { TFloatingNavProps } from "../../../components/types";
 
 export function FloatingNav({
   navItems,
@@ -20,7 +20,6 @@ export function FloatingNav({
   const [visible, setVisible] = useState(false);
 
   useMotionValueEvent(scrollYProgress, "change", (current) => {
-    // Check if current is not undefined and is a number
     if (typeof current !== "number") return;
     const direction = current - scrollYProgress.getPrevious()!;
     if (scrollYProgress.get() < 0.05) return setVisible(false);
