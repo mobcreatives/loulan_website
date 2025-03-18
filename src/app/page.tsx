@@ -11,7 +11,7 @@ export default function Home() {
     <main>
       <HeroSection />
       <RateYourExperience />
-      <Menu />
+      <Menu showMenuText />
       <Special />
       <Featured />
       <Opening />

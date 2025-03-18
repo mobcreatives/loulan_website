@@ -8,3 +8,7 @@ export type TMenuButtonPros = {
   text: TMenuEnum;
   icon: JSX.Element;
 };
+
+export type TMenuProps = {
+  showMenuText?: boolean;
+};
