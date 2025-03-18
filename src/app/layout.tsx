@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Fredoka } from "next/font/google";
 import "./globals.css";
 import { navItems } from "./data";
-import { FloatingNav } from "./components/layout/floating-navbar";
-import Footer from "./components/layout/footer";
+import { FloatingNav } from "./_components/layout/floating-navbar";
+import Footer from "./_components/layout/footer";
 
 const fredoka = Fredoka({
   variable: "--font-fredoka",

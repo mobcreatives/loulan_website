@@ -1,10 +1,10 @@
-import HeroSection from "./components/hero-section";
-import RateYourExperience from "./components/rate-your-experience";
-import Menu from "./components/menu/menu";
-import Special from "./components/special/special";
-import Featured from "./components/featured/featured";
-import Opening from "./components/opening";
-import Reservation from "./components/reservation/reservation";
+import HeroSection from "./_components/hero-section";
+import RateYourExperience from "./_components/rate-your-experience";
+import Menu from "./_components/menu/menu";
+import Special from "./_components/special/special";
+import Featured from "./_components/featured/featured";
+import Opening from "./_components/opening";
+import Reservation from "./_components/reservation/reservation";
 
 export default function Home() {
   return (
