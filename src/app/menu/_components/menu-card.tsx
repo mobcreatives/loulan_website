@@ -10,7 +10,7 @@ export default function MenuCard({
 }: Readonly<TMenuCardProps>) {
   return (
     <div className="flex items-center gap-x-3 border-b-2 border-white pb-3 border-dotted">
-      <p className="size-25">
+      <p className="w-30">
         <Image
           src={image}
           className="size-full object-cover"
