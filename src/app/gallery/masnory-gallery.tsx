@@ -29,7 +29,7 @@ export default function MasonryGallery() {
       <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
         {images.map((src, index) => (
           <div
-            key={src}
+            key={`${src}${index + 1}`}
             className="break-inside-avoid mb-4 overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
           >
             <div className="relative w-full aspect-auto">
