@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { Fredoka } from "next/font/google";
 import "./globals.css";
-import { navItems } from "./data";
-import { FloatingNav } from "./_components/layout/floating-navbar";
-import Footer from "./_components/layout/footer";
 
 const fredoka = Fredoka({
   variable: "--font-fredoka",
@@ -24,9 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${fredoka.variable} antialiased bg-[#0A1316]`}>
-        <FloatingNav navItems={navItems} />
         {children}
-        <Footer />
       </body>
     </html>
   );
