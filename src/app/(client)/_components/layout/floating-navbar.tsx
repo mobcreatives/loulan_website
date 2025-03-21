@@ -9,7 +9,7 @@ import {
 } from "motion/react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { TFloatingNavProps } from "../../../components/types";
+import { TFloatingNavProps } from "@/components";
 
 export function FloatingNav({
   navItems,
