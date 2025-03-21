@@ -1,4 +1,6 @@
 import React from "react";
+import DashboardSidebar from "./_components/dashboard-sidebar";
+import { SidebarProvider } from "@/components";
 
 export default function Dashboard({
   children,
@@ -6,9 +8,9 @@ export default function Dashboard({
   children: React.ReactNode;
 }>) {
   return (
-    <div>
-      Dashboard
-      {children}
-    </div>
+    <SidebarProvider>
+      <DashboardSidebar />
+      <main>{children}</main>
+    </SidebarProvider>
   );
 }

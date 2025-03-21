@@ -8,7 +8,7 @@ import Reservation from "./_components/reservation/reservation";
 
 export default function Home() {
   return (
-    <main>
+    <>
       <HeroSection />
       <RateYourExperience />
       <Menu showMenuText />
@@ -16,6 +16,6 @@ export default function Home() {
       <Featured />
       <Opening />
       <Reservation />
-    </main>
+    </>
   );
 }

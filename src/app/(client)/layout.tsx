@@ -9,7 +9,7 @@ export default function ClientLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main>
+    <main className="bg-[#0A1316]">
       <FloatingNav navItems={navItems} />
       {children}
       <Footer />

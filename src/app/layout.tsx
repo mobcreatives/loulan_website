@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${fredoka.variable} antialiased bg-[#0A1316]`}>
+      <body className={`${fredoka.variable} antialiased`}>
         {children}
       </body>
     </html>
