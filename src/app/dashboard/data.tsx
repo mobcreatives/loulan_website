@@ -14,7 +14,7 @@ export const sidebarItems: TSidebarItemsData[] = [
   },
   {
     label: "blog",
-    href: "/dashboard/menu",
+    href: "/dashboard/blog",
     icon: <MenuIconComponent />,
   },
 ];
