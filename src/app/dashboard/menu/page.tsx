@@ -2,6 +2,7 @@
 import { DataTable } from "@/components";
 import React, { useState } from "react";
 import Columns from "./columns";
+import AddMenu from "./_add/add-menu";
 
 export default function MenuPage() {
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
@@ -40,6 +41,7 @@ export default function MenuPage() {
         ]}
         columns={Columns()}
       />
+      <AddMenu open={openAddDialog} setOpenAddDialog={setOpenAddDialog} />
     </div>
   );
 }

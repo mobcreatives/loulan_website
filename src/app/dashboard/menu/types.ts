@@ -6,3 +6,4 @@ export type TMenuDetails = {
   images: string[];
   type: "korean" | "chinese";
 };
+
