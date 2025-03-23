@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { cuisineSchema } from "./_add/validator";
+import { cuisineSchema } from "./validator";
 
 export type TAddCuisineData = z.infer<typeof cuisineSchema>;
 

@@ -5,12 +5,13 @@ import { useState } from "react";
 import { DataTable } from "@/components";
 import AddCuisine from "./_add/add-cuisine";
 import Columns from "./columns";
+import { KEYS } from "@/config/constants";
 
 export default function Cuisine() {
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
   const { data: cuisine } = useQuery({
     queryFn: getCuisines,
-    queryKey: ["get", "cuisine"],
+    queryKey: KEYS.CUISINE.GET,
   });
   return (
     <div className="relative bg-[#3d3d3d] rounded-[12px] shadow-[0px_0px_4px_0px] shadow-primary">

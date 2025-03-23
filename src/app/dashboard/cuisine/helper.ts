@@ -1,7 +1,7 @@
 "use server";
 
 import { PrismaClient } from "@prisma/client";
-import { TAddCuisineData } from "./types";
+import { TAddCuisineData } from "./_add/types";
 import { cuisineSchema } from "./_add/validator";
 const prisma = new PrismaClient();
 

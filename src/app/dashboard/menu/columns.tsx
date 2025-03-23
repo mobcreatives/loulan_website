@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { TMenuDetails } from "./types";
+import { Menu } from "@prisma/client";
 
 export default function Columns() {
   return [
@@ -13,20 +13,5 @@ export default function Columns() {
       header: "Name",
       cell: ({ row }) => row.original.name,
     },
-    {
-      accessorKey: "price",
-      header: "Price",
-      cell: ({ row }) => row.original.price,
-    },
-    {
-      accessorKey: "type",
-      header: "Category",
-      cell: ({ row }) => row.original.type,
-    },
-    {
-      accessorKey: "description",
-      header: "Description",
-      cell: ({ row }) => row.original.description,
-    },
-  ] as ColumnDef<TMenuDetails>[];
+  ] as ColumnDef<Menu>[];
 }

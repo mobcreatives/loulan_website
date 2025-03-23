@@ -2,6 +2,7 @@ export * from "./types";
 
 export * from "./ui/button";
 export * from "./ui/calendar";
+export * from "./ui/command";
 export * from "./ui/date-picker";
 export * from "./ui/dialog";
 export * from "./ui/input";
@@ -18,6 +19,7 @@ export * from "./ui/tooltip";
 export * from "./text-with-line";
 export * from "./inputs/base-input";
 export * from "./data-table/data-table";
+export * from "./select/select-field";
 
 export * from "./icons/fill-star-icon-component";
 export * from "./icons/desert-icon-component";

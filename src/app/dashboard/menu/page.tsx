@@ -3,13 +3,22 @@ import { DataTable } from "@/components";
 import React, { useState } from "react";
 import Columns from "./columns";
 import AddMenu from "./_add/add-menu";
+import { useQuery } from "@tanstack/react-query";
+import { getMenu } from "./helper";
+import { KEYS } from "@/config/constants";
 
 export default function MenuPage() {
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
+  const { data: menus } = useQuery({
+    queryKey: KEYS.MENU.GET,
+    queryFn: getMenu,
+  });
   return (
     <div className="relative bg-[#3d3d3d] rounded-[12px] shadow-[0px_0px_4px_0px] shadow-primary">
       <div className="px-3 py-3 flex items-center justify-between">
-        <h1 className="text-2xl font-medium text-primary font-fredoka">Menu</h1>
+        <h1 className="text-2xl font-medium text-primary font-fredoka">
+          Menu List
+        </h1>
         <div className="">
           <button
             type="button"
@@ -20,27 +29,7 @@ export default function MenuPage() {
           </button>
         </div>
       </div>
-      <DataTable
-        data={[
-          {
-            id: 1,
-            name: "Burger",
-            price: 100,
-            type: "chinese",
-            description: "This is a burger",
-            images: [],
-          },
-          {
-            id: 2,
-            name: "Pizza",
-            price: 200,
-            type: "korean",
-            description: "This is a pizza",
-            images: [],
-          },
-        ]}
-        columns={Columns()}
-      />
+      <DataTable data={menus ?? []} columns={Columns()} />
       <AddMenu open={openAddDialog} setOpen={setOpenAddDialog} />
     </div>
   );
