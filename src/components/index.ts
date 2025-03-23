@@ -18,6 +18,7 @@ export * from "./ui/tooltip";
 
 export * from "./text-with-line";
 export * from "./inputs/base-input";
+export * from "./inputs/base-textarea";
 export * from "./data-table/data-table";
 export * from "./select/select-field";
 

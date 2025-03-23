@@ -17,4 +17,9 @@ export const sidebarItems: TSidebarItemsData[] = [
     href: "/dashboard/cuisine",
     icon: <DashboardIconComponent />,
   },
+  {
+    label: "food",
+    href: "/dashboard/food",
+    icon: <DashboardIconComponent />,
+  },
 ];

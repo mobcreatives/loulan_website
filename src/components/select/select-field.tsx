@@ -123,7 +123,7 @@ input */
               aria-expanded={open}
               disabled={disabled}
               className={cn(
-                "bg-white border border-[#2e2e2e] w-full text-[#2e2e2e] font-poppins font-medium text-[clamp(0.875rem0.8442rem+0.1299vw,1rem)] placeholder:text-[clamp(0.75rem,0.6883rem+0.2597vw,1rem)] h-12 rounded-[8px] placeholder-[#5f5f5f] px-4 focus:outline-[#FFD700]",
+                "bg-white border border-[#2e2e2e] w-full text-[#2e2e2e] font-poppins font-medium text-[clamp(0.875rem0.8442rem+0.1299vw,1rem)] placeholder:text-[clamp(0.75rem,0.6883rem+0.2597vw,1rem)] h-12 rounded-[8px] placeholder-[#5f5f5f] px-4 focus:outline-[#FFD700] cursor-pointer",
                 className
               )}
             >

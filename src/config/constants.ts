@@ -11,4 +11,10 @@ export const KEYS = {
     UPDATE: ["update", "menu"],
     DELETE: ["delete", "menu"],
   },
+  FOOD: {
+    GET: ["get", "foods"],
+    ADD: ["add", "food"],
+    UPDATE: ["update", "food"],
+    DELETE: ["delete", "food"],
+  },
 };

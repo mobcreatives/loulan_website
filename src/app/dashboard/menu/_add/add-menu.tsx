@@ -77,7 +77,7 @@ export default function AddMenu({ open, setOpen }: Readonly<TAddMenuProps>) {
             error={errors.cuisine?.message ?? ""}
             allowSearch
             searchPlaceholder="Search Cuisine Type"
-            emptyDataMessage="No user cuisine type found"
+            emptyDataMessage="No cuisine type found"
             modal
           />
           <DialogFooter>
