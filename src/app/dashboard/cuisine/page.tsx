@@ -15,7 +15,9 @@ export default function Cuisine() {
   return (
     <div className="relative bg-[#3d3d3d] rounded-[12px] shadow-[0px_0px_4px_0px] shadow-primary">
       <div className="px-3 py-3 flex items-center justify-between">
-        <h1 className="text-2xl font-medium text-primary font-fredoka">Menu</h1>
+        <h1 className="text-2xl font-medium text-primary font-fredoka">
+          Cuisine List
+        </h1>
         <div className="">
           <button
             type="button"

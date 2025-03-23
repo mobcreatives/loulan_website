@@ -13,7 +13,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -46,9 +45,6 @@ export default function AddCuisine({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline">Edit Profile</Button>
-      </DialogTrigger>
       <DialogContent className="sm:max-w-[425px">
         <DialogHeader className="flex flex-col items-center">
           <DialogTitle>Add Cuisine</DialogTitle>
