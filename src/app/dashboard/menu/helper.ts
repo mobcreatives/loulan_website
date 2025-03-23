@@ -7,7 +7,6 @@ import { addMenuDataSchema } from "./_add/validator";
 const prisma = new PrismaClient();
 
 export async function addMenu(data: TAddMenuData) {
-  console.log("💀 -> addMenu -> data <3", data);
   const result = addMenuDataSchema.safeParse(data);
   if (!result.success) {
     throw new Error(result.error.errors[0].message);
@@ -20,13 +19,12 @@ export async function addMenu(data: TAddMenuData) {
       },
     });
     return menu;
-  } catch (error) {
-    console.log(error);
+  } catch {
+    throw new Error("Failed to add menu");
   }
 }
 
 export async function getMenu() {
   const menus = await prisma.menu.findMany();
-  console.log("💀 -> getMenu -> menus <3", menus);
   return menus;
 }

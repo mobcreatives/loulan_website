@@ -13,8 +13,8 @@ export const sidebarItems: TSidebarItemsData[] = [
     icon: <MenuIconComponent />,
   },
   {
-    label: "blog",
-    href: "/dashboard/blog",
-    icon: <MenuIconComponent />,
+    label: "cuisine",
+    href: "/dashboard/cuisine",
+    icon: <DashboardIconComponent />,
   },
 ];
