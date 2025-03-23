@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fredoka } from "next/font/google";
 import "./globals.css";
+import TanstackQueryProvider from "./_components/tanstack-query-provider";
 
 const fredoka = Fredoka({
   variable: "--font-fredoka",
@@ -20,9 +21,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${fredoka.variable} antialiased`}>
-        {children}
-      </body>
+      <TanstackQueryProvider>
+        <body className={`${fredoka.variable} antialiased`}>{children}</body>
+      </TanstackQueryProvider>
     </html>
   );
 }

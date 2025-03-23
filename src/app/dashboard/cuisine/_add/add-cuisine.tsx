@@ -1,0 +1,76 @@
+import React from "react";
+import { useForm } from "react-hook-form";
+import { TAddCuisineData, TAddCuisineProps } from "../types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { cuisineSchema } from "./validator";
+import { addCuisine } from "../helper";
+import {
+  BaseInput,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+export default function AddCuisine({
+  open,
+  setOpen,
+}: Readonly<TAddCuisineProps>) {
+  const queryClient = useQueryClient();
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm<TAddCuisineData>({
+    resolver: zodResolver(cuisineSchema),
+  });
+  const { mutateAsync } = useMutation({
+    mutationKey: ["add", "cuisine"],
+    mutationFn: addCuisine,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["get", "cuisine"],
+      });
+      setOpen(false);
+    },
+    // TODO: handle error
+  });
+  async function onSubmit(data: TAddCuisineData) {
+    await mutateAsync(data);
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline">Edit Profile</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px">
+        <DialogHeader className="flex flex-col items-center">
+          <DialogTitle>Add Cuisine</DialogTitle>
+          <DialogDescription className="max-w-[350px] text-center">
+            Add a new cuisine type.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <BaseInput
+            label="type"
+            placeholder="Enter Cuisine Type"
+            {...register("type")}
+            error={errors.type?.message}
+          />
+        </form>
+
+        <DialogFooter>
+          <Button type="submit" className="text-[#2e2e2e] cursor-pointer px-3">
+            Add
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}

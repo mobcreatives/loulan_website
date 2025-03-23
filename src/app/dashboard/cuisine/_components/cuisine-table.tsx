@@ -1,10 +1,13 @@
 "use client";
+
 import { DataTable } from "@/components";
 import React, { useState } from "react";
-import Columns from "./columns";
-import AddMenu from "./_add/add-menu";
-
-export default function MenuPage() {
+import Columns from "../columns";
+import AddCuisine from "../_add/add-cuisine";
+import { CuisineType } from "@prisma/client";
+export default function CuisineTable({
+  data,
+}: Readonly<{ data: CuisineType[] }>) {
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
   return (
     <div className="relative bg-[#3d3d3d] rounded-[12px] shadow-[0px_0px_4px_0px] shadow-primary">
@@ -16,32 +19,12 @@ export default function MenuPage() {
             className="text-[#60697B] bg-primary py-2 px-3 rounded-[8px] cursor-pointer font-medium font-fredoka"
             onClick={() => setOpenAddDialog(true)}
           >
-            Add Menu
+            Add Cuisine
           </button>
         </div>
       </div>
-      <DataTable
-        data={[
-          {
-            id: 1,
-            name: "Burger",
-            price: 100,
-            type: "chinese",
-            description: "This is a burger",
-            images: [],
-          },
-          {
-            id: 2,
-            name: "Pizza",
-            price: 200,
-            type: "korean",
-            description: "This is a pizza",
-            images: [],
-          },
-        ]}
-        columns={Columns()}
-      />
-      <AddMenu open={openAddDialog} setOpen={setOpenAddDialog} />
+      <DataTable data={data ?? []} columns={Columns()} />
+      <AddCuisine open={openAddDialog} setOpen={setOpenAddDialog} />
     </div>
   );
 }
