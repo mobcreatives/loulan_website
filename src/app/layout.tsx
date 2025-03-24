@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Fredoka } from "next/font/google";
 import "./globals.css";
 import TanstackQueryProvider from "./_components/tanstack-query-provider";
+import { Toaster as Sonner } from "@/components";
 
 const fredoka = Fredoka({
   variable: "--font-fredoka",
@@ -22,7 +23,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <TanstackQueryProvider>
-        <body className={`${fredoka.variable} antialiased`}>{children}</body>
+        <body className={`${fredoka.variable} antialiased`}>
+          <Sonner />
+          {children}
+        </body>
       </TanstackQueryProvider>
     </html>
   );

@@ -20,8 +20,7 @@ import { addFood } from "../helper";
 import { getMenu } from "../../menu/helper";
 import { mapData } from "@/lib/utils";
 import BaseTextarea from "@/components/inputs/base-textarea";
-import AttachmentInput from "@/components/inputs/attachments-input";
-import { UploadButton, UploadDropzone } from "@/lib/uploadthing";
+import { UploadButton } from "@/lib/uploadthing";
 
 export default function AddFood({ open, setOpen }: Readonly<TAddFoodProps>) {
   const queryClient = useQueryClient();
@@ -66,8 +65,8 @@ export default function AddFood({ open, setOpen }: Readonly<TAddFoodProps>) {
   }
 
   // Function to map menu data (adjust as per your data structure)
-  const mapData = (menus: any[]) =>
-    menus.map((menu) => ({ value: menu.id, label: menu.name }));
+  // const mapData = (menus: any[]) =>
+  //   menus.map((menu) => ({ value: menu.id, label: menu.name }));
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
