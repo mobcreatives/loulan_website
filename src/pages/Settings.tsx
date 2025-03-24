@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 
 // Mock settings data
 const mockSettings = {
-  restaurantName: 'Golden Bistro',
+  restaurantName: 'LOULAN CUISINE',
   address: '123 Gourmet Street, Foodville, CA 90210',
   phone: '+1 (555) 123-4567',
   email: 'contact@goldenbistro.com',

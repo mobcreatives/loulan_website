@@ -62,7 +62,7 @@ const Sidebar = () => {
         {collapsed ? (
           <span className="text-2xl font-bold text-amber-500">G</span>
         ) : (
-          <h1 className="text-xl font-bold text-amber-500">Golden Bistro</h1>
+          <h1 className="text-xl font-bold text-amber-500">LOULAN CUISINE</h1>
         )}
       </div>
 
