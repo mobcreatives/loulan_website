@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -20,9 +21,12 @@ import { getMenu } from "../../menu/helper";
 import { mapData } from "@/lib/utils";
 import BaseTextarea from "@/components/inputs/base-textarea";
 import AttachmentInput from "@/components/inputs/attachments-input";
+import { UploadButton, UploadDropzone } from "@/lib/uploadthing";
 
 export default function AddFood({ open, setOpen }: Readonly<TAddFoodProps>) {
   const queryClient = useQueryClient();
+  const [imageUrl, setImageUrl] = useState<string>("");
+
   const {
     handleSubmit,
     register,
@@ -31,10 +35,12 @@ export default function AddFood({ open, setOpen }: Readonly<TAddFoodProps>) {
   } = useForm<TAddFoodData>({
     resolver: zodResolver(foodSchema),
   });
+
   const { data: menus } = useQuery({
     queryKey: KEYS.MENU.GET,
     queryFn: getMenu,
   });
+
   const { mutateAsync } = useMutation({
     mutationKey: KEYS.CUISINE.ADD,
     mutationFn: addFood,
@@ -44,15 +50,28 @@ export default function AddFood({ open, setOpen }: Readonly<TAddFoodProps>) {
       });
       setOpen(false);
     },
-    // TODO: handle error
+    onError: (error) => {
+      console.error("Error adding food:", error);
+      alert("Failed to add cuisine. Please try again.");
+    },
   });
+
   async function onSubmit(data: TAddFoodData) {
-    await mutateAsync(data);
+    const formData = {
+      ...data, // Include all the form data
+      imageUrl, // Include the image URL
+    };
+    console.log("formdata", formData);
+    await mutateAsync(formData);
   }
+
+  // Function to map menu data (adjust as per your data structure)
+  const mapData = (menus: any[]) =>
+    menus.map((menu) => ({ value: menu.id, label: menu.name }));
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[425px">
+      <DialogContent className="sm:max-w-[425px] p-6">
         <DialogHeader className="flex flex-col items-center">
           <DialogTitle>Add Cuisine</DialogTitle>
           <DialogDescription className="max-w-[350px] text-center">
@@ -60,7 +79,7 @@ export default function AddFood({ open, setOpen }: Readonly<TAddFoodProps>) {
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          <div className="space-y-4 max-h-[60dvh] overflow-y-auto">
+          <div className="space-y-4 max-h-[60dvh] overflow-y-auto px-2">
             <BaseInput
               label="Name"
               placeholder="Enter Food Name"
@@ -68,10 +87,11 @@ export default function AddFood({ open, setOpen }: Readonly<TAddFoodProps>) {
               error={errors.name?.message}
             />
             <BaseInput
+              type="number"
               label="Price"
               placeholder="Enter Price"
               {...register("price")}
-              error={errors.name?.message}
+              error={errors.price?.message} // Fixed to use price error
             />
             <SelectField
               data={mapData(menus ?? [])}
@@ -92,14 +112,29 @@ export default function AddFood({ open, setOpen }: Readonly<TAddFoodProps>) {
               rows={8}
               {...register("description")}
             />
-            <AttachmentInput
-              setValue={setValue}
-              name="images"
-              label="Images"
-              error={errors.images?.message ?? ""}
-              multiple
-              accept="image/*"
-            />
+            {/* UploadThing Dropzone with Preview */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-900">
+                Images
+              </label>
+              <UploadButton
+                endpoint="foodImage"
+                className="bg-black"
+                onClientUploadComplete={(res) => {
+                  console.log("Upload response:", res); // Log the entire response
+                  const uploadedImageUrl = res[0]?.url; // Adjust based on the response structure
+                  if (uploadedImageUrl) {
+                    console.log("uploaded image url", res);
+                    setImageUrl(uploadedImageUrl);
+                  }
+                  // Do something with the response
+                }}
+                onUploadError={(error: Error) => {
+                  // Do something with the error.
+                  alert(`ERROR! ${error.message}`);
+                }}
+              />
+            </div>
           </div>
           <DialogFooter>
             <button

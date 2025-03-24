@@ -84,23 +84,22 @@ model Menu {
 }
 
 model Food {
-    id             Int         @id @default(autoincrement())
+    id             Int      @id @default(autoincrement())
     name           String
     description    String
-    //    images         String[] // Array of image URLs
     price          Decimal
-    isFeatured     Boolean     @default(false)
+    isFeatured     Boolean  @default(false)
     featuredBanner String?
     menuId         Int
-    menu           Menu        @relation(fields: [menuId], references: [id])
-    createdAt      DateTime    @default(now())
-    updatedAt      DateTime    @updatedAt
-    foodImages     FoodImage[]
+    menu           Menu     @relation(fields: [menuId], references: [id])
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+    imgUrl         String
 }
 
-model FoodImage {
-    id     Int    @id @default(autoincrement())
-    imgUrl String
-    foodId Int
-    food   Food   @relation(fields: [foodId], references: [id])
-}
+// model FoodImage {
+//     id     Int    @id @default(autoincrement())
+//     imgUrl String
+//     foodId Int
+//     food   Food   @relation(fields: [foodId], references: [id])
+// }

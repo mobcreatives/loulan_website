@@ -1,8 +1,18 @@
+"use client";
 import Image from "next/image";
 import React from "react";
 import SpecialVariety from "./special-variety";
+import { useQuery } from "@tanstack/react-query";
+import { getFood } from "@/app/dashboard/food/helper";
+import { KEYS } from "@/config/constants";
 
 export default function Special() {
+  const { data: foods } = useQuery({
+    queryFn: getFood,
+    queryKey: KEYS.FOOD.GET,
+  });
+
+  console.log("food", foods);
   return (
     <section className="px-6 sm:px-10 md:px-16 lg:px-28 xl:px-36 2xl:px-44 bg-[#0A1316] text-white py-5 flex justify-center">
       <div className="relative flex flex-col items-center justify-center lg:flex-row gap-5 isolate">
@@ -20,12 +30,17 @@ export default function Special() {
             BBQ
           </h3>
           <div className="space-y-2">
-            <SpecialVariety
-              price={900}
-              title="Sake BBQ sauce"
-              description="radish, black sesame seeds, coriander"
-            />
-            <SpecialVariety
+            {foods?.map((food) => {
+              return (
+                <SpecialVariety
+                  price={food.price}
+                  title={food.name}
+                  description={food.description}
+                  img={food.imgUrl}
+                />
+              );
+            })}
+            {/* <SpecialVariety
               description="sticky Asian glaze, charred lime, chilli cashews"
               price={1000}
               title="BBQ baby back ribs"
@@ -39,7 +54,7 @@ export default function Special() {
               description="tossed in Korean hot sauce, pickled radish"
               price={400}
               title="Dusted chicken wings"
-            />
+            /> */}
           </div>
         </div>
       </div>
