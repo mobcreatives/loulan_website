@@ -58,8 +58,8 @@ export default function AddMenu({ open, setOpen }: Readonly<TAddMenuProps>) {
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <BaseInput
-            label="type"
-            placeholder="Enter Cuisine Type"
+            label="Name"
+            placeholder="Enter menu name"
             {...register("name")}
             error={errors.name?.message}
           />
