@@ -18,7 +18,9 @@ export * from "./ui/sheet";
 export * from "./ui/sidebar";
 export * from "./ui/skeleton";
 export * from "./ui/sonner";
+export * from "./ui/switch";
 export * from "./ui/table";
+export * from "./ui/textarea";
 export * from "./ui/tooltip";
 
 export * from "./text-with-line";
