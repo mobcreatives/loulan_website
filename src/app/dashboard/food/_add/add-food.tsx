@@ -66,8 +66,8 @@ export default function AddFood({ open, setOpen }: Readonly<TAddFoodProps>) {
   }
 
   // Function to map menu data (adjust as per your data structure)
-  const mapData = (menus: any[]) =>
-    menus.map((menu) => ({ value: menu.id, label: menu.name }));
+  // const mapData = (menus: any[]) =>
+  //   menus.map((menu) => ({ value: menu.id, label: menu.name }));
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

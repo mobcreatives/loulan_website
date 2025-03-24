@@ -22,7 +22,7 @@ export async function addFood(data: TAddFoodData) {
         imgUrl: data.imageUrl!,
       },
     });
-    return {} as Food;
+    return food;
   } catch {
     throw new Error("Fail to add food.");
   }
