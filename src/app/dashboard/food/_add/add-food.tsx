@@ -20,8 +20,7 @@ import { addFood } from "../helper";
 import { getMenu } from "../../menu/helper";
 import { mapData } from "@/lib/utils";
 import BaseTextarea from "@/components/inputs/base-textarea";
-import AttachmentInput from "@/components/inputs/attachments-input";
-import { UploadButton, UploadDropzone } from "@/lib/uploadthing";
+import { UploadButton } from "@/lib/uploadthing";
 
 export default function AddFood({ open, setOpen }: Readonly<TAddFoodProps>) {
   const queryClient = useQueryClient();

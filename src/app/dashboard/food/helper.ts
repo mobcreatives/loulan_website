@@ -1,6 +1,6 @@
 "use server";
 
-import { Food, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { TAddFoodData } from "./_add/types";
 import { foodSchema } from "./_add/validator";
 

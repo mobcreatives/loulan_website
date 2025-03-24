@@ -34,6 +34,7 @@ export default function Reviews() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [currentReview, setCurrentReview] = useState<any>(null);
 
   const handleFeaturedToggle = (id: string) => {
@@ -91,6 +92,7 @@ export default function Reviews() {
     setIsAddDialogOpen(true);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSubmitAdd = (data: any) => {
     const newReview = {
       ...currentReview,
@@ -104,6 +106,7 @@ export default function Reviews() {
     toast(`"${data.customerName}'s review" has been added successfully.`);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSubmitEdit = (data: any) => {
     setReviews(
       reviews.map((review) =>

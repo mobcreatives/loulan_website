@@ -1,4 +1,6 @@
-export const mockGalleryImages = [
+import { TImageGalleryDetails } from "./types";
+
+export const mockGalleryImages: TImageGalleryDetails[] = [
   {
     id: "1",
     imageUrl:

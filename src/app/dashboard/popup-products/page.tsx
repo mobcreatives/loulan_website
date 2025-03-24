@@ -5,11 +5,13 @@ import { mockPopupProducts } from "./data";
 import { toast } from "sonner";
 import { Button, PageTitle, ItemFormDrawer } from "@/components";
 import FoodItemCard from "../food-items/_components/food-item-card";
+import { TPopupProductsDetails } from "./types";
 
 export default function PopupProducts() {
   const [products, setProducts] = useState(mockPopupProducts);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState<any>(null);
+  const [currentProduct, setCurrentProduct] =
+    useState<TPopupProductsDetails | null>(null);
 
   const handleEdit = (id: string) => {
     const productToEdit = products.find((product) => product.id === id);
@@ -30,6 +32,7 @@ export default function PopupProducts() {
     setIsFormOpen(true);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleFormSubmit = (data: any) => {
     if (currentProduct) {
       // Edit existing
@@ -102,7 +105,7 @@ export default function PopupProducts() {
                 id="name"
                 type="text"
                 className="w-full p-2 border rounded-md gold-focus-ring"
-                defaultValue={currentProduct?.name || ""}
+                defaultValue={currentProduct?.name ?? ""}
                 placeholder="Enter product name"
               />
             </div>
@@ -114,7 +117,7 @@ export default function PopupProducts() {
               <textarea
                 id="description"
                 className="w-full p-2 border rounded-md gold-focus-ring min-h-[100px]"
-                defaultValue={currentProduct?.description || ""}
+                defaultValue={currentProduct?.description ?? ""}
                 placeholder="Describe your product"
               />
             </div>
@@ -129,7 +132,7 @@ export default function PopupProducts() {
                   type="number"
                   step="0.01"
                   className="w-full p-2 border rounded-md gold-focus-ring"
-                  defaultValue={currentProduct?.price || ""}
+                  defaultValue={currentProduct?.price ?? ""}
                   placeholder="0.00"
                 />
               </div>
@@ -141,7 +144,7 @@ export default function PopupProducts() {
                 <select
                   id="category"
                   className="w-full p-2 border rounded-md gold-focus-ring"
-                  defaultValue={currentProduct?.category || ""}
+                  defaultValue={currentProduct?.category ?? ""}
                 >
                   <option value="">Select category</option>
                   <option value="Main Course">Main Course</option>
@@ -161,7 +164,7 @@ export default function PopupProducts() {
                 id="image"
                 type="text"
                 className="w-full p-2 border rounded-md gold-focus-ring"
-                defaultValue={currentProduct?.imageUrl || "/placeholder.svg"}
+                defaultValue={currentProduct?.imageUrl ?? "/images/placeholder.svg"}
                 placeholder="Enter image URL"
               />
             </div>

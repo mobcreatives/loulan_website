@@ -1,5 +1,6 @@
 import React from "react";
 import { TSpecialVarietyProps } from "./types";
+import Image from "next/image";
 
 export default function SpecialVariety({
   title,
@@ -10,7 +11,13 @@ export default function SpecialVariety({
   return (
     <div className="flex justify-between border-b-3 border-dashed pb-2.5">
       <div className="font-fredoka space-y-0.5">
-        <img src={img} className="h-16 w-16 rounded-full" />
+        <Image
+          src={img}
+          className="h-16 w-16 rounded-full"
+          alt="Special Variety"
+          width={84}
+          height={84}
+        />
         <h4 className="text-[clamp(1.25rem,1.1883rem+0.2597vw,1.5rem)] font-semibold capitalize">
           {title}
         </h4>

@@ -8,7 +8,6 @@ import {
   Check,
   X,
   Users,
-  Clock,
 } from "lucide-react";
 import {
   Table,
@@ -61,6 +60,7 @@ export default function Reservations() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [currentReservation, setCurrentReservation] = useState<any>(null);
 
   const handleView = (id: string) => {
@@ -115,6 +115,7 @@ export default function Reservations() {
     setIsAddDialogOpen(true);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSubmitAdd = (data: any) => {
     const newReservation = {
       ...currentReservation,
@@ -127,6 +128,7 @@ export default function Reservations() {
     toast(`Reservation for ${data.name} has been added successfully.`);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSubmitEdit = (data: any) => {
     setReservations(
       reservations.map((res) =>

@@ -19,12 +19,15 @@ import {
 import { mockGalleryImages } from "./data";
 import ImageCard from "./_components/image-card";
 import Image from "next/image";
+import { TImageGalleryDetails } from "./types";
 
 export default function Gallery() {
   const [images, setImages] = useState(mockGalleryImages);
   const [searchQuery, setSearchQuery] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [currentImage, setCurrentImage] = useState<any>(null);
+  const [currentImage, setCurrentImage] = useState<TImageGalleryDetails | null>(
+    null
+  );
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [showHidden, setShowHidden] = useState(false);
 
@@ -76,6 +79,7 @@ export default function Gallery() {
     );
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleFormSubmit = (data: any) => {
     if (currentImage) {
       // Edit existing
@@ -185,7 +189,7 @@ export default function Gallery() {
                 id="imageUrl"
                 type="text"
                 className="w-full p-2 border rounded-md gold-focus-ring"
-                defaultValue={currentImage?.imageUrl || ""}
+                defaultValue={currentImage?.imageUrl ?? ""}
                 placeholder="https://example.com/image.jpg"
               />
             </div>
@@ -198,7 +202,7 @@ export default function Gallery() {
                 id="caption"
                 type="text"
                 className="w-full p-2 border rounded-md gold-focus-ring"
-                defaultValue={currentImage?.caption || ""}
+                defaultValue={currentImage?.caption ?? ""}
                 placeholder="Describe this image"
               />
             </div>

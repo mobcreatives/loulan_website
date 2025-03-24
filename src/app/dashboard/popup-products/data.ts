@@ -1,4 +1,6 @@
-export const mockPopupProducts = [
+import { TPopupProductsDetails } from "./types";
+
+export const mockPopupProducts: TPopupProductsDetails[] = [
   {
     id: "1",
     name: "Limited Time Seafood Platter",

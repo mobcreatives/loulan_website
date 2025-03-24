@@ -20,6 +20,7 @@ interface ItemFormDrawerProps {
   onClose: () => void;
   title: string;
   description?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSubmit: (data: any) => void;
   children: React.ReactNode;
   submitLabel?: string;
@@ -44,6 +45,7 @@ export const ItemFormDrawer = ({
 
     try {
       const formData = new FormData(formRef.current as HTMLFormElement);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const data: Record<string, any> = {};
 
       // Process form data

@@ -18,6 +18,7 @@ interface ItemFormDialogProps {
   onClose: () => void;
   title: string;
   description?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSubmit: (data: any) => void;
   children: React.ReactNode;
   submitLabel?: string;
@@ -41,6 +42,7 @@ const ItemFormDialog = ({
     try {
       const formElement = e.target as HTMLFormElement;
       const formData = new FormData(formElement);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const data: Record<string, any> = {};
 
       // Process form data

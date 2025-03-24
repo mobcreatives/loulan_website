@@ -1,9 +1,8 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { UploadThingError } from "uploadthing/server";
 
 const f = createUploadthing();
 
-const auth = (req: Request) => ({ id: "fakeId" }); // Fake auth function
+export const auth = () => ({ id: "fakeId" }); // Fake auth function
 
 // FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
@@ -13,7 +12,7 @@ export const ourFileRouter = {
       maxFileSize: "4MB",
       maxFileCount: 1,
     },
-  }).onUploadComplete(async ({ metadata, file }) => {
+  }).onUploadComplete(async ({ file }) => {
     console.log("file", file);
   }),
 } satisfies FileRouter;
