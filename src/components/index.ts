@@ -13,10 +13,12 @@ export * from "./ui/separator";
 export * from "./ui/sheet";
 export * from "./ui/sidebar";
 export * from "./ui/skeleton";
+export * from "./ui/sonner";
 export * from "./ui/table";
 export * from "./ui/tooltip";
 
 export * from "./text-with-line";
+export * from "./page-title";
 export * from "./inputs/base-input";
 export * from "./inputs/base-textarea";
 export * from "./data-table/data-table";
