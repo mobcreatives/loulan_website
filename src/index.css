@@ -1,0 +1,114 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 10% 97%;
+    --foreground: 30 10% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 30 10% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 30 10% 10%;
+
+    --primary: 45 100% 50%;
+    --primary-foreground: 30 10% 10%;
+
+    --secondary: 30 10% 97%;
+    --secondary-foreground: 30 10% 10%;
+
+    --muted: 30 5% 96%;
+    --muted-foreground: 30 5% 40%;
+
+    --accent: 45 80% 50%;
+    --accent-foreground: 30 10% 10%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 30 10% 85%;
+    --input: 30 10% 85%;
+    --ring: 45 100% 50%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 30 10% 10%;
+    --sidebar-foreground: 45 80% 65%;
+    --sidebar-primary: 45 80% 55%;
+    --sidebar-primary-foreground: 30 10% 10%;
+    --sidebar-accent: 30 5% 15%;
+    --sidebar-accent-foreground: 45 80% 65%;
+    --sidebar-border: 30 5% 20%;
+    --sidebar-ring: 45 80% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .gold-gradient {
+    @apply bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400;
+  }
+
+  .gold-text {
+    @apply text-transparent bg-clip-text gold-gradient;
+  }
+
+  .glass-card {
+    @apply bg-white/60 backdrop-blur-sm border border-white/20 shadow-lg;
+  }
+
+  .sidebar-item {
+    @apply flex items-center gap-3 px-4 py-3 text-sidebar-foreground hover:bg-sidebar-accent rounded-md transition-all duration-200 ease-in-out;
+  }
+
+  .sidebar-item.active {
+    @apply bg-sidebar-accent text-amber-500;
+  }
+
+  .btn-gold {
+    @apply px-4 py-2 bg-amber-500 text-black font-medium rounded-md hover:bg-amber-600 transition-colors duration-200 flex items-center justify-center gap-2;
+  }
+
+  .btn-black {
+    @apply px-4 py-2 bg-black text-amber-500 font-medium rounded-md hover:bg-gray-900 transition-colors duration-200 flex items-center justify-center gap-2 border border-amber-500/20;
+  }
+
+  .btn-outline {
+    @apply px-4 py-2 bg-transparent text-amber-500 font-medium rounded-md hover:bg-amber-500/10 transition-colors duration-200 flex items-center justify-center gap-2 border border-amber-500;
+  }
+
+  .stat-card {
+    @apply flex flex-col p-6 rounded-xl border border-amber-500/20 bg-white shadow-md hover:shadow-lg transition-all duration-300 relative overflow-hidden;
+  }
+
+  .stat-card::after {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-amber-500/5 via-amber-500/10 to-amber-500/5 opacity-0 hover:opacity-100 transition-opacity duration-300;
+  }
+
+  .dashboard-card {
+    @apply rounded-xl border border-amber-500/20 bg-white shadow-md hover:shadow-lg transition-all duration-300;
+  }
+
+  .dashboard-card-header {
+    @apply flex items-center justify-between p-4 border-b border-amber-500/20;
+  }
+
+  .gold-focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-opacity-50;
+  }
+}
