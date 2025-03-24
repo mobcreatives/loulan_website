@@ -18,16 +18,16 @@ export default function DashboardSidebar() {
     setActiveTab(window.location.pathname);
   }, []);
   return (
-    <Sidebar className="px-4 bg-[#2e2e2e] border-primary/50">
-      <SidebarHeader className="flex items-center justify-center bg-[#2e2e2e]">
+    <Sidebar className="px-4 border-primary/50">
+      <SidebarHeader className="flex items-center justify-center">
         <div className="flex items-center justify-between w-full py-2">
-          <h1 className="font-oswald font-semibold text-primary text-[clamp(1.125rem,0.6563rem+1.5vw,1.5rem)]">
+          <h1 className="font-oswald text-[clamp(1.125rem,0.6563rem+1.5vw,1.5rem)] text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400">
             Loulan
           </h1>
         </div>
         <div className="h-[1.5px] w-full bg-primary mt-1 rounded-full" />
       </SidebarHeader>
-      <SidebarContent className="bg-[#2e2e2e] pt-1 -space-y-1 ">
+      <SidebarContent className=" pt-1 -space-y-1 ">
         {sidebarItems.map((item) => (
           <li key={item.label} className="list-none">
             <Link

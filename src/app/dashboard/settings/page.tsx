@@ -72,9 +72,8 @@ export default function Settings() {
         title="Restaurant Settings"
         description="Manage your restaurant information and preferences"
       />
-
       <form onSubmit={handleSubmit}>
-        <div className="space-y-6 mt-8">
+        <div className="space-y-6">
           <Card className="p-6">
             <h3 className="text-lg font-medium mb-4">Basic Information</h3>
             <div className="space-y-4">
