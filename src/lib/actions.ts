@@ -4,7 +4,14 @@ import { db } from "@/db";
 import { revalidatePath } from "next/cache";
 
 // --------- CUISINE TYPE ACTIONS ---------
-
+export async function getCuisinType() {
+  try {
+    const cuisines = await db.cuisineType.findMany();
+    return { cuisines };
+  } catch {
+    return { success: false, error: "Failed to get cuisine type" };
+  }
+}
 export async function createCuisineType(formData: FormData) {
   const type = formData.get("type") as string;
 

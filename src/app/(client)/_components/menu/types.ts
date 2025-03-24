@@ -1,6 +1,6 @@
 import { Dispatch, JSX, SetStateAction } from "react";
 
-export type TMenuEnum = "desert" | "steak" | "coffee" | "burger";
+export type TMenuEnum = string;
 
 export type TMenuButtonPros = {
   activeTab: TMenuEnum;
