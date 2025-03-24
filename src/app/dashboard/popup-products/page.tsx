@@ -3,9 +3,8 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { mockPopupProducts } from "./data";
 import { toast } from "sonner";
-import { Button, PageTitle } from "@/components";
+import { Button, PageTitle, ItemFormDrawer } from "@/components";
 import FoodItemCard from "../food-items/_components/food-item-card";
-import ItemFormDrawer from "./_components/item-food-drawer";
 
 export default function PopupProducts() {
   const [products, setProducts] = useState(mockPopupProducts);

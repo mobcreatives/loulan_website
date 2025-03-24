@@ -25,7 +25,7 @@ interface ItemFormDrawerProps {
   submitLabel?: string;
 }
 
-const ItemFormDrawer = ({
+export const ItemFormDrawer = ({
   isOpen,
   onClose,
   title,

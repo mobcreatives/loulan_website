@@ -29,6 +29,7 @@ export * from "./inputs/base-input";
 export * from "./inputs/base-textarea";
 export * from "./data-table/data-table";
 export * from "./select/select-field";
+export * from "./item-food-drawer";
 
 export * from "./icons/fill-star-icon-component";
 export * from "./icons/desert-icon-component";
