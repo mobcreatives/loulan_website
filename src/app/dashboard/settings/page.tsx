@@ -15,46 +15,62 @@ import {
 import { toast } from "sonner";
 import { mockSettings } from "./data";
 
+interface Settings {
+  restaurantName: string;
+  address: string;
+  phone: string;
+  email: string;
+  openingHours: string;
+  socialMedia: {
+    facebook: string;
+    instagram: string;
+    twitter: string;
+  };
+  features: {
+    enableOnlineReservations: boolean;
+    enableOnlineOrdering: boolean;
+    showReviews: boolean;
+    enablePopups: boolean;
+  };
+}
 export default function Settings() {
-  const [settings, setSettings] = useState(mockSettings);
+  const [settings, setSettings] = useState<Settings>(mockSettings);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
 
+    // Check if the field is nested
     if (name.includes(".")) {
       const [section, key] = name.split(".");
+
       setSettings((prev) => ({
         ...prev,
         [section]: {
-          ...prev[section as keyof typeof prev],
+          ...prev[section as keyof Pick<Settings, "socialMedia" | "features">],
           [key]: value,
         },
       }));
     } else {
+      // Handle flat fields
       setSettings((prev) => ({
         ...prev,
         [name]: value,
       }));
     }
   };
-
   const handleSwitchChange = (name: string) => {
     const [section, key] = name.split(".");
+
     setSettings((prev) => ({
       ...prev,
       [section]: {
-        ...prev[section as keyof typeof prev],
-        [key]:
-          !prev[section as keyof typeof prev][
-            key as keyof (typeof prev)[typeof section]
-          ],
+        ...prev[section as "features"],
+        [key]: !prev[section as "features"][key as keyof Settings["features"]],
       },
     }));
   };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
