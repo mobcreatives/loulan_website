@@ -1,6 +1,6 @@
 "use server";
 
-import { Food, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { TAddFoodData } from "./_add/types";
 import { foodSchema } from "./_add/validator";
 
@@ -13,7 +13,7 @@ export async function addFood(data: TAddFoodData) {
     throw new Error(result.error.errors[0].message);
   }
   try {
-    const food = await prisma.food.create({
+    await prisma.food.create({
       data: {
         name: data.name,
         description: data.description,
@@ -22,7 +22,6 @@ export async function addFood(data: TAddFoodData) {
         imgUrl: data.imageUrl!,
       },
     });
-    return {} as Food;
   } catch {
     throw new Error("Fail to add food.");
   }
