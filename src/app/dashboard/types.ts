@@ -1,7 +1,10 @@
-import { JSX } from "react";
+import { LucideProps } from "lucide-react";
+import { ForwardRefExoticComponent, RefAttributes } from "react";
 
 export type TSidebarItemsData = {
   label: string;
   href: string;
-  icon: JSX.Element;
+  icon: ForwardRefExoticComponent<
+    Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
+  >;
 };

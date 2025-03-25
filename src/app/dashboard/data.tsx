@@ -1,25 +1,66 @@
-import { DashboardIconComponent, MenuIconComponent } from "@/components";
 import { TSidebarItemsData } from "./types";
+import {
+  Home,
+  Menu,
+  FileText,
+  Star,
+  Calendar,
+  MessageSquare,
+  Mail,
+  Settings,
+  Sparkles,
+  Image,
+} from "lucide-react";
 
 export const sidebarItems: TSidebarItemsData[] = [
   {
     label: "Dashboard",
     href: "/dashboard",
-    icon: <DashboardIconComponent />,
+    icon: Home,
   },
   {
-    label: "cuisine",
-    href: "/dashboard/cuisine",
-    icon: <DashboardIconComponent />,
+    label: "Menu Categories",
+    href: "/dashboard/menu-categories",
+    icon: Menu,
   },
   {
-    label: "Menu",
-    href: "/dashboard/menu",
-    icon: <MenuIconComponent />,
+    label: "Food Items",
+    href: "/dashboard/food-items",
+    icon: FileText,
   },
   {
-    label: "food",
-    href: "/dashboard/food",
-    icon: <DashboardIconComponent />,
+    label: "Featured Products",
+    href: "/dashboard/featured-products",
+    icon: Star,
+  },
+  {
+    label: "Popup Products",
+    href: "/dashboard/popup-products",
+    icon: Sparkles,
+  },
+  {
+    label: "Gallery",
+    href: "/dashboard/gallery",
+    icon: Image,
+  },
+  {
+    label: "Reservations",
+    href: "/dashboard/reservations",
+    icon: Calendar,
+  },
+  {
+    label: "Reviews",
+    href: "/dashboard/reviews",
+    icon: MessageSquare,
+  },
+  {
+    label: "Contact Requests",
+    href: "/dashboard/contact-requests",
+    icon: Mail,
+  },
+  {
+    label: "Settings",
+    href: "/dashboard/settings",
+    icon: Settings,
   },
 ];

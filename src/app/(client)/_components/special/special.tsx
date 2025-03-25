@@ -33,11 +33,15 @@ export default function Special() {
             {foods?.map((food) => {
               return (
                 <SpecialVariety
+<<<<<<< HEAD
                   key={food.id}
+=======
+>>>>>>> 3e4eb4ad41d248e4de4cbde8a727fb3f183b5630
                   price={food.price.toString()}
                   title={food.name}
                   description={food.description}
                   img={food.imgUrl}
+                  key={food.id}
                 />
               );
             })}
