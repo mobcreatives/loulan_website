@@ -13,16 +13,15 @@ export async function addFood(data: TAddFoodData) {
     throw new Error(result.error.errors[0].message);
   }
   try {
-    const food = await prisma.food.create({
+    await prisma.food.create({
       data: {
         name: data.name,
         description: data.description,
         price: data.price,
         menuId: data.menu,
-        imgUrl: data.imageUrl!,
+        // imgUrl: data.imageUrl!,
       },
     });
-    return food;
   } catch {
     throw new Error("Fail to add food.");
   }

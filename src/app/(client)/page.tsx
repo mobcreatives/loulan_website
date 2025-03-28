@@ -1,7 +1,6 @@
 import HeroSection from "./_components/hero-section";
 import RateYourExperience from "./_components/rate-your-experience";
 import Menu from "./_components/menu/menu";
-import Special from "./_components/special/special";
 import Featured from "./_components/featured/featured";
 import Opening from "./_components/opening";
 import Reservation from "./_components/reservation/reservation";
@@ -12,7 +11,7 @@ export default function Home() {
       <HeroSection />
       <RateYourExperience />
       <Menu showMenuText />
-      <Special />
+      {/* <Special /> */}
       <Featured />
       <Opening />
       <Reservation />

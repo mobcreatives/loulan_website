@@ -17,4 +17,15 @@ export const KEYS = {
     UPDATE: ["update", "food"],
     DELETE: ["delete", "food"],
   },
+  REVIEWS: {
+    GET: ["get", "reviews"],
+    ADD: ["add", "review"],
+    UPDATE: ["update", "review"],
+    DELETE: ["delete", "review"],
+    FEATURED:["toggle", "featured", "review"]
+  },
+};
+
+export const CONSTANTS = {
+  TOKEN: "token",
 };

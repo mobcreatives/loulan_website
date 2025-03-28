@@ -164,7 +164,9 @@ export default function PopupProducts() {
                 id="image"
                 type="text"
                 className="w-full p-2 border rounded-md gold-focus-ring"
-                defaultValue={currentProduct?.imageUrl ?? "/images/placeholder.svg"}
+                defaultValue={
+                  currentProduct?.imageUrl ?? "/images/placeholder.svg"
+                }
                 placeholder="Enter image URL"
               />
             </div>
