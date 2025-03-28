@@ -263,7 +263,7 @@ export default function Reviews() {
                   <div className="flex items-center mt-1">
                     {[...Array(5)].map((_, i) => (
                       <Star
-                        key={`star_${_}`}
+                        key={`star_${_}${i}`}
                         size={16}
                         className={
                           i < review.stars
@@ -503,7 +503,7 @@ export default function Reviews() {
                 <div className="flex items-center mb-2">
                   {[...Array(5)].map((_, i) => (
                     <Star
-                      key={`star_${_}`}
+                      key={`star_${_}${i}`}
                       size={16}
                       className={
                         i < currentReview.stars
