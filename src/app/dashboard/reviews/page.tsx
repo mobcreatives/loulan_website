@@ -137,27 +137,24 @@ export default function Reviews() {
     try {
       const response = await _axios.post(API_ROUTES.REVIEW, data);
       return response.data;
-    } catch (error) {
-      console.error("Error creating review:", error);
-      throw new Error("There was a problem creating your review. Please");
+    } catch {
+      throw new Error("There was a problem creating your review");
     }
   }
   async function updateReview(id: number, data: Partial<TUpdateReviewData>) {
     try {
       const response = await _axios.patch(`${API_ROUTES.REVIEW}/${id}`, data);
       return response.data;
-    } catch (error) {
-      console.error("Error creating review:", error);
-      throw new Error("There was a problem creating your review. Please");
+    } catch {
+      throw new Error("There was a problem creating your review");
     }
   }
   async function deleteReview(id: number) {
     try {
       const response = await _axios.delete(`${API_ROUTES.REVIEW}/${id}`);
       return response.data;
-    } catch (error) {
-      console.error("Error deleting review:", error);
-      throw new Error("There was a problem deleting your review. Please");
+    } catch {
+      throw new Error("There was a problem deleting your review");
     }
   }
 
@@ -167,9 +164,8 @@ export default function Reviews() {
         API_ROUTES.REVIEW
       );
       return response.data.data;
-    } catch (error) {
-      console.error("Error getting review:", error);
-      throw new Error("There was a problem getting your review. Please");
+    } catch {
+      throw new Error("There was a problem getting your review");
     }
   }
 
@@ -179,7 +175,7 @@ export default function Reviews() {
       return response.data;
     } catch (error) {
       console.error("Error toggling featured review:", error);
-      throw new Error("There was a problem toggling featured review. Please");
+      throw new Error("There was a problem toggling featured review");
     }
   }
 

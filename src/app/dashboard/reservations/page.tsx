@@ -8,6 +8,7 @@ import {
   Check,
   X,
   Users,
+  Loader2,
 } from "lucide-react";
 import {
   Table,
@@ -43,14 +44,25 @@ import {
   Input,
   Label,
   PageTitle,
+  DialogDescription,
 } from "@/components";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { mockReservations, statusStyles, timeSlots } from "./data";
 import ItemFormDialog from "./_components/item-form-dialog";
+import { useAuthAxios } from "@/config/auth-axios";
+import { TAddReservationData } from "./types";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { addReservationSchema } from "./validator";
+import { useMutation } from "@tanstack/react-query";
+import { KEYS } from "@/config/constants";
+import { API_ROUTES } from "@/config/routes";
 
 export default function Reservations() {
+  const { _axios } = useAuthAxios();
+  // states
   const [reservations, setReservations] = useState(mockReservations);
   const [calendarDate, setCalendarDate] = useState<Date | undefined>(
     new Date()
@@ -63,6 +75,38 @@ export default function Reservations() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [currentReservation, setCurrentReservation] = useState<any>(null);
 
+  const {
+    register: addReservationRegister,
+    handleSubmit: handleAddReservationSubmit,
+    setValue: addReservationSetValue,
+  } = useForm<TAddReservationData>({
+    resolver: zodResolver(addReservationSchema),
+  });
+  // tanstack queries
+  const { mutateAsync: addReservationMutateSync, isPending: addPending } =
+    useMutation({
+      mutationKey: KEYS.RESERVATIONS.ADD,
+      mutationFn: addReservation,
+      onSuccess: () => {
+        toast("Reservation added successfully");
+        setIsAddDialogOpen(false);
+      },
+      onError: () => {
+        toast("Failed to add reservation");
+      },
+    });
+  // handlers
+  // api handlers
+  async function addReservation(data: TAddReservationData) {
+    try {
+      const response = await _axios.post(API_ROUTES.RESERVATIONS, data);
+      return response.data;
+    } catch {
+      throw new Error("Failed to add reservation");
+    }
+  }
+
+  // basic handlers
   const handleView = (id: string) => {
     const reservation = reservations.find((res) => res.id === id);
     setCurrentReservation(reservation);
@@ -115,18 +159,9 @@ export default function Reservations() {
     setIsAddDialogOpen(true);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleSubmitAdd = (data: any) => {
-    const newReservation = {
-      ...currentReservation,
-      ...data,
-    };
-
-    setReservations([...reservations, newReservation]);
-    setIsAddDialogOpen(false);
-
-    toast(`Reservation for ${data.name} has been added successfully.`);
-  };
+  async function handleSubmitAdd(data: TAddReservationData) {
+    await addReservationMutateSync(data);
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSubmitEdit = (data: any) => {
@@ -147,12 +182,15 @@ export default function Reservations() {
         description="Manage customer table reservations and bookings"
         actions={
           <div className="flex gap-2">
-            <Button onClick={() => handleAdd()} className="btn-gold">
+            <Button
+              onClick={() => handleAdd()}
+              className="btn-gold cursor-pointer"
+            >
               Add Reservation
             </Button>
             <Button
               variant="outline"
-              className="btn-outline"
+              className="btn-outline cursor-pointer"
               onClick={() => setShowCalendarView(!showCalendarView)}
             >
               <CalendarIcon size={16} className="mr-2" />
@@ -409,113 +447,155 @@ export default function Reservations() {
       )}
 
       {/* Add Reservation Dialog */}
-      <ItemFormDialog
-        isOpen={isAddDialogOpen}
-        onClose={() => setIsAddDialogOpen(false)}
-        title="Add Reservation"
-        description="Book a new table reservation"
-        onSubmit={handleSubmitAdd}
-        submitLabel="Add Reservation"
-      >
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="name">Customer Name</Label>
-            <Input id="name" name="name" required />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" required />
-            </div>
-            <div>
-              <Label htmlFor="phone">Phone</Label>
-              <Input id="phone" name="phone" required />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="date">Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className="w-full justify-start text-left font-normal"
-                    name="date"
-                    id="date-trigger"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {currentReservation?.date ? (
-                      format(new Date(currentReservation.date), "PPP")
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={
-                      currentReservation?.date
-                        ? new Date(currentReservation.date)
-                        : undefined
-                    }
-                    onSelect={(date) => {
-                      if (date) {
-                        setCurrentReservation({
-                          ...currentReservation,
-                          date: format(date, "yyyy-MM-dd"),
-                        });
-                      }
-                    }}
-                    className="p-3 pointer-events-auto"
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <form onSubmit={handleAddReservationSubmit(handleSubmitAdd)}>
+            <DialogHeader className="px-0">
+              <div className="flex items-center justify-between">
+                <DialogTitle>Add Reservation</DialogTitle>
+              </div>
+              <DialogDescription>
+                Book a new table reservation
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="name">Customer Name</Label>
+                  <Input
+                    id="name"
+                    required
+                    {...addReservationRegister("name")}
                   />
-                </PopoverContent>
-              </Popover>
-              <Input
-                id="date"
-                name="date"
-                type="hidden"
-                value={
-                  currentReservation?.date || format(new Date(), "yyyy-MM-dd")
-                }
-              />
-            </div>
-            <div>
-              <Label htmlFor="time">Time</Label>
-              <Select
-                name="time"
-                defaultValue={currentReservation?.time || "19:00"}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select time" />
-                </SelectTrigger>
-                <SelectContent>
-                  {timeSlots.map((time) => (
-                    <SelectItem key={time} value={time}>
-                      {time}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      required
+                      {...addReservationRegister("email")}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="phone">Phone</Label>
+                    <Input
+                      id="phone"
+                      name="phone"
+                      required
+                      {...addReservationRegister("phone")}
+                    />
+                  </div>
+                </div>
 
-          <div>
-            <Label htmlFor="guests">Number of Guests</Label>
-            <Input
-              id="guests"
-              name="guests"
-              type="number"
-              min="1"
-              max="20"
-              defaultValue={currentReservation?.guests || 2}
-              required
-            />
-          </div>
-        </div>
-      </ItemFormDialog>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="date">Date</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={"outline"}
+                          className="w-full justify-start text-left font-normal"
+                          name="date"
+                          id="date-trigger"
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {currentReservation?.date ? (
+                            format(new Date(currentReservation.date), "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={
+                            currentReservation?.date
+                              ? new Date(currentReservation.date)
+                              : undefined
+                          }
+                          onSelect={(date) => {
+                            if (date) {
+                              setCurrentReservation({
+                                ...currentReservation,
+                                date: format(date, "yyyy-MM-dd"),
+                              });
+                              addReservationSetValue(
+                                "date",
+                                format(date, "yyyy-MM-dd")
+                              );
+                            }
+                          }}
+                          className="p-3 pointer-events-auto"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  <div>
+                    <Label htmlFor="time">Time</Label>
+                    <Select
+                      name="time"
+                      defaultValue={currentReservation?.time || "19:00"}
+                      onValueChange={(value) =>
+                        addReservationSetValue("time", value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select time" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {timeSlots.map((time) => (
+                          <SelectItem key={time} value={time}>
+                            {time}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="guests">Number of Guests</Label>
+                  <Input
+                    id="guests"
+                    name="guests"
+                    type="number"
+                    min="1"
+                    max="20"
+                    defaultValue={currentReservation?.guests || 2}
+                    {...addReservationRegister("guestsNum")}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+            <DialogFooter className="px-0 border-t pt-4">
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsAddDialogOpen(false)}
+                  type="button"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  className="btn-gold"
+                  disabled={addPending}
+                >
+                  {addPending ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : null}
+                  {addPending ? "Saving..." : "Add Reservation"}
+                </Button>
+              </div>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Reservation Dialog */}
       {currentReservation && (

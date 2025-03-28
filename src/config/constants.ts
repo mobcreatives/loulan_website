@@ -22,7 +22,13 @@ export const KEYS = {
     ADD: ["add", "review"],
     UPDATE: ["update", "review"],
     DELETE: ["delete", "review"],
-    FEATURED:["toggle", "featured", "review"]
+    FEATURED: ["toggle", "featured", "review"],
+  },
+  RESERVATIONS: {
+    GET: ["get", "reservations"],
+    ADD: ["add", "reservation"],
+    UPDATE: ["update", "reservation"],
+    DELETE: ["delete", "reservation"],
   },
 };
 

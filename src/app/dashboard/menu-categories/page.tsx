@@ -19,7 +19,6 @@ export default function MenuCategories() {
 
   const handleEdit = (id: string) => {
     console.log("Edit category:", id);
-    // In a real app, this would open an edit modal or navigate to an edit page
   };
 
   const handleDelete = (id: string) => {
@@ -33,7 +32,7 @@ export default function MenuCategories() {
         title="Menu Categories"
         description="Manage your restaurant's menu categories"
         actions={
-          <button className="btn-gold">
+          <button className="btn-gold cursor-pointer">
             <Plus size={18} />
             Add Category
           </button>
@@ -67,7 +66,6 @@ export default function MenuCategories() {
             onDelete={handleDelete}
           />
         ))}
-
         {filteredCategories.length === 0 && (
           <div className="col-span-full flex flex-col items-center justify-center p-12 bg-white rounded-lg border border-dashed border-gray-300">
             <p className="text-gray-500 mb-4">No categories found</p>

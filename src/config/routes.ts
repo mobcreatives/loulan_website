@@ -4,6 +4,7 @@ export const API_ROUTES = {
     REGISTER: "auth/register",
   },
   REVIEW: "reviews",
+  RESERVATIONS: "reservations",
 };
 
 export const APP_ROUTES = {
