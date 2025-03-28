@@ -19,7 +19,7 @@ export async function addFood(data: TAddFoodData) {
         description: data.description,
         price: data.price,
         menuId: data.menu,
-        imgUrl: data.imageUrl!,
+        // imgUrl: data.imageUrl!,
       },
     });
   } catch {

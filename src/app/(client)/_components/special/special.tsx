@@ -37,7 +37,7 @@ export default function Special() {
                   price={food.price.toString()}
                   title={food.name}
                   description={food.description}
-                  img={food.imgUrl}
+                  img={""}
                 />
               );
             })}
