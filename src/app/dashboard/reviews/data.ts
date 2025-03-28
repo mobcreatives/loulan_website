@@ -1,4 +1,6 @@
-export const mockReviews = [
+import { TReviewDetails } from "./types";
+
+export const mockReviews: TReviewDetails[] = [
   {
     id: "1",
     customerName: "Amanda Chen",

@@ -3,4 +3,12 @@ export const API_ROUTES = {
     LOGIN: "auth/login",
     REGISTER: "auth/register",
   },
+  REVIEW: "reviews",
+};
+
+export const APP_ROUTES = {
+  HOME: "/",
+  LOGIN: "/login",
+  REGISTER: "/register",
+  DASHBOARD: "/dashboard",
 };

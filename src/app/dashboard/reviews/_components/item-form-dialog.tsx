@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Loader2 } from "lucide-react";
+import {  Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -81,14 +81,6 @@ const ItemFormDialog = ({
           <DialogHeader className="px-0">
             <div className="flex items-center justify-between">
               <DialogTitle>{title}</DialogTitle>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onClose}
-                className="h-8 w-8"
-              >
-                <X size={16} />
-              </Button>
             </div>
             {description && (
               <DialogDescription>{description}</DialogDescription>

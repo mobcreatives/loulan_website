@@ -10,6 +10,7 @@ import { login } from "./helper";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { APP_ROUTES } from "@/config/routes";
 
 export default function Login() {
   const router = useRouter();
@@ -25,7 +26,7 @@ export default function Login() {
     mutationFn: login,
     onSuccess: async () => {
       await toast.success("Login successful");
-      router.push("/");
+      router.push(APP_ROUTES.LOGIN);
     },
     onError: () => {
       toast.error("Login failed");
@@ -56,7 +57,7 @@ export default function Login() {
               required
               placeholder="Enter Username"
               error={errors.username?.message}
-              {...register("email")}
+              {...register("username")}
             />
             <BaseInput
               label="email"
@@ -86,7 +87,7 @@ export default function Login() {
             type="submit"
             disabled={isPending}
           >
-            Login
+            Sign up
           </button>
         </form>
       </div>
