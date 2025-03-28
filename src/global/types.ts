@@ -1,8 +1,10 @@
-export type TResponse<T> = {
+export type TResponse<T, K extends string> = {
   status: string;
-  data: T[];
   meta: TMeta;
+} & {
+  [P in K]: T[];
 };
+
 export type TMeta = {
   page: number;
   limit: number;

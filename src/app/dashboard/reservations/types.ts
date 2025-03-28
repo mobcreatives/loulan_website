@@ -4,3 +4,16 @@ import { addReservationSchema, updateReservationSchema } from "./validator";
 export type TAddReservationData = z.infer<typeof addReservationSchema>;
 
 export type TUpdateReservationData = z.infer<typeof updateReservationSchema>;
+
+export type TReservationDetails = {
+  id: number;
+  name: string;
+  guestsNum: number;
+  email: string;
+  phone: string;
+  date: string;
+  time: string;
+  status: string; // "PENDING";
+  createdAt: string;
+  updatedAt: string;
+};

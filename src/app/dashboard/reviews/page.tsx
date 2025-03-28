@@ -160,7 +160,7 @@ export default function Reviews() {
 
   async function getPreviews() {
     try {
-      const response = await _axios.get<TResponse<TReviewDetails>>(
+      const response = await _axios.get<TResponse<TReviewDetails, "data">>(
         API_ROUTES.REVIEW
       );
       return response.data.data;
@@ -195,7 +195,7 @@ export default function Reviews() {
   }
 
   function confirmDelete() {
-    if (!currentReview) return;
+    if (!isDeleteDialogOpen) return;
     deleteReviewSync(currentReview.id);
   }
 

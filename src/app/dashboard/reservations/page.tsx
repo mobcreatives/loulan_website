@@ -49,21 +49,21 @@ import {
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { mockReservations, statusStyles, timeSlots } from "./data";
+import { statusStyles, timeSlots } from "./data";
 import ItemFormDialog from "./_components/item-form-dialog";
 import { useAuthAxios } from "@/config/auth-axios";
-import { TAddReservationData } from "./types";
+import { TAddReservationData, TReservationDetails } from "./types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addReservationSchema } from "./validator";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { KEYS } from "@/config/constants";
 import { API_ROUTES } from "@/config/routes";
+import { TResponse } from "@/global/types";
 
 export default function Reservations() {
   const { _axios } = useAuthAxios();
   // states
-  const [reservations, setReservations] = useState(mockReservations);
   const [calendarDate, setCalendarDate] = useState<Date | undefined>(
     new Date()
   );
@@ -72,8 +72,8 @@ export default function Reservations() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [currentReservation, setCurrentReservation] = useState<any>(null);
+  const [currentReservation, setCurrentReservation] =
+    useState<TReservationDetails>(null);
 
   const {
     register: addReservationRegister,
@@ -88,6 +88,7 @@ export default function Reservations() {
       mutationKey: KEYS.RESERVATIONS.ADD,
       mutationFn: addReservation,
       onSuccess: () => {
+        refetch();
         toast("Reservation added successfully");
         setIsAddDialogOpen(false);
       },
@@ -95,67 +96,98 @@ export default function Reservations() {
         toast("Failed to add reservation");
       },
     });
+
+  const { mutateAsync: deleteReservationMutateSync, isPending: deletePending } =
+    useMutation({
+      mutationKey: KEYS.RESERVATIONS.DELETE,
+      mutationFn: deleteReservation,
+      onSuccess: () => {
+        refetch();
+        toast("Reservation deleted successfully");
+        setIsDeleteDialogOpen(false);
+      },
+      onError: () => {
+        toast("Failed to delete reservation");
+      },
+    });
+
+  const { data: reservations, refetch } = useQuery({
+    queryKey: KEYS.RESERVATIONS.GET,
+    queryFn: getReservations,
+  });
   // handlers
   // api handlers
   async function addReservation(data: TAddReservationData) {
     try {
-      const response = await _axios.post(API_ROUTES.RESERVATIONS, data);
+      const response = await _axios.post<TReservationDetails>(
+        API_ROUTES.RESERVATIONS,
+        data
+      );
       return response.data;
     } catch {
       throw new Error("Failed to add reservation");
     }
   }
 
+  async function updateReservation(id: number, data: TAddReservationData) {
+    try {
+      const response = await _axios.put(
+        `${API_ROUTES.RESERVATIONS}/${id}`,
+        data
+      );
+      return response.data;
+    } catch {
+      throw new Error("Failed to update reservation");
+    }
+  }
+
+  async function deleteReservation(id: number) {
+    try {
+      await _axios.delete(`${API_ROUTES.RESERVATIONS}/${id}`);
+    } catch {
+      throw new Error("Failed to delete reservation");
+    }
+  }
+
+  async function getReservations() {
+    try {
+      const response = await _axios.get<
+        TResponse<TReservationDetails, "reservations">
+      >(API_ROUTES.RESERVATIONS);
+      return response.data.reservations;
+    } catch {
+      throw new Error("Failed to fetch reservations");
+    }
+  }
+
   // basic handlers
-  const handleView = (id: string) => {
-    const reservation = reservations.find((res) => res.id === id);
+  function handleView(reservation: TReservationDetails) {
     setCurrentReservation(reservation);
     setIsViewDialogOpen(true);
-  };
+  }
 
-  const handleEdit = (id: string) => {
-    const reservation = reservations.find((res) => res.id === id);
+  const handleEdit = (reservation: TReservationDetails) => {
     setCurrentReservation(reservation);
     setIsEditDialogOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    const reservation = reservations.find((res) => res.id === id);
+  function handleDelete(reservation: TReservationDetails) {
     setCurrentReservation(reservation);
     setIsDeleteDialogOpen(true);
-  };
+  }
 
-  const confirmDelete = () => {
-    setReservations(
-      reservations.filter((res) => res.id !== currentReservation.id)
-    );
-    setIsDeleteDialogOpen(false);
-    toast(`Reservation for ${currentReservation.name} has been cancelled.`);
-  };
+  async function confirmDelete() {
+    if (Object.keys(currentReservation).length <= 0 || !isDeleteDialogOpen)
+      return;
+    deleteReservationMutateSync(currentReservation.id);
+  }
 
-  const handleStatusChange = (id: string, newStatus: string) => {
-    setReservations(
-      reservations.map((res) =>
-        res.id === id ? { ...res, status: newStatus } : res
-      )
-    );
-
-    const reservation = reservations.find((res) => res.id === id);
-    toast(`Reservation for ${reservation?.name ?? ""} has been ${newStatus}.`);
-  };
+  const handleStatusChange = (
+    reservation: TReservationDetails,
+    newStatus: string
+  ) => {};
 
   const handleAdd = () => {
-    const today = new Date();
-    setCurrentReservation({
-      id: `${reservations.length + 1}`,
-      name: "",
-      email: "",
-      phone: "",
-      date: format(today, "yyyy-MM-dd"),
-      time: "19:00",
-      guests: 2,
-      status: "pending",
-    });
     setIsAddDialogOpen(true);
   };
 
@@ -163,15 +195,8 @@ export default function Reservations() {
     await addReservationMutateSync(data);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleSubmitEdit = (data: any) => {
-    setReservations(
-      reservations.map((res) =>
-        res.id === currentReservation.id ? { ...res, ...data } : res
-      )
-    );
+  const handleSubmitEdit = (data: TAddReservationData) => {
     setIsEditDialogOpen(false);
-
     toast(`Reservation for ${data.name} has been updated successfully.`);
   };
 
@@ -216,69 +241,71 @@ export default function Reservations() {
                 {calendarDate ? format(calendarDate, "MMMM d, yyyy") : "Today"}
               </h3>
 
-              {reservations
-                .filter(
+              {Array.isArray(reservations) &&
+                reservations
+                  .filter(
+                    (res) =>
+                      res.date ===
+                      (calendarDate
+                        ? format(calendarDate, "yyyy-MM-dd")
+                        : format(new Date(), "yyyy-MM-dd"))
+                  )
+                  .sort((a, b) => a.time.localeCompare(b.time))
+                  .map((res) => (
+                    <div
+                      key={res.id}
+                      className={cn(
+                        `mb-2 p-3 border rounded-md`,
+                        res.status === "confirmed" &&
+                          "border-green-200 bg-green-50",
+                        res.status === "pending"
+                          ? "border-amber-200 bg-amber-50"
+                          : "border-red-200 bg-red-50"
+                      )}
+                    >
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-medium">
+                            {res.name} - {res.time}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            {res.guestsNum} guests
+                          </p>
+                        </div>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleView(res)}
+                            className="h-8 w-8 text-amber-500"
+                          >
+                            <EyeIcon size={16} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEdit(res)}
+                            className="h-8 w-8 text-amber-500"
+                          >
+                            <Edit2Icon size={16} />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+              {Array.isArray(reservations) &&
+                reservations.filter(
                   (res) =>
                     res.date ===
                     (calendarDate
                       ? format(calendarDate, "yyyy-MM-dd")
                       : format(new Date(), "yyyy-MM-dd"))
-                )
-                .sort((a, b) => a.time.localeCompare(b.time))
-                .map((res) => (
-                  <div
-                    key={res.id}
-                    className={cn(
-                      `mb-2 p-3 border rounded-md`,
-                      res.status === "confirmed" &&
-                        "border-green-200 bg-green-50",
-                      res.status === "pending"
-                        ? "border-amber-200 bg-amber-50"
-                        : "border-red-200 bg-red-50"
-                    )}
-                  >
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="font-medium">
-                          {res.name} - {res.time}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {res.guests} guests
-                        </p>
-                      </div>
-                      <div className="flex gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleView(res.id)}
-                          className="h-8 w-8 text-amber-500"
-                        >
-                          <EyeIcon size={16} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEdit(res.id)}
-                          className="h-8 w-8 text-amber-500"
-                        >
-                          <Edit2Icon size={16} />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-
-              {reservations.filter(
-                (res) =>
-                  res.date ===
-                  (calendarDate
-                    ? format(calendarDate, "yyyy-MM-dd")
-                    : format(new Date(), "yyyy-MM-dd"))
-              ).length === 0 && (
-                <p className="text-center text-gray-500 py-4">
-                  No reservations for this day
-                </p>
-              )}
+                ).length === 0 && (
+                  <p className="text-center text-gray-500 py-4">
+                    No reservations for this day
+                  </p>
+                )}
             </div>
           </div>
         </Card>
@@ -297,16 +324,16 @@ export default function Reservations() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {reservations.map((reservation) => (
+                {reservations?.map((reservation) => (
                   <TableRow key={reservation.id}>
                     <TableCell className="font-medium">
                       {reservation.name}
                     </TableCell>
                     <TableCell>
                       {new Date(reservation.date).toLocaleDateString()} at{" "}
-                      {reservation.time}
+                      {reservation.time ?? "19:00"}
                     </TableCell>
-                    <TableCell>{reservation.guests}</TableCell>
+                    <TableCell>{reservation.guestsNum}</TableCell>
                     <TableCell>
                       <div>{reservation.email}</div>
                       <div className="text-sm text-muted-foreground">
@@ -315,14 +342,15 @@ export default function Reservations() {
                     </TableCell>
                     <TableCell>
                       <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        className={cn(
+                          `px-2 py-1 rounded-full text-xs font-medium`,
                           statusStyles[
                             reservation.status as keyof typeof statusStyles
                           ]
-                        }`}
+                        )}
                       >
-                        {reservation.status.charAt(0).toUpperCase() +
-                          reservation.status.slice(1)}
+                        {reservation.status?.charAt(0).toUpperCase() +
+                          reservation.status?.slice(1)}
                       </span>
                     </TableCell>
                     <TableCell>
@@ -330,24 +358,25 @@ export default function Reservations() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleView(reservation.id)}
-                          className="h-8 w-8 text-amber-500"
+                          onClick={() => handleView(reservation)}
+                          className="h-8 w-8 text-amber-500 cursor-pointer"
                         >
                           <EyeIcon size={16} />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleEdit(reservation.id)}
-                          className="h-8 w-8 text-amber-500"
+                          onClick={() => handleEdit(reservation)}
+                          className="h-8 w-8 text-amber-500 cursor-pointer"
                         >
                           <Edit2Icon size={16} />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleDelete(reservation.id)}
-                          className="h-8 w-8 text-red-500"
+                          onClick={() => handleDelete(reservation)}
+                          disabled={deletePending}
+                          className="h-8 w-8 text-red-500 cursor-pointer"
                         >
                           <Trash2Icon size={16} />
                         </Button>
@@ -356,9 +385,9 @@ export default function Reservations() {
                             variant="ghost"
                             size="icon"
                             onClick={() =>
-                              handleStatusChange(reservation.id, "confirmed")
+                              handleStatusChange(reservation, "confirmed")
                             }
-                            className="h-8 w-8 text-green-500"
+                            className="h-8 w-8 text-green-500 cursor-pointer"
                           >
                             <Check size={16} />
                           </Button>
@@ -368,9 +397,9 @@ export default function Reservations() {
                             variant="ghost"
                             size="icon"
                             onClick={() =>
-                              handleStatusChange(reservation.id, "cancelled")
+                              handleStatusChange(reservation, "cancelled")
                             }
-                            className="h-8 w-8 text-red-500"
+                            className="h-8 w-8 text-red-500 cursor-pointer"
                           >
                             <X size={16} />
                           </Button>
@@ -388,47 +417,47 @@ export default function Reservations() {
       {/* View Reservation Dialog */}
       {currentReservation && (
         <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-          <DialogContent>
+          <DialogContent className="sm:max-w-2xl">
             <DialogHeader>
               <DialogTitle>Reservation Details</DialogTitle>
             </DialogHeader>
             <div className="py-4">
               <div className="space-y-4">
-                <div className="flex justify-between items-start">
+                <div className="grid grid-cols-3">
                   <h3 className="text-lg font-medium">
                     {currentReservation.name}
                   </h3>
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    className={`px-2 py-1 rounded-full text-xs font-medium col-span-2 ${
                       statusStyles[
                         currentReservation.status as keyof typeof statusStyles
                       ]
                     }`}
                   >
-                    {currentReservation.status.charAt(0).toUpperCase() +
-                      currentReservation.status.slice(1)}
+                    {currentReservation.status?.charAt(0).toUpperCase() +
+                      currentReservation.status?.slice(1)}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <div>
                     <p className="text-sm text-gray-500">Date</p>
                     <p>
                       {new Date(currentReservation.date).toLocaleDateString()}
                     </p>
                   </div>
-                  <div>
+                  <div className="col-span-2">
                     <p className="text-sm text-gray-500">Time</p>
-                    <p>{currentReservation.time}</p>
+                    <p>{currentReservation.time ?? "19:00"}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Guests</p>
                     <p className="flex items-center">
                       <Users size={16} className="mr-1" />
-                      {currentReservation.guests}
+                      {currentReservation.guestsNum}
                     </p>
                   </div>
-                  <div>
+                  <div className="col-span-2">
                     <p className="text-sm text-gray-500">Email</p>
                     <p>{currentReservation.email}</p>
                   </div>
@@ -565,7 +594,7 @@ export default function Reservations() {
                     type="number"
                     min="1"
                     max="20"
-                    defaultValue={currentReservation?.guests || 2}
+                    defaultValue={currentReservation?.guestsNum || 2}
                     {...addReservationRegister("guestsNum")}
                     required
                   />
@@ -707,7 +736,7 @@ export default function Reservations() {
                 type="number"
                 min="1"
                 max="20"
-                defaultValue={currentReservation.guests}
+                defaultValue={currentReservation.guestsNum}
                 required
               />
             </div>
