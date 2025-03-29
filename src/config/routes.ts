@@ -5,6 +5,7 @@ export const API_ROUTES = {
   },
   REVIEW: "reviews",
   RESERVATIONS: "reservations",
+  MENU_CATEGORIES: "menus",
 };
 
 export const APP_ROUTES = {

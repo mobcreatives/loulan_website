@@ -31,6 +31,12 @@ export const KEYS = {
     DELETE: ["delete", "reservation"],
     FEATURED: ["toggle", "featured", "review"],
   },
+  MENU_CATEGORIES: {
+    GET: ["get", "menu", "categories"],
+    ADD: ["add", "menu", "category"],
+    UPDATE: ["update", "menu", "category"],
+    DELETE: ["delete", "menu", "category"],
+  },
 };
 
 export const CONSTANTS = {
