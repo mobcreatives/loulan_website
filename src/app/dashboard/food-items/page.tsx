@@ -1,132 +1,131 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Search, Filter } from "lucide-react";
-import { PageTitle } from "@/components";
+import { Plus, Search } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  PageTitle,
+} from "@/components";
 import FoodItemCard from "./_components/food-item-card";
-const initialFoodItems = [
-  {
-    id: "1",
-    name: "Filet Mignon",
-    price: 42.99,
-    description:
-      "Premium cut beef tenderloin, served with roasted vegetables and red wine reduction.",
-    category: "Main Dishes",
-    isFeatured: true,
-    isAvailable: true,
-    imageUrl:
-      "https://images.unsplash.com/photo-1546833998-877b37c2e5c6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-  },
-  {
-    id: "2",
-    name: "Truffle Risotto",
-    price: 28.99,
-    description:
-      "Creamy Arborio rice with wild mushrooms, finished with truffle oil and parmesan.",
-    category: "Main Dishes",
-    isFeatured: false,
-    isAvailable: true,
-    imageUrl:
-      "https://images.unsplash.com/photo-1633436375743-b1e249fa9bf6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-  },
-  {
-    id: "3",
-    name: "Lobster Bisque",
-    price: 16.99,
-    description:
-      "Rich and creamy soup made with fresh lobster, finished with a touch of cognac.",
-    category: "Appetizers",
-    isFeatured: true,
-    isAvailable: true,
-    imageUrl:
-      "https://images.unsplash.com/photo-1547496502-affa22d38842?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1297&q=80",
-  },
-  {
-    id: "4",
-    name: "Chocolate Soufflé",
-    price: 12.99,
-    description:
-      "Warm chocolate soufflé with a molten center, served with vanilla ice cream.",
-    category: "Desserts",
-    isFeatured: false,
-    isAvailable: true,
-    imageUrl:
-      "https://images.unsplash.com/photo-1579954115545-a95591f28bfc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-  },
-  {
-    id: "5",
-    name: "Premium Wine Selection",
-    price: 85.0,
-    description:
-      "Bottle of our finest reserve wine, selected by our sommelier.",
-    category: "Beverages",
-    isFeatured: false,
-    isAvailable: false,
-    imageUrl:
-      "https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-  },
-  {
-    id: "6",
-    name: "Seasonal Seafood Platter",
-    price: 68.99,
-    description:
-      "Selection of the freshest seafood, including oysters, shrimp, and crab claws.",
-    category: "Specials",
-    isFeatured: true,
-    isAvailable: true,
-    imageUrl:
-      "https://images.unsplash.com/photo-1565557623262-b51c2513a641?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1071&q=80",
-  },
-];
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useAuthAxios } from "@/config/auth-axios";
+import { API_ROUTES } from "@/config/routes";
+import { KEYS } from "@/config/constants";
+import AddFood from "./add-food";
+import { TResponse } from "@/global/types";
+import { TFoodDetails } from "./types";
+import UpdateFood from "./update-food";
+import { toast } from "sonner";
 
 export default function FoodItems() {
-  const [foodItems, setFoodItems] = useState(initialFoodItems);
+  const { _axios } = useAuthAxios();
   const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("All");
-  const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
+  const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
+  const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+  const [selectedFood, setSelectedFood] = useState<TFoodDetails | null>(null);
 
-  const categories = [
-    "All",
-    ...new Set(foodItems.map((item) => item.category)),
-  ];
-
-  const filteredItems = foodItems.filter((item) => {
-    const matchesSearch =
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      categoryFilter === "All" || item.category === categoryFilter;
-    const matchesFeatured = !showFeaturedOnly || item.isFeatured;
-
-    return matchesSearch && matchesCategory && matchesFeatured;
+  const { mutateAsync: deleteMutateSync, isPending: deletePending } =
+    useMutation({
+      mutationKey: KEYS.FOOD.DELETE,
+      mutationFn: deleteFood,
+      onSuccess: async () => {
+        await refetch();
+        toast("Food item deleted successfully");
+        setOpenDeleteDialog(false);
+      },
+      onError: () => {
+        toast("Failed to delete food item. Please try again.");
+      },
+    });
+  const { data: foods, refetch } = useQuery({
+    queryKey: KEYS.FOOD.GET,
+    queryFn: getFoods,
   });
 
-  const handleEdit = (id: string) => {
-    console.log("Edit item:", id);
-    // In a real app, this would open an edit modal or navigate to an edit page
-  };
+  const { mutateAsync: toggleFeaturedMutateSync } = useMutation({
+    mutationKey: KEYS.FOOD.TOGGLE_FEATURED,
+    mutationFn: toggleFeatured,
+    onSuccess: async () => {
+      await refetch();
+      toast("Food item updated successfully");
+    },
+    onError: () => {
+      toast("Failed to update food item. Please try again.");
+    },
+  });
 
-  const handleDelete = (id: string) => {
-    if (window.confirm("Are you sure you want to delete this item?")) {
-      setFoodItems(foodItems.filter((item) => item.id !== id));
+  // const filteredItems = foods?.filter((item) => {
+  //   const matchesSearch =
+  //     item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     item.description.toLowerCase().includes(searchQuery.toLowerCase());
+  //   // const matchesCategory =
+  //   //   categoryFilter === "All" || item.category === categoryFilter; // hamro food items ma category chaina
+  //   const matchesFeatured = !showFeaturedOnly || item.isFeatured;
+
+  //   return matchesSearch && matchesFeatured;
+  // });
+  async function getFoods() {
+    try {
+      const response = await _axios.get<TResponse<TFoodDetails, "foodItems">>(
+        API_ROUTES.FOODS
+      );
+      return response.data.foodItems;
+    } catch {
+      throw new Error("Failed to fetch food items");
     }
+  }
+
+  async function deleteFood(id: number) {
+    try {
+      return await _axios.delete(`${API_ROUTES.FOODS}/${id}`);
+    } catch {
+      throw new Error("Failed to delete food item");
+    }
+  }
+  async function toggleFeatured(id: number) {
+    try {
+      return await _axios.patch(`${API_ROUTES.FOODS}/${id}/featured`);
+    } catch {
+      throw new Error("Failed to toggle featured");
+    }
+  }
+  function handleEdit(data: TFoodDetails) {
+    setSelectedFood(data);
+    setOpenEditDialog(true);
+  }
+
+  function handleDelete(data: TFoodDetails) {
+    setSelectedFood(data);
+    setOpenDeleteDialog(true);
+  }
+
+  const handleToggleFeatured = (data: TFoodDetails) => {
+    toggleFeaturedMutateSync(data.id);
   };
 
-  const handleToggleFeatured = (id: string) => {
-    setFoodItems(
-      foodItems.map((item) =>
-        item.id === id ? { ...item, isFeatured: !item.isFeatured } : item
-      )
-    );
-  };
-
+  function confirmDelete() {
+    if (selectedFood) {
+      deleteMutateSync(selectedFood.id);
+    }
+  }
   return (
     <div>
       <PageTitle
         title="Food Items"
         description="Manage your restaurant's menu items"
         actions={
-          <button className="btn-gold">
+          <button
+            className="btn-gold cursor-pointer text-black"
+            onClick={() => setOpenAddDialog(true)}
+          >
             <Plus size={18} />
             Add Food Item
           </button>
@@ -147,7 +146,7 @@ export default function FoodItems() {
           />
         </div>
 
-        <div className="flex gap-2">
+        {/* <div className="flex gap-2">
           <select
             className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 gold-focus-ring"
             value={categoryFilter}
@@ -171,28 +170,21 @@ export default function FoodItems() {
             <Filter size={16} />
             Featured Only
           </button>
-        </div>
+        </div> */}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredItems.map((item) => (
+        {foods?.map((item) => (
           <FoodItemCard
             key={item.id}
-            id={item.id}
-            name={item.name}
-            price={item.price}
-            description={item.description}
-            category={item.category}
-            isFeatured={item.isFeatured}
-            isAvailable={item.isAvailable}
-            imageUrl={item.imageUrl}
+            data={item}
             onEdit={handleEdit}
             onDelete={handleDelete}
             onToggleFeatured={handleToggleFeatured}
           />
         ))}
 
-        {filteredItems.length === 0 && (
+        {foods?.length === 0 && (
           <div className="col-span-full flex flex-col items-center justify-center p-12 bg-white rounded-lg border border-dashed border-gray-300">
             <p className="text-gray-500 mb-4">No food items found</p>
             <button className="btn-gold">
@@ -202,6 +194,40 @@ export default function FoodItems() {
           </div>
         )}
       </div>
+      <AddFood
+        open={openAddDialog}
+        setOpen={setOpenAddDialog}
+        refetch={refetch}
+      />
+      {openEditDialog && (
+        <UpdateFood
+          open={openEditDialog}
+          setOpen={setOpenEditDialog}
+          refetch={refetch}
+          data={selectedFood}
+        />
+      )}
+      <AlertDialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Image</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this image from the gallery? This
+              action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              disabled={deletePending}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

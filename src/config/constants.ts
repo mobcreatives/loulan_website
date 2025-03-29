@@ -16,6 +16,7 @@ export const KEYS = {
     ADD: ["add", "food"],
     UPDATE: ["update", "food"],
     DELETE: ["delete", "food"],
+    TOGGLE_FEATURED: ["toggle", "featured", "food"],
   },
   REVIEWS: {
     GET: ["get", "reviews"],
