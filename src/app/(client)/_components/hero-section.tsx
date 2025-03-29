@@ -1,6 +1,7 @@
 import { TextWithLine } from "@/components";
 import ButtonWithBorder from "@/components/buttons/button-with-border";
 import { ArrowRightIcon } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 export default function HeroSection() {
@@ -15,20 +16,24 @@ export default function HeroSection() {
           Reserve Your Table
         </h3>
         <div className="mt-2 flex gap-x-5 items-center ">
-          <ButtonWithBorder text="Book a Table" />
-          <button
-            className="capitalize text-black py-2 px-4 font-medium font-fredoka bg-primary flex items-center gap-x-3 hover:[&>p>svg]:translate-x-0.5 rounded-full text-[clamp(0.75rem,0.7192rem+0.1299vw,0.875rem)] cursor-pointer"
-            type="button"
-          >
-            <span>Explore Menu</span>
-            <p className="bg-black rounded-full p-2">
-              <ArrowRightIcon
-                className="text-white transition-transform duration-300"
-                size={16}
-                aria-hidden="true"
-              />
-            </p>
-          </button>
+          <Link href="/booking">
+            <ButtonWithBorder text="Book a Table" />
+          </Link>
+          <Link href="/menu">
+            <button
+              className="capitalize text-black py-2 px-4 font-medium font-fredoka bg-primary flex items-center gap-x-3 hover:[&>p>svg]:translate-x-0.5 rounded-full text-[clamp(0.75rem,0.7192rem+0.1299vw,0.875rem)] cursor-pointer"
+              type="button"
+            >
+              <span>Explore Menu</span>
+              <p className="bg-black rounded-full p-2">
+                <ArrowRightIcon
+                  className="text-white transition-transform duration-300"
+                  size={16}
+                  aria-hidden="true"
+                />
+              </p>
+            </button>
+          </Link>
         </div>
       </div>
     </section>

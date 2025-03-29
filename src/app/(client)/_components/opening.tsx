@@ -1,4 +1,5 @@
 import { TextWithLine } from "@/components";
+import Link from "next/link";
 import React from "react";
 
 export default function Opening() {
@@ -15,12 +16,14 @@ export default function Opening() {
               Working Hours
             </p>
             <div className="text-[clamp(0.875rem,0.8442rem+0.1299vw,1rem)] space-x-3">
-              <button
-                type="button"
-                className="uppercase bg-primary text-black px-4 pb-1.5 pt-2 rounded-[4px] cursor-pointer focus:outline-none"
-              >
-                Book A Table
-              </button>
+              <Link href="/booking">
+                <button
+                  type="button"
+                  className="uppercase bg-primary text-black px-4 pb-1.5 pt-2 rounded-[4px] cursor-pointer focus:outline-none"
+                >
+                  Book A Table
+                </button>
+              </Link>
               <button
                 type="button"
                 className="uppercase text-white px-4 pb-1.5 pt-2 rounded-[4px] cursor-pointer focus:outline-none"
