@@ -6,6 +6,8 @@ export const API_ROUTES = {
   REVIEW: "reviews",
   RESERVATIONS: "reservations",
   MENU_CATEGORIES: "menus",
+  GALLERY: "galleries",
+  FOODS: "foods",
 };
 
 export const APP_ROUTES = {

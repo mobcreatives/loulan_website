@@ -37,6 +37,13 @@ export const KEYS = {
     UPDATE: ["update", "menu", "category"],
     DELETE: ["delete", "menu", "category"],
   },
+  GALLERY: {
+    GET: ["get", "gallery"],
+    ADD: ["add", "gallery"],
+    UPDATE: ["update", "gallery"],
+    DELETE: ["delete", "gallery"],
+    TOGGLE_VISIBILITY: ["toggle", "visibility", "gallery"],
+  },
 };
 
 export const CONSTANTS = {

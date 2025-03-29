@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Plus, Search } from "lucide-react";
-import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import { Plus, Search, X } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,93 +13,249 @@ import {
   AlertDialogTitle,
   Button,
   PageTitle,
-  ItemFormDrawer,
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  Label,
+  Switch,
 } from "@/components";
-import { mockGalleryImages } from "./data";
 import ImageCard from "./_components/image-card";
 import Image from "next/image";
-import { TImageGalleryDetails } from "./types";
+import {
+  TAddGalleyData,
+  TImageGalleryDetails,
+  TUpdateGalleryArgs,
+  TUpdateGalleryData,
+} from "./types";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuthAxios } from "@/config/auth-axios";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { addGallerySchema, updateGallerySchema } from "./validator";
+import { API_ROUTES } from "@/config/routes";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { KEYS } from "@/config/constants";
+import { toast } from "sonner";
+import { TResponse } from "@/global/types";
 
 export default function Gallery() {
-  const [images, setImages] = useState(mockGalleryImages);
+  // hooks
+  const isMobile = useIsMobile();
+  const { _axios } = useAuthAxios();
+
+  // states
   const [searchQuery, setSearchQuery] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [showHidden, setShowHidden] = useState(false);
   const [currentImage, setCurrentImage] = useState<TImageGalleryDetails | null>(
     null
   );
-  const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [showHidden, setShowHidden] = useState(false);
 
-  const filteredImages = images.filter((image) => {
-    const matchesSearch = image.caption
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesVisibility = showHidden ? true : image.isVisible;
-    return matchesSearch && matchesVisibility;
+  const {
+    handleSubmit: addHandleSubmit,
+    register: addRegister,
+    setValue: addSetValue,
+    reset: addReset,
+  } = useForm<TAddGalleyData>({
+    resolver: zodResolver(addGallerySchema),
   });
 
-  const handleAdd = () => {
-    setCurrentImage(null);
-    setIsFormOpen(true);
-  };
+  const {
+    handleSubmit: updateHandleSubmit,
+    register: updateRegister,
+    setValue: updateSetValue,
+    reset: updateReset,
+  } = useForm<TUpdateGalleryData>({
+    resolver: zodResolver(updateGallerySchema),
+  });
 
-  const handleEdit = (id: string) => {
-    const imageToEdit = images.find((image) => image.id === id);
-    if (imageToEdit) {
-      setCurrentImage(imageToEdit);
-      setIsFormOpen(true);
-    }
-  };
+  const { mutateAsync: addMutateSync, isPending: addPending } = useMutation({
+    mutationKey: KEYS.GALLERY.ADD,
+    mutationFn: addGallery,
+    onSuccess: () => {
+      refetch();
+      setIsFormOpen(false);
+      toast("Image added to the gallery successfully");
+      addReset();
+    },
+    onError: () => {
+      toast("Fail to add image to the gallery.");
+    },
+  });
 
-  const handleDelete = (id: string) => {
-    setDeleteId(id);
-  };
+  const { mutateAsync: updateMutateSync, isPending: updatePending } =
+    useMutation({
+      mutationKey: KEYS.GALLERY.UPDATE,
+      mutationFn: (updateData: TUpdateGalleryArgs) =>
+        updateGallery(updateData.id, updateData.data),
+      onSuccess: () => {
+        refetch();
+        setIsEditOpen(false);
+        toast("Image updated successfully");
+        setCurrentImage(null);
+        updateReset();
+      },
+      onError: () => {
+        toast("Fail to update image.");
+      },
+    });
 
-  const confirmDelete = () => {
-    if (deleteId) {
-      setImages(images.filter((image) => image.id !== deleteId));
-      toast("The image has been removed from the gallery.");
-      setDeleteId(null);
-    }
-  };
+  const { mutateAsync: deleteMutateSync, isPending: deletePending } =
+    useMutation({
+      mutationKey: KEYS.GALLERY.DELETE,
+      mutationFn: deleteGallery,
+      onSuccess: () => {
+        refetch();
+        setCurrentImage(null);
+        toast("Image deleted successfully");
+      },
+      onError: () => {
+        toast("Fail to delete image.");
+      },
+    });
 
-  const handleToggleVisibility = (id: string) => {
-    setImages(
-      images.map((image) =>
-        image.id === id ? { ...image, isVisible: !image.isVisible } : image
-      )
-    );
+  const { mutateAsync: toggleVisibilityMutateSync } = useMutation({
+    mutationKey: KEYS.GALLERY.TOGGLE_VISIBILITY,
+    mutationFn: toggleVisibility,
+    onSuccess: () => {
+      refetch();
+      toast("Image visibility updated successfully");
+    },
+    onError: () => {
+      toast("Fail to update image visibility.");
+    },
+  });
 
-    const image = images.find((img) => img.id === id);
-    toast(
-      image?.isVisible
-        ? "The image has been hidden from public view."
-        : "The image is now visible to the public."
-    );
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleFormSubmit = (data: any) => {
-    if (currentImage) {
-      // Edit existing
-      setImages(
-        images.map((image) =>
-          image.id === currentImage.id ? { ...image, ...data } : image
-        )
+  const { data: gallery, refetch } = useQuery({
+    queryKey: KEYS.GALLERY.GET,
+    queryFn: getGalleryImages,
+  });
+  const filteredImages = gallery?.filter((image) => {
+    const matchesSearch = image.description
+      ?.toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    // const matchesVisibility = showHidden ? true : !!image.isVisible; // yesle garda kunai pani image dekhako theyna, so comment gareko ho
+    return matchesSearch;
+  });
+  async function addGallery(data: TAddGalleyData) {
+    try {
+      const response = await _axios.post(
+        API_ROUTES.GALLERY,
+        {
+          imgUrl: data.image[0],
+          description: data.description,
+          iseVisible: data.isVisible,
+        },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
-      toast("The gallery image has been updated successfully.");
-    } else {
-      // Add new
-      const newImage = {
-        id: Date.now().toString(),
-        ...data,
-        isVisible: data.isVisible || false,
-      };
-      setImages([...images, newImage]);
-      toast("The new image has been added to the gallery.");
+      return response.data;
+    } catch {
+      throw new Error("Fail to add image to gallery");
     }
-    setIsFormOpen(false);
-  };
+  }
+
+  async function updateGallery(id: number, data: TUpdateGalleryData) {
+    let updateData = {};
+    if (data.image) {
+      updateData = {
+        ...updateData,
+        imgUrl: data.image[0],
+      };
+    }
+    try {
+      const response = await _axios.patch(
+        `${API_ROUTES.GALLERY}/${id}`,
+        updateData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data;
+    } catch {
+      throw new Error("Fail to update image in gallery");
+    }
+  }
+
+  async function deleteGallery(id: number) {
+    try {
+      return await _axios.delete(`${API_ROUTES.GALLERY}/${id}`);
+    } catch {
+      throw new Error("Fail to delete image from gallery");
+    }
+  }
+
+  async function toggleVisibility(id: number) {
+    try {
+      const response = await _axios.patch(
+        `${API_ROUTES.GALLERY}/${id}/visibility`
+      );
+      return response.data;
+    } catch {
+      throw new Error("Fail to update image visibility");
+    }
+  }
+
+  async function getGalleryImages() {
+    try {
+      const response = await _axios.get<
+        TResponse<TImageGalleryDetails, "galleries">
+      >(API_ROUTES.GALLERY);
+      return response.data.galleries;
+    } catch {
+      throw new Error("Fail to fetch images.");
+    }
+  }
+
+  function handleEdit(data: TImageGalleryDetails) {
+    setCurrentImage(data);
+    setIsEditOpen(true);
+  }
+
+  function handleDelete(data: TImageGalleryDetails) {
+    setCurrentImage(data);
+  }
+
+  async function confirmDelete() {
+    if (!currentImage) return;
+    await deleteMutateSync(currentImage.id);
+  }
+
+  async function handleToggleVisibility(data: TImageGalleryDetails) {
+    await toggleVisibilityMutateSync(data.id);
+  }
+
+  async function onAddSubmit(data: TAddGalleyData) {
+    await addMutateSync(data);
+  }
+
+  async function onUpdateSubmit(data: TUpdateGalleryData) {
+    if (!currentImage) return;
+    await updateMutateSync({
+      id: currentImage.id,
+      data,
+    });
+  }
+
+  useEffect(() => {
+    if (currentImage) {
+      updateReset({
+        description: currentImage.description,
+        isVisible: currentImage.isVisible,
+      });
+    }
+  }, [currentImage, updateReset]);
 
   return (
     <div>
@@ -108,7 +263,10 @@ export default function Gallery() {
         title="Gallery"
         description="Manage the images shown on your restaurant's website"
         actions={
-          <Button onClick={handleAdd} className="btn-gold">
+          <Button
+            onClick={() => setIsFormOpen(true)}
+            className="btn-gold cursor-pointer text-black"
+          >
             <Plus size={16} />
             Add Image
           </Button>
@@ -146,23 +304,20 @@ export default function Gallery() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredImages.map((image) => (
+        {filteredImages?.map((image) => (
           <ImageCard
             key={image.id}
-            id={image.id}
-            imageUrl={image.imageUrl}
-            caption={image.caption}
-            isVisible={image.isVisible}
+            data={image}
             onEdit={handleEdit}
             onDelete={handleDelete}
             onToggleVisibility={handleToggleVisibility}
           />
         ))}
 
-        {filteredImages.length === 0 && (
+        {filteredImages?.length === 0 && (
           <div className="col-span-full flex flex-col items-center justify-center p-12 bg-white rounded-lg border border-dashed border-gray-300">
             <p className="text-gray-500 mb-4">No images found</p>
-            <Button onClick={handleAdd} className="btn-gold">
+            <Button onClick={() => setIsFormOpen(true)} className="btn-gold">
               <Plus size={16} />
               Add Your First Image
             </Button>
@@ -170,79 +325,204 @@ export default function Gallery() {
         )}
       </div>
 
-      {/* Add/Edit Image Form */}
-      <ItemFormDrawer
-        isOpen={isFormOpen}
-        onClose={() => setIsFormOpen(false)}
-        title={currentImage ? "Edit Gallery Image" : "Add New Gallery Image"}
-        description="Manage images for your restaurant's gallery"
-        onSubmit={handleFormSubmit}
-        submitLabel={currentImage ? "Save Changes" : "Add Image"}
-      >
-        <div className="space-y-4 py-4">
-          <div className="grid gap-4">
-            <div className="space-y-2">
-              <label htmlFor="imageUrl" className="text-sm font-medium">
-                Image URL
-              </label>
-              <input
-                id="imageUrl"
-                type="text"
-                className="w-full p-2 border rounded-md gold-focus-ring"
-                defaultValue={currentImage?.imageUrl ?? ""}
-                placeholder="https://example.com/image.jpg"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="caption" className="text-sm font-medium">
-                Caption
-              </label>
-              <input
-                id="caption"
-                type="text"
-                className="w-full p-2 border rounded-md gold-focus-ring"
-                defaultValue={currentImage?.caption ?? ""}
-                placeholder="Describe this image"
-              />
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <input
-                id="isVisible"
-                name="isVisible"
-                type="checkbox"
-                className="gold-focus-ring rounded"
-                defaultChecked={currentImage ? currentImage.isVisible : true}
-              />
-              <label htmlFor="isVisible" className="text-sm font-medium">
-                Visible on website
-              </label>
-            </div>
-
-            {currentImage?.imageUrl && (
-              <div className="mt-4">
-                <p className="text-sm font-medium mb-2">Preview:</p>
-                <div className="aspect-video bg-gray-100 rounded-md overflow-hidden">
-                  <Image
-                    src={currentImage.imageUrl}
-                    alt={currentImage.caption}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = "/placeholder.svg";
-                    }}
-                    height={200}
-                    width={300}
-                  />
+      {/* Add Image Form */}
+      <Drawer open={isFormOpen} onOpenChange={setIsFormOpen}>
+        <DrawerContent
+          className={
+            isMobile
+              ? "max-h-[90vh]"
+              : "max-h-[85vh] max-w-2xl mx-auto rounded-t-lg"
+          }
+        >
+          <form onSubmit={addHandleSubmit(onAddSubmit)}>
+            <DrawerHeader className="px-4 sm:px-6 py-0">
+              <div className="flex items-center justify-between">
+                <DrawerTitle>Add Image to Gallery</DrawerTitle>
+                <DrawerClose asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 cursor-pointer"
+                  >
+                    <X size={16} />
+                  </Button>
+                </DrawerClose>
+              </div>
+              <DrawerDescription>{`Manage images for your restaurant's gallery`}</DrawerDescription>
+            </DrawerHeader>
+            <div className="px-4 sm:px-6 pb-4 overflow-y-auto">
+              <div className="space-y-4 py-4">
+                <div className="grid gap-4">
+                  <div className="space-y-2">
+                    <label htmlFor="image" className="text-sm font-medium">
+                      Image
+                    </label>
+                    <input
+                      id="image"
+                      type="file"
+                      className="w-full p-2 border rounded-md gold-focus-ring"
+                      onChange={(e) => {
+                        if (!e.target.files) return;
+                        addSetValue("image", Array.from(e.target.files));
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="caption" className="text-sm font-medium">
+                      Caption
+                    </label>
+                    <input
+                      id="caption"
+                      type="text"
+                      className="w-full p-2 border rounded-md gold-focus-ring"
+                      defaultValue={currentImage?.description ?? ""}
+                      placeholder="Describe this image"
+                      {...addRegister("description")}
+                    />
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="isVisible"
+                      name="isVisible"
+                      defaultChecked={true}
+                      onCheckedChange={(isChecked) =>
+                        addSetValue("isVisible", isChecked)
+                      }
+                    />
+                    <Label htmlFor="isFeatured">Visible on website</Label>
+                  </div>
                 </div>
               </div>
-            )}
-          </div>
-        </div>
-      </ItemFormDrawer>
+            </div>
+            <DrawerFooter className="px-4 sm:px-6 border-t">
+              <div className="flex justify-end gap-2">
+                <DrawerClose asChild>
+                  <Button className="cursor-pointer" variant="outline">
+                    Cancel
+                  </Button>
+                </DrawerClose>
+                <Button
+                  type="submit"
+                  className="btn-gold cursor-pointer"
+                  disabled={addPending}
+                >
+                  {addPending ? "Saving..." : "Add Image"}
+                </Button>
+              </div>
+            </DrawerFooter>
+          </form>
+        </DrawerContent>
+      </Drawer>
 
+      {/* Update Image Form */}
+      <Drawer open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <DrawerContent
+          className={
+            isMobile
+              ? "max-h-[90vh]"
+              : "max-h-[85vh] max-w-2xl mx-auto rounded-t-lg"
+          }
+        >
+          <form onSubmit={updateHandleSubmit(onUpdateSubmit)}>
+            <DrawerHeader className="px-4 sm:px-6 py-0">
+              <div className="flex items-center justify-between">
+                <DrawerTitle>Update Image of Gallery</DrawerTitle>
+                <DrawerClose asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 cursor-pointer"
+                  >
+                    <X size={16} />
+                  </Button>
+                </DrawerClose>
+              </div>
+              <DrawerDescription>{`Manage images for your restaurant's gallery`}</DrawerDescription>
+            </DrawerHeader>
+            <div className="px-4 sm:px-6 pb-4 overflow-y-auto">
+              <div className="space-y-4 py-4">
+                <div className="grid gap-4">
+                  <div className="space-y-2">
+                    <label htmlFor="image" className="text-sm font-medium">
+                      Image
+                    </label>
+                    <input
+                      id="image"
+                      type="file"
+                      className="w-full p-2 border rounded-md gold-focus-ring"
+                      onChange={(e) => {
+                        if (!e.target.files) return;
+                        updateSetValue("image", Array.from(e.target.files));
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="caption" className="text-sm font-medium">
+                      Caption
+                    </label>
+                    <input
+                      id="caption"
+                      type="text"
+                      className="w-full p-2 border rounded-md gold-focus-ring"
+                      defaultValue={currentImage?.description ?? ""}
+                      placeholder="Describe this image"
+                      {...updateRegister("description")}
+                    />
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="isVisible"
+                      name="isVisible"
+                      defaultChecked={true}
+                      onCheckedChange={(isChecked) =>
+                        updateSetValue("isVisible", isChecked)
+                      }
+                    />
+                    <Label htmlFor="isFeatured">Visible on website</Label>
+                  </div>
+
+                  {currentImage?.imgUrl && (
+                    <div className="mt-4">
+                      <p className="text-sm font-medium mb-2">Preview:</p>
+                      <div className="aspect-video bg-gray-100 rounded-md overflow-hidden">
+                        <Image
+                          src={currentImage.imgUrl}
+                          alt={currentImage.description}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              "/images/placeholder.svg";
+                          }}
+                          height={200}
+                          width={300}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            <DrawerFooter className="px-4 sm:px-6 border-t">
+              <div className="flex justify-end gap-2">
+                <DrawerClose asChild>
+                  <Button className="cursor-pointer" variant="outline">
+                    Cancel
+                  </Button>
+                </DrawerClose>
+                <Button
+                  type="submit"
+                  className="btn-gold cursor-pointer"
+                  disabled={updatePending}
+                >
+                  {updatePending ? "Saving..." : "Update Image"}
+                </Button>
+              </div>
+            </DrawerFooter>
+          </form>
+        </DrawerContent>
+      </Drawer>
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
+      <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Image</AlertDialogTitle>
@@ -255,6 +535,7 @@ export default function Gallery() {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
+              disabled={deletePending}
               className="bg-red-500 hover:bg-red-600 text-white"
             >
               Delete
