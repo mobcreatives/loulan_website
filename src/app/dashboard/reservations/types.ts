@@ -13,7 +13,14 @@ export type TReservationDetails = {
   phone: string;
   date: string;
   time: string;
-  status: string; // "PENDING";
+  status: TStatus; // "PENDING";
   createdAt: string;
   updatedAt: string;
+};
+
+export type TStatus = "PENDING" | "CONFIRMED" | "CANCELLED";
+
+export type TUpdateReservationArgs = {
+  id: number;
+  data: TUpdateReservationData;
 };

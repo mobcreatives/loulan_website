@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Calendar as CalendarIcon,
   EyeIcon,
@@ -50,9 +50,13 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { statusStyles, timeSlots } from "./data";
-import ItemFormDialog from "./_components/item-form-dialog";
 import { useAuthAxios } from "@/config/auth-axios";
-import { TAddReservationData, TReservationDetails } from "./types";
+import {
+  TAddReservationData,
+  TReservationDetails,
+  TStatus,
+  TUpdateReservationArgs,
+} from "./types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addReservationSchema } from "./validator";
@@ -82,6 +86,15 @@ export default function Reservations() {
   } = useForm<TAddReservationData>({
     resolver: zodResolver(addReservationSchema),
   });
+
+  const {
+    register: updateReservationRegister,
+    handleSubmit: handleUpdateReservationSubmit,
+    setValue: updateReservationSetValue,
+    reset: updateReservationReset,
+  } = useForm<TAddReservationData>({
+    resolver: zodResolver(addReservationSchema),
+  });
   // tanstack queries
   const { mutateAsync: addReservationMutateSync, isPending: addPending } =
     useMutation({
@@ -96,7 +109,6 @@ export default function Reservations() {
         toast("Failed to add reservation");
       },
     });
-
   const { mutateAsync: deleteReservationMutateSync, isPending: deletePending } =
     useMutation({
       mutationKey: KEYS.RESERVATIONS.DELETE,
@@ -108,6 +120,21 @@ export default function Reservations() {
       },
       onError: () => {
         toast("Failed to delete reservation");
+      },
+    });
+
+  const { mutateAsync: updateReservationMutateSync, isPending: updatePending } =
+    useMutation({
+      mutationKey: KEYS.RESERVATIONS.UPDATE,
+      mutationFn: (updateData: TUpdateReservationArgs) =>
+        updateReservation(updateData.id, updateData.data),
+      onSuccess: () => {
+        refetch();
+        toast("Reservation updated successfully");
+        setIsEditDialogOpen(false);
+      },
+      onError: () => {
+        toast("Failed to update reservation");
       },
     });
 
@@ -131,7 +158,7 @@ export default function Reservations() {
 
   async function updateReservation(id: number, data: TAddReservationData) {
     try {
-      const response = await _axios.put(
+      const response = await _axios.patch(
         `${API_ROUTES.RESERVATIONS}/${id}`,
         data
       );
@@ -182,10 +209,15 @@ export default function Reservations() {
     deleteReservationMutateSync(currentReservation.id);
   }
 
-  const handleStatusChange = (
+  async function handleStatusChange(
     reservation: TReservationDetails,
-    newStatus: string
-  ) => {};
+    status: TStatus
+  ) {
+    await updateReservationMutateSync({
+      id: reservation.id,
+      data: { status },
+    });
+  }
 
   const handleAdd = () => {
     setIsAddDialogOpen(true);
@@ -195,10 +227,27 @@ export default function Reservations() {
     await addReservationMutateSync(data);
   }
 
-  const handleSubmitEdit = (data: TAddReservationData) => {
-    setIsEditDialogOpen(false);
-    toast(`Reservation for ${data.name} has been updated successfully.`);
-  };
+  async function handleSubmitEdit(data: TAddReservationData) {
+    if (!currentReservation) return;
+    await updateReservationMutateSync({
+      id: currentReservation.id,
+      data,
+    });
+  }
+
+  useEffect(() => {
+    if (currentReservation) {
+      updateReservationReset({
+        name: currentReservation.name,
+        email: currentReservation.email,
+        phone: currentReservation.phone,
+        date: currentReservation.date,
+        time: currentReservation.time,
+        guestsNum: currentReservation.guestsNum,
+        status: currentReservation.status,
+      });
+    }
+  }, [currentReservation, updateReservationReset]);
 
   return (
     <div>
@@ -209,7 +258,7 @@ export default function Reservations() {
           <div className="flex gap-2">
             <Button
               onClick={() => handleAdd()}
-              className="btn-gold cursor-pointer"
+              className="btn-gold cursor-pointer text-black"
             >
               Add Reservation
             </Button>
@@ -256,9 +305,9 @@ export default function Reservations() {
                       key={res.id}
                       className={cn(
                         `mb-2 p-3 border rounded-md`,
-                        res.status === "confirmed" &&
+                        res.status === "CONFIRMED" &&
                           "border-green-200 bg-green-50",
-                        res.status === "pending"
+                        res.status === "PENDING"
                           ? "border-amber-200 bg-amber-50"
                           : "border-red-200 bg-red-50"
                       )}
@@ -380,24 +429,26 @@ export default function Reservations() {
                         >
                           <Trash2Icon size={16} />
                         </Button>
-                        {reservation.status !== "confirmed" && (
+                        {reservation.status !== "CONFIRMED" && (
                           <Button
                             variant="ghost"
                             size="icon"
+                            title="Confirm Reservation"
                             onClick={() =>
-                              handleStatusChange(reservation, "confirmed")
+                              handleStatusChange(reservation, "CONFIRMED")
                             }
                             className="h-8 w-8 text-green-500 cursor-pointer"
                           >
                             <Check size={16} />
                           </Button>
                         )}
-                        {reservation.status !== "cancelled" && (
+                        {reservation.status !== "CANCELLED" && (
                           <Button
                             variant="ghost"
                             size="icon"
+                            title="Cancel Reservation"
                             onClick={() =>
-                              handleStatusChange(reservation, "cancelled")
+                              handleStatusChange(reservation, "CANCELLED")
                             }
                             className="h-8 w-8 text-red-500 cursor-pointer"
                           >
@@ -461,9 +512,24 @@ export default function Reservations() {
                     <p className="text-sm text-gray-500">Email</p>
                     <p>{currentReservation.email}</p>
                   </div>
-                  <div>
+                  <div className="">
                     <p className="text-sm text-gray-500">Phone</p>
                     <p>{currentReservation.phone}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-sm text-gray-500">Status</p>
+                    <p
+                      className={cn(
+                        "w-fit cursor-default px-1 rounded-[4px]",
+                        currentReservation.status === "CONFIRMED" &&
+                          "border-green-200 bg-green-50",
+                        currentReservation.status === "PENDING"
+                          ? "border-amber-200 bg-amber-100"
+                          : "border-red-200 bg-red-20"
+                      )}
+                    >
+                      {currentReservation.status}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -572,7 +638,7 @@ export default function Reservations() {
                         addReservationSetValue("time", value)
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select time" />
                       </SelectTrigger>
                       <SelectContent>
@@ -628,134 +694,173 @@ export default function Reservations() {
 
       {/* Edit Reservation Dialog */}
       {currentReservation && (
-        <ItemFormDialog
-          isOpen={isEditDialogOpen}
-          onClose={() => setIsEditDialogOpen(false)}
-          title="Edit Reservation"
-          description="Update the reservation details"
-          onSubmit={handleSubmitEdit}
-          submitLabel="Update Reservation"
-        >
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="name">Customer Name</Label>
-              <Input
-                id="name"
-                name="name"
-                defaultValue={currentReservation.name}
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  defaultValue={currentReservation.email}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="phone">Phone</Label>
-                <Input
-                  id="phone"
-                  name="phone"
-                  defaultValue={currentReservation.phone}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="date">Date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className="w-full justify-start text-left font-normal"
-                      name="date-trigger"
-                      id="date-trigger"
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {currentReservation.date ? (
-                        format(new Date(currentReservation.date), "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={new Date(currentReservation.date)}
-                      onSelect={(date) => {
-                        if (date) {
-                          setCurrentReservation({
-                            ...currentReservation,
-                            date: format(date, "yyyy-MM-dd"),
-                          });
-                        }
-                      }}
-                      className="p-3 pointer-events-auto"
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="max-w-2xl">
+            <form onSubmit={handleUpdateReservationSubmit(handleSubmitEdit)}>
+              <DialogHeader className="px-0">
+                <div className="flex items-center justify-between">
+                  <DialogTitle>Edit Reservation</DialogTitle>
+                </div>
+                <DialogDescription>
+                  Update the reservation details
+                </DialogDescription>
+              </DialogHeader>
+              <div className="py-4">
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="name">Customer Name</Label>
+                    <Input
+                      id="name"
+                      required
+                      {...updateReservationRegister("name")}
                     />
-                  </PopoverContent>
-                </Popover>
-                <Input
-                  id="date"
-                  name="date"
-                  type="hidden"
-                  value={currentReservation.date}
-                />
-              </div>
-              <div>
-                <Label htmlFor="time">Time</Label>
-                <Select name="time" defaultValue={currentReservation.time}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select time" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {timeSlots.map((time) => (
-                      <SelectItem key={time} value={time}>
-                        {time}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="email">Email</Label>
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        required
+                        {...updateReservationRegister("email")}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="phone">Phone</Label>
+                      <Input
+                        id="phone"
+                        name="phone"
+                        required
+                        {...updateReservationRegister("phone")}
+                      />
+                    </div>
+                  </div>
 
-            <div>
-              <Label htmlFor="guests">Number of Guests</Label>
-              <Input
-                id="guests"
-                name="guests"
-                type="number"
-                min="1"
-                max="20"
-                defaultValue={currentReservation.guestsNum}
-                required
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="status">Status</Label>
-              <Select name="status" defaultValue={currentReservation.status}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="confirmed">Confirmed</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </ItemFormDialog>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="date">Date</Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={"outline"}
+                            className="w-full justify-start text-left font-normal"
+                            name="date"
+                            id="date-trigger"
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {currentReservation?.date ? (
+                              format(new Date(currentReservation.date), "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={
+                              currentReservation?.date
+                                ? new Date(currentReservation.date)
+                                : undefined
+                            }
+                            onSelect={(date) => {
+                              if (date) {
+                                setCurrentReservation({
+                                  ...currentReservation,
+                                  date: format(date, "yyyy-MM-dd"),
+                                });
+                                updateReservationSetValue(
+                                  "date",
+                                  format(date, "yyyy-MM-dd")
+                                );
+                              }
+                            }}
+                            className="p-3 pointer-events-auto"
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <div>
+                      <Label htmlFor="time">Time</Label>
+                      <Select
+                        name="time"
+                        defaultValue={currentReservation?.time || "19:00"}
+                        onValueChange={(value) =>
+                          updateReservationSetValue("time", value)
+                        }
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select time" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {timeSlots.map((time) => (
+                            <SelectItem key={time} value={time}>
+                              {time}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="guests">Number of Guests</Label>
+                    <Input
+                      id="guests"
+                      name="guests"
+                      type="number"
+                      min="1"
+                      max="20"
+                      defaultValue={currentReservation?.guestsNum || 2}
+                      {...updateReservationRegister("guestsNum")}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="status">Status</Label>
+                    <Select
+                      name="status"
+                      defaultValue={currentReservation.status}
+                      onValueChange={(value: TStatus) =>
+                        updateReservationSetValue("status", value)
+                      }
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="PENDING">Pending</SelectItem>
+                        <SelectItem value="CONFIRM">Confirmed</SelectItem>
+                        <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+              <DialogFooter className="px-0 border-t pt-4">
+                <div className="flex justify-end gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsAddDialogOpen(false)}
+                    type="button"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="btn-gold"
+                    disabled={updatePending}
+                  >
+                    {updatePending ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : null}
+                    {updatePending ? "Saving..." : "Update Reservation"}
+                  </Button>
+                </div>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       )}
 
       {/* Delete Confirmation Dialog */}
@@ -768,9 +873,15 @@ export default function Reservations() {
             <AlertDialogHeader>
               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
               <AlertDialogDescription>
-                This will cancel the reservation for {currentReservation.name}{" "}
-                on {new Date(currentReservation.date).toLocaleDateString()} at{" "}
-                {currentReservation.time}. This action cannot be undone.
+                {`
+                This will cancel the reservation for ${
+                  currentReservation.name
+                } on ${new Date(
+                  currentReservation.date
+                ).toLocaleDateString()} at ${
+                  currentReservation.time
+                }. This action cannot be undone.
+              `}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
