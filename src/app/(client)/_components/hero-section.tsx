@@ -1,5 +1,6 @@
 import { TextWithLine } from "@/components";
 import ButtonWithBorder from "@/components/buttons/button-with-border";
+import { APP_ROUTES } from "@/config/routes";
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
@@ -16,10 +17,10 @@ export default function HeroSection() {
           Reserve Your Table
         </h3>
         <div className="mt-2 flex gap-x-5 items-center ">
-          <Link href="/booking">
+          <Link href={APP_ROUTES.BOOKING}>
             <ButtonWithBorder text="Book a Table" />
           </Link>
-          <Link href="/menu">
+          <Link href={APP_ROUTES.MENU}>
             <button
               className="capitalize text-black py-2 px-4 font-medium font-fredoka bg-primary flex items-center gap-x-3 hover:[&>p>svg]:translate-x-0.5 rounded-full text-[clamp(0.75rem,0.7192rem+0.1299vw,0.875rem)] cursor-pointer"
               type="button"

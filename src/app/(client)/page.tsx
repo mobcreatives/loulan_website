@@ -11,7 +11,6 @@ export default function Home() {
       <HeroSection />
       <RateYourExperience />
       <Menu showMenuText />
-      {/* <Special /> */}
       <Featured />
       <Opening />
       <Reservation />

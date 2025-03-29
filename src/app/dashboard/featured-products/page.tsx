@@ -2,39 +2,52 @@
 
 import { useState } from "react";
 import { Plus, Search } from "lucide-react";
-import { initialFeaturedItems } from "./data";
 import { PageTitle } from "@/components";
 import FoodItemCard from "../food-items/_components/food-item-card";
+import { TFoodDetails } from "../food-items/types";
+import { KEYS } from "@/config/constants";
+import { useQuery } from "@tanstack/react-query";
+import { useAuthAxios } from "@/config/auth-axios";
+import { API_ROUTES } from "@/config/routes";
+import { TResponse } from "@/global/types";
 
 export default function FeaturedProducts() {
-  const [featuredItems, setFeaturedItems] = useState(initialFeaturedItems);
+  const { _axios } = useAuthAxios();
+  // const [featuredItems, setFeaturedItems] = useState(initialFeaturedItems);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredItems = featuredItems.filter((item) => {
-    return (
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+  // const filteredItems = featuredItems.filter((item) => {
+  //   return (
+  //     item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     item.description.toLowerCase().includes(searchQuery.toLowerCase())
+  //   );
+  // });
+  const { data: foods } = useQuery({
+    queryKey: KEYS.FOOD.GET,
+    queryFn: getFoods,
   });
 
-  const handleEdit = (id: string) => {
-    console.log("Edit featured item:", id);
+  async function getFoods() {
+    try {
+      const response = await _axios.get<TResponse<TFoodDetails, "foodItems">>(
+        API_ROUTES.FOODS
+      );
+      return response.data.foodItems;
+    } catch {
+      throw new Error("Failed to fetch food items");
+    }
+  }
+  const handleEdit = (data: TFoodDetails) => {
+    console.log("Edit featured item:", data);
     // In a real app, this would open an edit modal or navigate to an edit page
   };
 
-  const handleDelete = (id: string) => {
-    if (
-      window.confirm(
-        "Are you sure you want to remove this item from featured products?"
-      )
-    ) {
-      setFeaturedItems(featuredItems.filter((item) => item.id !== id));
-    }
+  const handleDelete = (data: TFoodDetails) => {
+    console.log("💀 -> handleDelete -> data <3", data);
   };
 
-  const handleToggleFeatured = (id: string) => {
-    // In a real app, this would remove the item from featured items
-    setFeaturedItems(featuredItems.filter((item) => item.id !== id));
+  const handleToggleFeatured = (data: TFoodDetails) => {
+    console.log("💀 -> handleToggleFeatured -> data <3", data);
   };
 
   return (
@@ -66,24 +79,17 @@ export default function FeaturedProducts() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredItems.map((item) => (
+        {foods?.map((item) => (
           <FoodItemCard
             key={item.id}
-            id={item.id}
-            name={item.name}
-            price={item.price}
-            description={item.description}
-            category={item.category}
-            isFeatured={item.isFeatured}
-            isAvailable={item.isAvailable}
-            imageUrl={item.imageUrl}
+            data={item}
             onEdit={handleEdit}
             onDelete={handleDelete}
             onToggleFeatured={handleToggleFeatured}
           />
         ))}
 
-        {filteredItems.length === 0 && (
+        {foods?.length === 0 && (
           <div className="col-span-full flex flex-col items-center justify-center p-12 bg-white rounded-lg border border-dashed border-gray-300">
             <p className="text-gray-500 mb-4">No featured products found</p>
             <button className="btn-gold">

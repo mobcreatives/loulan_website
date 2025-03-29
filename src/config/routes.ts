@@ -15,4 +15,7 @@ export const APP_ROUTES = {
   LOGIN: "/login",
   REGISTER: "/register",
   DASHBOARD: "/dashboard",
+  BOOKING: "/booking",
+  MENU: "/menu",
+  GALLERY: "/gallery",
 };

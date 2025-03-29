@@ -6,25 +6,40 @@ import { toast } from "sonner";
 import { Button, PageTitle, ItemFormDrawer } from "@/components";
 import FoodItemCard from "../food-items/_components/food-item-card";
 import { TPopupProductsDetails } from "./types";
+import { useQuery } from "@tanstack/react-query";
+import { KEYS } from "@/config/constants";
+import { TResponse } from "@/global/types";
+import { TFoodDetails } from "../food-items/types";
+import { API_ROUTES } from "@/config/routes";
+import { useAuthAxios } from "@/config/auth-axios";
 
 export default function PopupProducts() {
+  const { _axios } = useAuthAxios();
   const [products, setProducts] = useState(mockPopupProducts);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [currentProduct, setCurrentProduct] =
     useState<TPopupProductsDetails | null>(null);
+  const { data: foods } = useQuery({
+    queryKey: KEYS.FOOD.GET,
+    queryFn: getFoods,
+  });
 
-  const handleEdit = (id: string) => {
-    const productToEdit = products.find((product) => product.id === id);
-    if (productToEdit) {
-      setCurrentProduct(productToEdit);
-      setIsFormOpen(true);
+  async function getFoods() {
+    try {
+      const response = await _axios.get<TResponse<TFoodDetails, "foodItems">>(
+        API_ROUTES.FOODS
+      );
+      return response.data.foodItems;
+    } catch {
+      throw new Error("Failed to fetch food items");
     }
+  }
+  const handleEdit = (data: TFoodDetails) => {
+    console.log("💀 -> handleEdit -> data <3", data);
   };
 
-  const handleDelete = (id: string) => {
-    // Implement delete functionality
-    setProducts(products.filter((product) => product.id !== id));
-    toast("The popup product has been removed successfully.");
+  const handleDelete = (data: TFoodDetails) => {
+    console.log("💀 -> handleDelete -> id <3", data);
   };
 
   const handleAdd = () => {
@@ -69,17 +84,10 @@ export default function PopupProducts() {
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-        {products.map((product) => (
+        {foods?.map((product) => (
           <FoodItemCard
             key={product.id}
-            id={product.id}
-            name={product.name}
-            description={product.description}
-            price={product.price}
-            category={product.category}
-            imageUrl={product.imageUrl}
-            isAvailable={product.isActive}
-            isFeatured={false}
+            data={product}
             onEdit={handleEdit}
             onDelete={handleDelete}
             onToggleFeatured={() => {}}

@@ -8,7 +8,6 @@ export type TFloatingItem = {
 
 export type TFloatingNavProps = {
   navItems: TFloatingItem[];
-  className?: string;
 };
 
 export type TIconComponentProps = {
