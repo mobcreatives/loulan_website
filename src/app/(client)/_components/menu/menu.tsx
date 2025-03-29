@@ -13,7 +13,6 @@ export default function Menu({ showMenuText = false }: Readonly<TMenuProps>) {
     queryFn: getCuisinType,
     queryKey: KEYS.CUISINE.GET,
   });
-  console.log("cuisines", cuisines);
   const [activeTab, setActiveTab] = useState<TMenuEnum>("");
   return (
     <section className="px-6 sm:px-10 md:px-16 lg:px-28 xl:px-36 2xl:px-44 bg-[#0A1316] text-white py-10 space-y-14">

@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { IButtonWithBorderProps } from "./types";
 import { cn } from "@/lib/utils";
