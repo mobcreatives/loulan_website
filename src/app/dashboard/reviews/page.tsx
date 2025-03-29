@@ -2,9 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Star, Eye, Edit, Trash2, Plus, Loader2 } from "lucide-react";
-
-import { useEffect, useState } from "react";
-import { Star, Eye, Edit, Trash2, Plus, Loader2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,23 +25,7 @@ import {
   PageTitle,
 } from "@/components";
 import { DialogDescription } from "@/components/ui/dialog";
-import { DialogDescription } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { reviewSchema } from "./validator";
-import {
-  TAddReviewData,
-  TReviewDetails,
-  TUpdateReviewArgs,
-  TUpdateReviewData,
-} from "./types";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { API_ROUTES } from "@/config/routes";
-import { useAuthAxios } from "@/config/auth-axios";
-import { KEYS } from "@/config/constants";
-import { TResponse } from "@/global/types";
-import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { reviewSchema } from "./validator";
@@ -62,8 +43,6 @@ import { TResponse } from "@/global/types";
 import { cn } from "@/lib/utils";
 
 export default function Reviews() {
-  const { _axios } = useAuthAxios();
-  // states
   const { _axios } = useAuthAxios();
   // states
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -158,8 +137,8 @@ export default function Reviews() {
     try {
       const response = await _axios.post(API_ROUTES.REVIEW, data);
       return response.data;
-    } catch {
-      throw new Error("There was a problem creating your review");
+    } catch  {
+      throw new Error("There was a problem creating your review. Please");
     }
   }
   async function updateReview(id: number, data: Partial<TUpdateReviewData>) {
@@ -167,7 +146,7 @@ export default function Reviews() {
       const response = await _axios.patch(`${API_ROUTES.REVIEW}/${id}`, data);
       return response.data;
     } catch {
-      throw new Error("There was a problem creating your review");
+      throw new Error("There was a problem creating your review. Please");
     }
   }
   async function deleteReview(id: number) {
@@ -175,7 +154,7 @@ export default function Reviews() {
       const response = await _axios.delete(`${API_ROUTES.REVIEW}/${id}`);
       return response.data;
     } catch {
-      throw new Error("There was a problem deleting your review");
+      throw new Error("There was a problem deleting your review. Please");
     }
   }
 
@@ -185,8 +164,9 @@ export default function Reviews() {
         API_ROUTES.REVIEW
       );
       return response.data.data;
-    } catch {
-      throw new Error("There was a problem getting your review");
+    } catch (error) {
+      console.error("Error getting review:", error);
+      throw new Error("There was a problem getting your review. Please");
     }
   }
 
@@ -194,9 +174,8 @@ export default function Reviews() {
     try {
       const response = await _axios.patch(`${API_ROUTES.REVIEW}/${id}/feature`);
       return response.data;
-    } catch (error) {
-      console.error("Error toggling featured review:", error);
-      throw new Error("There was a problem toggling featured review");
+    } catch  {
+      throw new Error("There was a problem toggling featured review. Please");
     }
   }
 
@@ -209,18 +188,14 @@ export default function Reviews() {
     setCurrentReview(review);
     setIsEditDialogOpen(true);
   }
-  }
 
-  function handleDelete(review: TReviewDetails) {
-    setCurrentReview(review);
   function handleDelete(review: TReviewDetails) {
     setCurrentReview(review);
     setIsDeleteDialogOpen(true);
   }
-  }
 
   function confirmDelete() {
-    if (!isDeleteDialogOpen) return;
+    if (!currentReview) return;
     deleteReviewSync(currentReview.id);
   }
 
@@ -228,33 +203,9 @@ export default function Reviews() {
     setCurrentReview(data);
     setIsViewDialogOpen(true);
   }
-  }
 
-  async function handleAdd() {
   async function handleAdd() {
     setIsAddDialogOpen(true);
-  }
-
-  async function handleSubmitAdd(data: TAddReviewData) {
-    await createPreviewSync(data);
-  }
-
-  async function handleSubmitEdit(data: TUpdateReviewData) {
-    await updateReviewSync({
-      id: currentReview.id,
-      data,
-    });
-  }
-
-  // resets the form values for update
-  useEffect(() => {
-    if (Object.keys(currentReview).length <= 0) return;
-    resetUpdateReview({
-      reviewerName: currentReview.reviewerName,
-      stars: currentReview.stars,
-      comment: currentReview.comment,
-    });
-  }, [currentReview, resetUpdateReview]);
   }
 
   async function handleSubmitAdd(data: TAddReviewData) {
@@ -287,10 +238,6 @@ export default function Reviews() {
             onClick={handleAdd}
             className="btn-gold text-black cursor-pointer"
           >
-          <Button
-            onClick={handleAdd}
-            className="btn-gold text-black cursor-pointer"
-          >
             <Plus size={16} />
             Add Review
           </Button>
@@ -298,80 +245,6 @@ export default function Reviews() {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-        {Array.isArray(reviews) &&
-          reviews.map((review) => (
-            <Card
-              key={review.id}
-              className={cn(`p-6`, review.isFeatured && "border-amber-500")}
-            >
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-lg font-medium capitalize">
-                    {review.reviewerName}
-                  </h3>
-                  <div className="flex items-center mt-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={`star_${_}${i}`}
-                        size={16}
-                        className={
-                          i < review.stars
-                            ? "fill-amber-500 text-amber-500"
-                            : "text-gray-300"
-                        }
-                      />
-                    ))}
-                    <span className="ml-2 text-sm text-gray-500">
-                      {new Date(review.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleFeaturedToggle(review)}
-                    disabled={isTogglingFeatured}
-                    className={cn(
-                      `px-3 text-xs cursor-pointer`,
-                      review.isFeatured
-                        ? "bg-amber-100 text-amber-800"
-                        : "bg-gray-100 text-gray-800"
-                    )}
-                  >
-                    {review.isFeatured ? "Featured" : "Not Featured"}
-                  </Button>
-                </div>
-              </div>
-              <p className="text-gray-700 mb-4">{review.comment}</p>
-              <div className="flex justify-end space-x-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleView(review)}
-                  className="h-8 w-8 text-amber-500 cursor-pointer"
-                >
-                  <Eye size={16} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleEdit(review)}
-                  className="h-8 w-8 text-amber-500 cursor-pointer"
-                >
-                  <Edit size={16} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleDelete(review)}
-                  className="h-8 w-8 text-red-500 cursor-pointer"
-                >
-                  <Trash2 size={16} />
-                </Button>
-              </div>
-            </Card>
-          ))}
         {Array.isArray(reviews) &&
           reviews.map((review) => (
             <Card
@@ -470,28 +343,6 @@ export default function Reviews() {
                   required
                 />
               </div>
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <form onSubmit={addHandleSubmit(handleSubmitAdd)}>
-            <DialogHeader className="px-0">
-              <div className="flex items-center justify-between">
-                <DialogTitle>Add New Review</DialogTitle>
-              </div>
-              <DialogDescription>
-                Add a new customer review to your collection
-              </DialogDescription>
-            </DialogHeader>
-            <div className="py-4 space-y-4">
-              <div>
-                <Label htmlFor="customerName">Customer Name</Label>
-                <Input
-                  id="customerName"
-                  type="text"
-                  placeholder="Enter customer name"
-                  {...addRegister("reviewerName")}
-                  required
-                />
-              </div>
 
               <div>
                 <Label htmlFor="rating">Rating (1-5)</Label>
@@ -516,64 +367,7 @@ export default function Reviews() {
                   required
                 />
               </div>
-              <div>
-                <Label htmlFor="rating">Rating (1-5)</Label>
-                <Input
-                  id="rating"
-                  type="number"
-                  min="1"
-                  max="5"
-                  {...addRegister("stars")}
-                  defaultValue="5"
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="content">Review Content</Label>
-                <Textarea
-                  id="content"
-                  name="content"
-                  placeholder="Enter the review content"
-                  className="min-h-[100px]"
-                  {...addRegister("comment")}
-                  required
-                />
-              </div>
 
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="isFeatured"
-                  name="isFeatured"
-                  // onCheckedChange={(isChecked) => setValue("", isChecked)}
-                />
-                <Label htmlFor="isFeatured">Feature this review</Label>
-              </div>
-            </div>
-            <DialogFooter className="px-0 border-t pt-4">
-              <div className="flex justify-end gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsAddDialogOpen(false)}
-                  type="button"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  className="btn-gold"
-                  disabled={isCreatingReview}
-                >
-                  {isCreatingReview ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : null}
-                  {isCreatingReview ? "Saving..." : "Add Review"}
-                </Button>
-              </div>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-      {/* Add Review Dialog */}
               <div className="flex items-center space-x-2">
                 <Switch
                   id="isFeatured"
@@ -631,28 +425,6 @@ export default function Reviews() {
                   required
                 />
               </div>
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <form onSubmit={updateHandleSubmit(handleSubmitEdit)}>
-            <DialogHeader className="px-0">
-              <div className="flex items-center justify-between">
-                <DialogTitle>Edit Review</DialogTitle>
-              </div>
-              <DialogDescription>
-                Make changes to this customer review
-              </DialogDescription>
-            </DialogHeader>
-            <div className="py-4 space-y-4">
-              <div>
-                <Label htmlFor="customerName">Customer Name</Label>
-                <Input
-                  id="customerName"
-                  type="text"
-                  placeholder="Enter customer name"
-                  {...updateRegister("reviewerName")}
-                  required
-                />
-              </div>
 
               <div>
                 <Label htmlFor="rating">Rating (1-5)</Label>
@@ -677,63 +449,7 @@ export default function Reviews() {
                   required
                 />
               </div>
-              <div>
-                <Label htmlFor="rating">Rating (1-5)</Label>
-                <Input
-                  id="rating"
-                  type="number"
-                  min="1"
-                  max="5"
-                  {...updateRegister("stars")}
-                  defaultValue="5"
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="content">Review Content</Label>
-                <Textarea
-                  id="content"
-                  name="content"
-                  placeholder="Enter the review content"
-                  className="min-h-[100px]"
-                  {...updateRegister("comment")}
-                  required
-                />
-              </div>
 
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="isFeatured"
-                  name="isFeatured"
-                  // onCheckedChange={(isChecked) => setValue("", isChecked)}
-                />
-                <Label htmlFor="isFeatured">Feature this review</Label>
-              </div>
-            </div>
-            <DialogFooter className="px-0 border-t pt-4">
-              <div className="flex justify-end gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsEditDialogOpen(false)}
-                  type="button"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  className="btn-gold"
-                  disabled={isUpdatingReview}
-                >
-                  {isUpdatingReview ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : null}
-                  {isUpdatingReview ? "Saving..." : "Update Review"}
-                </Button>
-              </div>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
               <div className="flex items-center space-x-2">
                 <Switch
                   id="isFeatured"
@@ -779,16 +495,13 @@ export default function Reviews() {
               <div className="mb-6">
                 <h3 className="text-lg font-medium mb-1">
                   {currentReview.reviewerName}
-                  {currentReview.reviewerName}
                 </h3>
                 <div className="flex items-center mb-2">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={`star_${_}${i}`}
-                      key={`star_${_}${i}`}
                       size={16}
                       className={
-                        i < currentReview.stars
                         i < currentReview.stars
                           ? "fill-amber-500 text-amber-500"
                           : "text-gray-300"
@@ -796,7 +509,6 @@ export default function Reviews() {
                     />
                   ))}
                   <span className="ml-2 text-sm text-gray-500">
-                    {new Date(currentReview.createdAt).toLocaleDateString()}
                     {new Date(currentReview.createdAt).toLocaleDateString()}
                   </span>
                 </div>
@@ -811,7 +523,6 @@ export default function Reviews() {
                 </div>
               </div>
               <p className="text-gray-700 whitespace-pre-wrap">
-                {currentReview.comment}
                 {currentReview.comment}
               </p>
             </div>
@@ -833,7 +544,6 @@ export default function Reviews() {
             <AlertDialogDescription>
               This will permanently delete the review from{" "}
               {currentReview?.reviewerName}. This action cannot be undone.
-              {currentReview?.reviewerName}. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -841,7 +551,6 @@ export default function Reviews() {
             <AlertDialogAction
               onClick={confirmDelete}
               className="bg-red-500 text-white hover:bg-red-600"
-              disabled={isDeletingReview}
               disabled={isDeletingReview}
             >
               Delete
