@@ -29,6 +29,7 @@ export const KEYS = {
     ADD: ["add", "reservation"],
     UPDATE: ["update", "reservation"],
     DELETE: ["delete", "reservation"],
+    FEATURED: ["toggle", "featured", "review"],
   },
 };
 
