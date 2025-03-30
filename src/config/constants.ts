@@ -18,6 +18,12 @@ export const KEYS = {
     DELETE: ["delete", "food"],
     TOGGLE_FEATURED: ["toggle", "featured", "food"],
   },
+  FEATURED_FOOD: {
+    GET: ["get", "featured", "foods"],
+    ADD: ["add", "featured", "food"],
+    DELETE: ["delete", "featured", "food"],
+    TOGGLE: ["toggle", "featured", "food"],
+  },
   REVIEWS: {
     GET: ["get", "reviews"],
     ADD: ["add", "review"],
