@@ -51,6 +51,11 @@ export const KEYS = {
     DELETE: ["delete", "gallery"],
     TOGGLE_VISIBILITY: ["toggle", "visibility", "gallery"],
   },
+  CONTACTS: {
+    GET: ["get", "contacts"],
+    DELETE: ["delete", "contact"],
+    CHANGE_STATUS: ["change", "status", "contact"],
+  },
 };
 
 export const CONSTANTS = {

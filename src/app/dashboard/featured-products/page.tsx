@@ -45,11 +45,6 @@ export default function FoodItems() {
         toast("Failed to delete food item. Please try again.");
       },
     });
-  const { data: foods, refetch } = useQuery({
-    queryKey: KEYS.FEATURED_FOOD.GET,
-    queryFn: getFoods,
-  });
-
   const { mutateAsync: toggleFeaturedMutateSync } = useMutation({
     mutationKey: KEYS.FEATURED_FOOD.TOGGLE,
     mutationFn: toggleFeatured,
@@ -60,6 +55,10 @@ export default function FoodItems() {
     onError: () => {
       toast("Failed to update food item. Please try again.");
     },
+  });
+  const { data: foods, refetch } = useQuery({
+    queryKey: KEYS.FEATURED_FOOD.GET,
+    queryFn: getFoods,
   });
 
   // const filteredItems = foods?.filter((item) => {
@@ -112,9 +111,9 @@ export default function FoodItems() {
     setOpenDeleteDialog(true);
   }
 
-  const handleToggleFeatured = (data: TFoodDetails) => {
+  function handleToggleFeatured(data: TFoodDetails) {
     toggleFeaturedMutateSync(data.id);
-  };
+  }
 
   function confirmDelete() {
     if (selectedFood) {
@@ -192,10 +191,7 @@ export default function FoodItems() {
         {foods?.length === 0 && (
           <div className="col-span-full flex flex-col items-center justify-center p-12 bg-white rounded-lg border border-dashed border-gray-300">
             <p className="text-gray-500 mb-4">No food items found</p>
-            <button
-              className="btn-gold cursor-pointer text-black"
-              onClick={() => setOpenAddDialog(true)}
-            >
+            <button className="btn-gold">
               <Plus size={18} />
               Add Your First Food Item
             </button>
