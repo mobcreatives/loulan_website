@@ -10,9 +10,9 @@ const fredoka = Fredoka({
 });
 
 export const metadata: Metadata = {
-  title: "Loulan",
+  title: "Loulan Chinese Restaurant and Bar",
   // TODO: Add description here
-  description: "",
+  description: "Chinese Restuarant In Nepal",
 };
 
 export default function RootLayout({
