@@ -13,10 +13,10 @@ export default function MenuCard({
       <p className="w-30">
         <Image
           src={image}
-          className="size-full object-cover"
-          alt="a plate of freshly cooked barbecue/bbq"
-          height={1080}
-          width={1920}
+          className="size-full object-cover rounded-full "
+          alt={description}
+          height={720}
+          width={1080}
         />
       </p>
       <div className="">

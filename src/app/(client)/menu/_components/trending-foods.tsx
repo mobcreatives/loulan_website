@@ -1,7 +1,26 @@
+"use client";
 import React from "react";
 import MenuCard from "./menu-card";
+import { _axios } from "@/config/axios";
+import { API_ROUTES } from "@/config/routes";
+import { useQuery } from "@tanstack/react-query";
+import { KEYS } from "@/config/constants";
 
 export default function TrendingFood() {
+  const { data: foods } = useQuery({
+    queryFn: getAllFoods,
+    queryKey: KEYS.FOOD.GET,
+  });
+
+  async function getAllFoods() {
+    try {
+      const response = await _axios.get(API_ROUTES.FOODS);
+      return response.data;
+    } catch {
+      throw new Error("Failed to load food items");
+    }
+  }
+
   return (
     <section className="px-6 sm:px-10 md:px-16 lg:px-20 xl:px-24 2xl:px-44 bg-[#0A1316] text-white py-10 space-y-14 flex justify-center">
       <div className="max-w-[1200px] font-oswald flex flex-col items-center">
@@ -12,54 +31,17 @@ export default function TrendingFood() {
           Trending Food Menu
         </h3>
         <div className="p-10 mt-8 rounded-[12px] border-2 border-dotted border-white max-w-300 grid xl:grid-cols-2 gap-10">
-          <MenuCard
-            description="Its the perfect dining experience where Experience quick and efficient"
-            image="/images/bbq.png"
-            price={200}
-            title="CHICAGO DEEP PIZZA"
-          />
-          <MenuCard
-            description="Its the perfect dining experience where Experience quick and efficient"
-            image="/images/bbq.png"
-            price={300}
-            title="CHINESE PASTA"
-          />
-          <MenuCard
-            description="Its the perfect dining experience where Experience quick and efficient"
-            image="/images/bbq.png"
-            price={360}
-            title="Chicago Burger King"
-          />
-          <MenuCard
-            description="Its the perfect dining experience where Experience quick and efficient"
-            image="/images/bbq.png"
-            price={400}
-            title="Chicago chicken wings"
-          />
-          <MenuCard
-            description="Its the perfect dining experience where Experience quick and efficient"
-            image="/images/bbq.png"
-            price={250}
-            title="Chicago French Fries"
-          />
-          <MenuCard
-            description="Its the perfect dining experience where Experience quick and efficient"
-            image="/images/bbq.png"
-            price={450}
-            title="Chicago Deep Pasta"
-          />
-          <MenuCard
-            description="Its the perfect dining experience where Experience quick and efficient"
-            image="/images/bbq.png"
-            price={230}
-            title="Chicago beef jerky"
-          />
-          <MenuCard
-            description="Its the perfect dining experience where Experience quick and efficient"
-            image="/images/bbq.png"
-            price={400}
-            title="Chicago salad recipes"
-          />
+          {foods?.foodItems.map((food) => {
+            return (
+              <MenuCard
+                key={food.id}
+                description={food.description}
+                image={food.imgUrl}
+                price={food.price}
+                title={food.name}
+              />
+            );
+          })}
         </div>
       </div>
     </section>
