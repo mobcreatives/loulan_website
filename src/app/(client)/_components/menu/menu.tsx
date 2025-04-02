@@ -53,7 +53,7 @@ export default function Menu({ showMenuText = false }: Readonly<TMenuProps>) {
           className="font-fredoka text-[clamp(2.125rem,2.0325rem+0.3896vw,2.5rem)] font-bold before:w-[170px] before:h-[5px] before:-bottom-1"
         />
       </div>
-      <div className=" w-full flex justify-center gap-5 ">
+      <div className="w-full flex justify-center gap-5 ">
         {menusCategories?.map((menu) => {
           return (
             <MenuButton
