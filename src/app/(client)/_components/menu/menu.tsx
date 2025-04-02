@@ -36,7 +36,7 @@ export default function Menu({ showMenuText = false }: Readonly<TMenuProps>) {
   // use effect
   useEffect(() => {
     if (menusCategories) {
-      setActiveTab(menusCategories[0].name);
+      setActiveTab(menusCategories[0]);
     }
   }, [menusCategories, setActiveTab]);
   return (
@@ -54,11 +54,11 @@ export default function Menu({ showMenuText = false }: Readonly<TMenuProps>) {
         />
       </div>
       <div className=" w-full flex justify-center gap-5 ">
-        {menusCategories?.map((cuisine) => {
+        {menusCategories?.map((menu) => {
           return (
             <MenuButton
-              key={cuisine.id}
-              text={cuisine?.name}
+              key={menu.id}
+              data={menu}
               icon={<DesertIconComponent />}
             />
           );

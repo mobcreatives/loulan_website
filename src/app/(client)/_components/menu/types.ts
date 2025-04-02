@@ -1,9 +1,8 @@
+import { TMenuCategoryDetails } from "@/app/dashboard/menu-categories/types";
 import { JSX } from "react";
 
-export type TMenuEnum = string;
-
 export type TMenuButtonPros = {
-  text: TMenuEnum;
+  data: TMenuCategoryDetails;
   icon: JSX.Element;
 };
 
@@ -12,6 +11,6 @@ export type TMenuProps = {
 };
 
 export type TUseClientStore = {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
+  activeTab: TMenuCategoryDetails | null;
+  setActiveTab: (tab: TMenuCategoryDetails) => void;
 };
