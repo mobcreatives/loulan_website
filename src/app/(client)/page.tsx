@@ -10,8 +10,8 @@ export default function Home() {
     <>
       <HeroSection />
       <RateYourExperience />
-      <Menu showMenuText />
       <Featured />
+      <Menu showMenuText />
       <Opening />
       <Reservation />
     </>
