@@ -48,15 +48,17 @@ export function FloatingNav({ navItems }: Readonly<TFloatingNavProps>) {
     //   </motion.div>
     // </AnimatePresence>
     <nav className="px-6 sm:px-10 md:px-16 lg:px-28 xl:px-36 2xl:px-44 bg-[#0A1316] text-white flex justify-around py-4 sticky top-0 z-50 items-center">
-      <p className="w-20">
-        <Image
-          className="size-full object-cover"
-          src={"/images/logo.png"}
-          alt="a minimalistic logo for Loulan"
-          width={40}
-          height={40}
-        />
-      </p>
+      <Link href={APP_ROUTES.HOME} className="flex items-center">
+        <p className="w-20">
+          <Image
+            className="size-full object-cover"
+            src={"/images/logo.png"}
+            alt="a minimalistic logo for Loulan"
+            width={40}
+            height={40}
+          />
+        </p>
+      </Link>
       <div className="flex gap-x-8">
         {navItems.map((navItem, idx: number) => (
           <Link
