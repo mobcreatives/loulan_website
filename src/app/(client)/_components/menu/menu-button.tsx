@@ -1,13 +1,10 @@
 import { cn } from "@/lib/utils";
 import { cloneElement } from "react";
 import { TMenuButtonPros } from "./types";
+import { useClientMenuStore } from "./store";
 
-export default function MenuButton({
-  activeTab,
-  setActiveTab,
-  text,
-  icon,
-}: Readonly<TMenuButtonPros>) {
+export default function MenuButton({ text, icon }: Readonly<TMenuButtonPros>) {
+  const { setActiveTab, activeTab } = useClientMenuStore();
   return (
     <button
       className={cn(

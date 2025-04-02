@@ -1,19 +1,44 @@
 "use client";
 
 import { DesertIconComponent, TextWithLine } from "@/components";
-import { useState } from "react";
-import { TMenuEnum, TMenuProps } from "./types";
+import { useEffect } from "react";
+import { TMenuProps } from "./types";
 import MenuButton from "./menu-button";
 import { useQuery } from "@tanstack/react-query";
-import { getCuisinType } from "@/lib/actions";
 import { KEYS } from "@/config/constants";
+import { useAuthAxios } from "@/config/auth-axios";
+import { TResponse } from "@/global/types";
+import { TMenuCategoryDetails } from "@/app/dashboard/menu-categories/types";
+import { API_ROUTES } from "@/config/routes";
+import { useClientMenuStore } from "./store";
 
 export default function Menu({ showMenuText = false }: Readonly<TMenuProps>) {
-  const { data: cuisines } = useQuery({
-    queryFn: getCuisinType,
-    queryKey: KEYS.CUISINE.GET,
+  // hooks
+  const { _axios } = useAuthAxios();
+  // stores
+  const { setActiveTab } = useClientMenuStore();
+  // tanstack/react-query
+  const { data: menusCategories } = useQuery({
+    queryKey: KEYS.MENU_CATEGORIES.GET,
+    queryFn: getMenuCategories,
   });
-  const [activeTab, setActiveTab] = useState<TMenuEnum>("");
+  // handlers
+  async function getMenuCategories() {
+    try {
+      const response = await _axios.get<
+        TResponse<TMenuCategoryDetails, "menus">
+      >(API_ROUTES.MENU_CATEGORIES);
+      return response.data.menus;
+    } catch {
+      throw new Error("Failed to fetch menu categories");
+    }
+  }
+  // use effect
+  useEffect(() => {
+    if (menusCategories) {
+      setActiveTab(menusCategories[0].name);
+    }
+  }, [menusCategories, setActiveTab]);
   return (
     <section className="px-6 sm:px-10 md:px-16 lg:px-28 xl:px-36 2xl:px-44 bg-[#0A1316] text-white py-10 space-y-14">
       <div className="space-y-3 flex flex-col items-center ">
@@ -29,13 +54,11 @@ export default function Menu({ showMenuText = false }: Readonly<TMenuProps>) {
         />
       </div>
       <div className=" w-full flex justify-center gap-5 ">
-        {cuisines?.cuisines?.map((cuisine) => {
+        {menusCategories?.map((cuisine) => {
           return (
             <MenuButton
               key={cuisine.id}
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-              text={cuisine?.type}
+              text={cuisine?.name}
               icon={<DesertIconComponent />}
             />
           );
