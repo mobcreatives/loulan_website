@@ -16,7 +16,6 @@ export default function FloatingReview() {
     queryKey: KEYS.REVIEWS.GET,
     queryFn: getPreviews,
   });
-  console.log("💀 -> FloatingReview -> reviews <3", reviews);
   async function getPreviews() {
     try {
       const response = await _axios.get<TResponse<TReviewDetails, "data">>(
@@ -24,7 +23,6 @@ export default function FloatingReview() {
       );
       return response.data.data;
     } catch (error) {
-      console.error("Error getting review:", error);
       throw new Error("There was a problem getting your review. Please");
     }
   }

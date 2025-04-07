@@ -12,7 +12,6 @@ export default function Special() {
     queryKey: KEYS.FOOD.GET,
   });
 
-  console.log("food", foods);
   return (
     <section className="px-6 sm:px-10 md:px-16 lg:px-28 xl:px-36 2xl:px-44 bg-[#0A1316] text-white py-5 flex justify-center">
       <div className="relative flex flex-col items-center justify-center lg:flex-row gap-5 isolate">
