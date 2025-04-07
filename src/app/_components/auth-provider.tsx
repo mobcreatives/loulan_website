@@ -16,9 +16,10 @@ export default function AuthProvider({
 
   useEffect(() => {
     if (!token) {
-      router.push(APP_ROUTES.LOGIN);
+      return router.push(APP_ROUTES.LOGIN);
     }
+    router.push(APP_ROUTES.DASHBOARD);
   }, [token, router]);
-  
+
   return <>{children}</>;
 }
