@@ -26,7 +26,7 @@ export default function Login() {
     mutationFn: login,
     onSuccess: async () => {
       await toast.success("Login successful");
-      router.push(APP_ROUTES.HOME);
+      router.push(APP_ROUTES.DASHBOARD);
     },
     onError: () => {
       toast.error("Login failed");
