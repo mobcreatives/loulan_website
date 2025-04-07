@@ -30,10 +30,16 @@ import { toast } from "sonner";
 
 export default function Reservation() {
   const { _axios } = useAuthAxios();
-  const { register, handleSubmit, setValue, watch, reset } =
-    useForm<TAddReservationData>({
-      resolver: zodResolver(addReservationSchema),
-    });
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm<TAddReservationData>({
+    resolver: zodResolver(addReservationSchema),
+  });
   const date = watch("date");
   const { mutateAsync, isPending } = useMutation({
     mutationKey: KEYS.RESERVATIONS.ADD,
@@ -77,42 +83,64 @@ export default function Reservation() {
             onSubmit={handleSubmit(handleSubmitAdd)}
           >
             <div className="grid md:grid-cols-2 gap-4">
-              <input
-                type="text"
-                name="number-of-guest"
-                id="number-of-guest"
-                placeholder="No. of Guests"
-                {...register("guestsNum")}
-                className="bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black"
-              />
+              <div className="w-full">
+                <input
+                  name="number-of-guest"
+                  id="number-of-guest"
+                  placeholder="No. of Guests"
+                  {...register("guestsNum")}
+                  type="number"
+                  className="bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black w-full"
+                />
+                {errors.guestsNum && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {errors.guestsNum.message}
+                  </p>
+                )}
+              </div>
               <div className="grid md:grid-cols-2 gap-4 ">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className="w-full flex items-center justify-start text-left bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black"
-                      name="date"
-                      id="date-trigger"
-                    >
-                      <CalendarIcon className="mr-1 size-4" />
-                      {date ? (
-                        <span>{format(new Date(date), "PPP")}</span>
-                      ) : (
-                        <span className="mt-1 text-[#555555]">Pick a date</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={date ? new Date(date) : undefined}
-                      onSelect={(date) => {
-                        if (date) setValue("date", format(date, "yyyy-MM-dd"));
-                      }}
-                      className="p-3 pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
+                <div className="">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className="w-full flex items-center justify-start text-left bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black"
+                        name="date"
+                        id="date-trigger"
+                      >
+                        <CalendarIcon className="mr-1 size-4" />
+                        {date ? (
+                          <span>{format(new Date(date), "PPP")}</span>
+                        ) : (
+                          <span className="mt-1 text-[#555555]">
+                            Pick a date
+                          </span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={date ? new Date(date) : new Date()}
+                        onSelect={(date) => {
+                          if (date)
+                            setValue("date", format(date, "yyyy-MM-dd"));
+                        }}
+                        className="p-3 pointer-events-auto"
+                        disabled={[
+                          {
+                            before: new Date(),
+                          },
+                        ]}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  {errors.date && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.date.message}
+                    </p>
+                  )}
+                </div>
                 <div>
                   <Select
                     name="time"
@@ -129,24 +157,43 @@ export default function Reservation() {
                       ))}
                     </SelectContent>
                   </Select>
+                  {errors.time && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.time.message}
+                    </p>
+                  )}
                 </div>
               </div>
-              <input
-                type="text"
-                name="name"
-                id="name"
-                {...register("name")}
-                placeholder="Fullname"
-                className="bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black"
-              />
-              <input
-                type="text"
-                name="phone"
-                id="phone"
-                {...register("phone")}
-                placeholder="Phone Number"
-                className="bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black"
-              />
+              <div className="w-full">
+                <input
+                  type="text"
+                  name="name"
+                  id="name"
+                  {...register("name")}
+                  placeholder="Fullname"
+                  className="bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black w-full"
+                />
+                {errors.name && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {errors.name.message}
+                  </p>
+                )}
+              </div>
+              <div className="w-full">
+                <input
+                  type="number"
+                  name="phone"
+                  id="phone"
+                  {...register("phone")}
+                  placeholder="Phone Number"
+                  className="bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black w-full"
+                />
+                {errors.phone && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {errors.phone.message}
+                  </p>
+                )}
+              </div>
             </div>
             <div className="flex justify-end lg:px-4">
               <button

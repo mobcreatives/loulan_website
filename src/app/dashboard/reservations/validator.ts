@@ -7,11 +7,17 @@ export const addReservationSchema = z.object({
       message: "Name is required",
     })
     .max(255, { message: "Name is too long" }),
-  email: z.string().email({ message: "Invalid email" }).optional(),
+  email: z.string().email({ message: "Enter a valid email" }).optional(),
   phone: z.string().min(7, { message: "Invalid phone number" }),
-  date: z.string().min(1, { message: "Date is required" }),
-  time: z.string().min(1, { message: "Time is required" }),
-  guestsNum: z.coerce.number().min(1, { message: "Invalid number of guests" }),
+  date: z
+    .string({ required_error: "Date is required" })
+    .min(1, { message: "Date is required" }),
+  time: z
+    .string({ required_error: "Date is required" })
+    .min(1, { message: "Time is required" }),
+  guestsNum: z.coerce
+    .number({ invalid_type_error: "Number is required for guest" })
+    .min(1, { message: "Invalid number of guests" }),
   status: z
     .enum(["PENDING", "CONFIRMED", "CANCELLED"])
     .optional()
