@@ -22,7 +22,7 @@ export default function FloatingReview() {
         `${API_ROUTES.REVIEW}?isFeatured`
       );
       return response.data.data;
-    } catch (error) {
+    } catch {
       throw new Error("There was a problem getting your review. Please");
     }
   }
