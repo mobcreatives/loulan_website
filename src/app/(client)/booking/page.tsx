@@ -78,7 +78,7 @@ export default function Booking() {
           <div className="flex flex-col gap-y-6">
             <div className="w-full">
               <input
-                type="text"
+                type="number"
                 name="number-of-guest"
                 id="number-of-guest"
                 {...register("guestsNum")}
@@ -172,7 +172,7 @@ export default function Booking() {
             </div>
             <div className="w-full">
               <input
-                type="text"
+                type="number"
                 name="phone"
                 id="phone"
                 placeholder="Phone Number"
