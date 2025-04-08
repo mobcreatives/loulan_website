@@ -12,7 +12,7 @@ export default function MenuCard({
     <div className="flex items-center gap-x-3 border-b-2 border-white pb-3 border-dotted">
       <p className="size-20">
         <Image
-          src={image}
+          src={image || "/images/placeholder.svg"}
           className="size-full object-cover rounded-full "
           alt={description}
           height={720}

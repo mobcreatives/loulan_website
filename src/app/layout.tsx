@@ -11,7 +11,6 @@ const fredoka = Fredoka({
 
 export const metadata: Metadata = {
   title: "Loulan Chinese Restaurant and Bar",
-  // TODO: Add description here
   description: "Chinese Restuarant In Nepal",
 };
 

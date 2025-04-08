@@ -20,7 +20,7 @@ const FoodItemCard = ({
     <div className="dashboard-card group overflow-hidden">
       <div className="aspect-video relative overflow-hidden bg-gray-100">
         <Image
-          src={data.imgUrl ?? "/images/placeholder.svg"}
+          src={data.imgUrl || "/images/placeholder.svg"}
           alt={data?.name}
           className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300"
           width={1920}
