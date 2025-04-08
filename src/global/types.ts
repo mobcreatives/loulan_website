@@ -1,6 +1,6 @@
 export type TResponse<T, K extends string> = {
   status: string;
-  meta: TMeta;
+  pagination: TMeta;
 } & {
   [P in K]: T[];
 };

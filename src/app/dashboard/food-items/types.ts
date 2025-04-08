@@ -39,3 +39,13 @@ export type TUpdateFoodArgs = {
   id: number;
   data: TUpdateFoodData;
 };
+
+export type TPaginationData = {
+  page: number;
+  limit: number;
+};
+export type TPaginationProps = {
+  pagination: TPaginationData;
+  setPagination: React.Dispatch<React.SetStateAction<TPaginationData>>;
+  totalPages: number;
+};

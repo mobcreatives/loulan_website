@@ -24,3 +24,11 @@ export type TUpdateReservationArgs = {
   id: number;
   data: TUpdateReservationData;
 };
+export type TChangeStatusProps = {
+  status: TStatus;
+  handleStatusChange(
+    reservation: TReservationDetails,
+    status: TStatus
+  ): Promise<void>;
+  reservation: TReservationDetails;
+};

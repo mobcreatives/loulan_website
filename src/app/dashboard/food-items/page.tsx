@@ -20,10 +20,10 @@ import { API_ROUTES } from "@/config/routes";
 import { KEYS } from "@/config/constants";
 import AddFood from "./add-food";
 import { TResponse } from "@/global/types";
-import { TFoodDetails } from "./types";
+import { TFoodDetails, TPaginationData } from "./types";
 import UpdateFood from "./update-food";
 import { toast } from "sonner";
-import { TMenuCategoryDetails } from "../menu-categories/types";
+import Pagination from "./_components/pagination";
 
 export default function FoodItems() {
   const { _axios } = useAuthAxios();
@@ -32,6 +32,11 @@ export default function FoodItems() {
   const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [selectedFood, setSelectedFood] = useState<TFoodDetails | null>(null);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [pagination, setPagination] = useState<TPaginationData>({
+    page: 1,
+    limit: 10,
+  });
 
   const { mutateAsync: deleteMutateSync, isPending: deletePending } =
     useMutation({
@@ -47,26 +52,25 @@ export default function FoodItems() {
       },
     });
   const { data: foods, refetch } = useQuery({
-    queryKey: KEYS.FOOD.GET,
+    queryKey: [...KEYS.FOOD.GET, pagination.limit, pagination.page],
     queryFn: getFoods,
   });
   // tanstack/react-query
-  const { data: menus } = useQuery({
-    queryKey: KEYS.MENU_CATEGORIES.GET,
-    queryFn: getMenuCategories,
-  });
-  console.log("💀 -> FoodItems -> menus <3", menus);
+  // const { data: menus } = useQuery({
+  //   queryKey: KEYS.MENU_CATEGORIES.GET,
+  //   queryFn: getMenuCategories,
+  // });
   // handlers
-  async function getMenuCategories() {
-    try {
-      const response = await _axios.get<
-        TResponse<TMenuCategoryDetails, "menus">
-      >(API_ROUTES.MENU_CATEGORIES);
-      return response.data.menus;
-    } catch {
-      throw new Error("Failed to fetch menu categories");
-    }
-  }
+  // async function getMenuCategories() {
+  //   try {
+  //     const response = await _axios.get<
+  //       TResponse<TMenuCategoryDetails, "menus">
+  //     >(API_ROUTES.MENU_CATEGORIES);
+  //     return response.data.menus;
+  //   } catch {
+  //     throw new Error("Failed to fetch menu categories");
+  //   }
+  // }
   const { mutateAsync: toggleFeaturedMutateSync } = useMutation({
     mutationKey: KEYS.FOOD.TOGGLE_FEATURED,
     mutationFn: toggleFeatured,
@@ -82,8 +86,15 @@ export default function FoodItems() {
   async function getFoods() {
     try {
       const response = await _axios.get<TResponse<TFoodDetails, "foodItems">>(
-        API_ROUTES.FOODS
+        API_ROUTES.FOODS,
+        {
+          params: {
+            page: pagination.page,
+            limit: pagination.limit,
+          },
+        }
       );
+      setTotalPages(response.data.pagination.totalPages);
       return response.data.foodItems;
     } catch {
       throw new Error("Failed to fetch food items");
@@ -139,7 +150,7 @@ export default function FoodItems() {
         }
       />
 
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
         <div className="relative flex-grow max-w-md">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
             <Search className="w-5 h-5 text-gray-400" />
@@ -152,7 +163,11 @@ export default function FoodItems() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-
+        <Pagination
+          pagination={pagination}
+          setPagination={setPagination}
+          totalPages={totalPages}
+        />
         {/* <div className="flex gap-2">
           <select
             className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 gold-focus-ring"

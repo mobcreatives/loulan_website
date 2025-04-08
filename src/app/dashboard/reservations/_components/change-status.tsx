@@ -7,16 +7,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components";
 import React from "react";
-import { TReservationDetails, TStatus } from "../types";
+import { TChangeStatusProps, TStatus } from "../types";
 
-export type TChangeStatusProps = {
-  status: TStatus;
-  handleStatusChange(
-    reservation: TReservationDetails,
-    status: TStatus
-  ): Promise<void>;
-  reservation: TReservationDetails;
-};
 export default function ChangeStatus({
   status,
   handleStatusChange,
@@ -25,7 +17,9 @@ export default function ChangeStatus({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="focus:outline-none">
-        <span className="capitalize cursor-pointer">{status?.toLowerCase()}</span>
+        <span className="capitalize cursor-pointer">
+          {status?.toLowerCase()}
+        </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuLabel>Change Status</DropdownMenuLabel>
