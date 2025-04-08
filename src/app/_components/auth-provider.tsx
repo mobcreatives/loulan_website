@@ -18,7 +18,8 @@ export default function AuthProvider({
     if (!token) {
       return router.push(APP_ROUTES.LOGIN);
     }
-    router.push(APP_ROUTES.DASHBOARD);
+    const currentLocation = window.location.pathname;
+    router.push(currentLocation ?? APP_ROUTES.DASHBOARD);
   }, [token, router]);
 
   return <>{children}</>;
