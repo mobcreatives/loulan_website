@@ -5,8 +5,6 @@ import {
   EyeIcon,
   Edit2Icon,
   Trash2Icon,
-  Check,
-  X,
   Users,
   Loader2,
 } from "lucide-react";
@@ -64,6 +62,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { KEYS } from "@/config/constants";
 import { API_ROUTES } from "@/config/routes";
 import { TResponse } from "@/global/types";
+import ChangeStatus from "./_components/change-status";
 
 export default function Reservations() {
   const { _axios } = useAuthAxios();
@@ -390,17 +389,11 @@ export default function Reservations() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span
-                        className={cn(
-                          `px-2 py-1 rounded-full text-xs font-medium`,
-                          statusStyles[
-                            reservation.status as keyof typeof statusStyles
-                          ]
-                        )}
-                      >
-                        {reservation.status?.charAt(0).toUpperCase() +
-                          reservation.status?.slice(1)}
-                      </span>
+                      <ChangeStatus
+                        handleStatusChange={handleStatusChange}
+                        reservation={reservation}
+                        status={reservation?.status}
+                      />
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
@@ -429,32 +422,6 @@ export default function Reservations() {
                         >
                           <Trash2Icon size={16} />
                         </Button>
-                        {reservation.status !== "CONFIRMED" && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            title="Confirm Reservation"
-                            onClick={() =>
-                              handleStatusChange(reservation, "CONFIRMED")
-                            }
-                            className="h-8 w-8 text-green-500 cursor-pointer"
-                          >
-                            <Check size={16} />
-                          </Button>
-                        )}
-                        {reservation.status !== "CANCELLED" && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            title="Cancel Reservation"
-                            onClick={() =>
-                              handleStatusChange(reservation, "CANCELLED")
-                            }
-                            className="h-8 w-8 text-red-500 cursor-pointer"
-                          >
-                            <X size={16} />
-                          </Button>
-                        )}
                       </div>
                     </TableCell>
                   </TableRow>

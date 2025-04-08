@@ -23,6 +23,7 @@ import { TResponse } from "@/global/types";
 import { TFoodDetails } from "./types";
 import UpdateFood from "./update-food";
 import { toast } from "sonner";
+import { TMenuCategoryDetails } from "../menu-categories/types";
 
 export default function FoodItems() {
   const { _axios } = useAuthAxios();
@@ -49,7 +50,23 @@ export default function FoodItems() {
     queryKey: KEYS.FOOD.GET,
     queryFn: getFoods,
   });
-
+  // tanstack/react-query
+  const { data: menus } = useQuery({
+    queryKey: KEYS.MENU_CATEGORIES.GET,
+    queryFn: getMenuCategories,
+  });
+  console.log("💀 -> FoodItems -> menus <3", menus);
+  // handlers
+  async function getMenuCategories() {
+    try {
+      const response = await _axios.get<
+        TResponse<TMenuCategoryDetails, "menus">
+      >(API_ROUTES.MENU_CATEGORIES);
+      return response.data.menus;
+    } catch {
+      throw new Error("Failed to fetch menu categories");
+    }
+  }
   const { mutateAsync: toggleFeaturedMutateSync } = useMutation({
     mutationKey: KEYS.FOOD.TOGGLE_FEATURED,
     mutationFn: toggleFeatured,
@@ -62,16 +79,6 @@ export default function FoodItems() {
     },
   });
 
-  // const filteredItems = foods?.filter((item) => {
-  //   const matchesSearch =
-  //     item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //     item.description.toLowerCase().includes(searchQuery.toLowerCase());
-  //   // const matchesCategory =
-  //   //   categoryFilter === "All" || item.category === categoryFilter; // hamro food items ma category chaina
-  //   const matchesFeatured = !showFeaturedOnly || item.isFeatured;
-
-  //   return matchesSearch && matchesFeatured;
-  // });
   async function getFoods() {
     try {
       const response = await _axios.get<TResponse<TFoodDetails, "foodItems">>(
