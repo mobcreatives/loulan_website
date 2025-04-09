@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import { EyeIcon, Trash2Icon, CheckCircle, XCircle } from "lucide-react";
 import {
   Table,

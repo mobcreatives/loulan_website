@@ -1,5 +1,5 @@
 import { APP_ROUTES } from "@/config/routes";
-import { IconBrandAppgallery, IconBrandBooking, IconHome, IconMenu, IconMessage, IconUser } from "@tabler/icons-react";
+import { IconBrandAppgallery, IconHome, IconMenu, IconMessage2,  } from "@tabler/icons-react";
 
 export const navItems = [
   {
@@ -21,6 +21,6 @@ export const navItems = [
   {
     name: "Booking",
     link: APP_ROUTES.CONTACTS,
-    icon: <IconBrandBooking className="h-4 w-4 text-neutral-500 dark:text-white" />,
+    icon: <IconMessage2 className="h-4 w-4 text-neutral-500 dark:text-white" />,
   },
 ];
