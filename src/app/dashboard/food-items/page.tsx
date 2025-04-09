@@ -51,26 +51,12 @@ export default function FoodItems() {
         toast("Failed to delete food item. Please try again.");
       },
     });
+  
   const { data: foods, refetch } = useQuery({
     queryKey: [...KEYS.FOOD.GET, pagination.limit, pagination.page],
     queryFn: getFoods,
   });
-  // tanstack/react-query
-  // const { data: menus } = useQuery({
-  //   queryKey: KEYS.MENU_CATEGORIES.GET,
-  //   queryFn: getMenuCategories,
-  // });
-  // handlers
-  // async function getMenuCategories() {
-  //   try {
-  //     const response = await _axios.get<
-  //       TResponse<TMenuCategoryDetails, "menus">
-  //     >(API_ROUTES.MENU_CATEGORIES);
-  //     return response.data.menus;
-  //   } catch {
-  //     throw new Error("Failed to fetch menu categories");
-  //   }
-  // }
+
   const { mutateAsync: toggleFeaturedMutateSync } = useMutation({
     mutationKey: KEYS.FOOD.TOGGLE_FEATURED,
     mutationFn: toggleFeatured,
@@ -83,6 +69,7 @@ export default function FoodItems() {
     },
   });
 
+  // Function to fetch food items from the API with pagination
   async function getFoods() {
     try {
       const response = await _axios.get<TResponse<TFoodDetails, "foodItems">>(
@@ -108,6 +95,7 @@ export default function FoodItems() {
       throw new Error("Failed to delete food item");
     }
   }
+
   async function toggleFeatured(id: number) {
     try {
       return await _axios.patch(`${API_ROUTES.FOODS}/${id}/featured`);
@@ -115,6 +103,7 @@ export default function FoodItems() {
       throw new Error("Failed to toggle featured");
     }
   }
+
   function handleEdit(data: TFoodDetails) {
     setSelectedFood(data);
     setOpenEditDialog(true);
@@ -134,6 +123,12 @@ export default function FoodItems() {
       deleteMutateSync(selectedFood.id);
     }
   }
+
+  // Filter foods based on the search query
+  const filteredFoods = foods?.filter((food) =>
+    food.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div>
       <PageTitle
@@ -163,40 +158,16 @@ export default function FoodItems() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
+
         <Pagination
           pagination={pagination}
           setPagination={setPagination}
           totalPages={totalPages}
         />
-        {/* <div className="flex gap-2">
-          <select
-            className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 gold-focus-ring"
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-          >
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-
-          <button
-            className={`px-4 py-2 text-sm rounded-lg flex items-center gap-2 transition-colors ${
-              showFeaturedOnly
-                ? "bg-gold-DEFAULT text-black"
-                : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-            }`}
-            onClick={() => setShowFeaturedOnly(!showFeaturedOnly)}
-          >
-            <Filter size={16} />
-            Featured Only
-          </button>
-        </div> */}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {foods?.map((item) => (
+        {filteredFoods?.map((item) => (
           <FoodItemCard
             key={item.id}
             data={item}
@@ -206,7 +177,7 @@ export default function FoodItems() {
           />
         ))}
 
-        {foods?.length === 0 && (
+        {filteredFoods?.length === 0 && (
           <div className="col-span-full flex flex-col items-center justify-center p-12 bg-white rounded-lg border border-dashed border-gray-300">
             <p className="text-gray-500 mb-4">No food items found</p>
             <button className="btn-gold">
@@ -216,6 +187,7 @@ export default function FoodItems() {
           </div>
         )}
       </div>
+
       <AddFood
         open={openAddDialog}
         setOpen={setOpenAddDialog}
