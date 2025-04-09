@@ -19,7 +19,7 @@ export default function FloatingReview() {
   async function getPreviews() {
     try {
       const response = await _axios.get<TResponse<TReviewDetails, "data">>(
-        `${API_ROUTES.REVIEW}?isFeatured`
+        `${API_ROUTES.REVIEW}?featured=true`
       );
       return response.data.data;
     } catch {
