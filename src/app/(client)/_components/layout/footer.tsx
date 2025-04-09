@@ -57,7 +57,7 @@ export default function Footer() {
               <p>Friday Closed</p>
             </div>
           </div>
-          <div className="text-[clamp(0.75rem,0.725rem+0.125vw,0.875rem)] space-y-4">
+          {/* <div className="text-[clamp(0.75rem,0.725rem+0.125vw,0.875rem)] space-y-4">
             <h4 className="text-white text-[clamp(0.75rem,0.7rem+0.25vw,1rem)] font-semibold">
               User Link
             </h4>
@@ -68,7 +68,7 @@ export default function Footer() {
               <p>Payment and Tax</p>
               <p>Terms and Services</p>
             </div>
-          </div>
+          </div> */}
           <div className="text-[clamp(0.75rem,0.725rem+0.125vw,0.875rem)] space-y-4">
             <h4 className="text-white text-[clamp(0.75rem,0.7rem+0.25vw,1rem)] font-semibold">
               Contact Us

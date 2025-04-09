@@ -25,12 +25,14 @@ export default function Opening() {
                   Book A Table
                 </button>
               </Link>
+              <Link href={APP_ROUTES.CONTACTS}>
               <button
                 type="button"
                 className="uppercase text-white px-4 pb-1.5 pt-2 rounded-[4px] cursor-pointer focus:outline-none"
               >
                 contact us
               </button>
+              </Link>
             </div>
           </div>
           <div className="bg-[#121A1D] p-12 text-center space-y-11">

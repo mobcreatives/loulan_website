@@ -19,7 +19,7 @@ export const navItems = [
     icon: <IconBrandAppgallery className="h-4 w-4 text-neutral-500 dark:text-white" />,
   },
   {
-    name: "Booking",
+    name: "Contact",
     link: APP_ROUTES.CONTACTS,
     icon: <IconMessage2 className="h-4 w-4 text-neutral-500 dark:text-white" />,
   },
