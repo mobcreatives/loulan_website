@@ -52,6 +52,7 @@ export const KEYS = {
     TOGGLE_VISIBILITY: ["toggle", "visibility", "gallery"],
   },
   CONTACTS: {
+    ADD : ["add", "contact"],
     GET: ["get", "contacts"],
     DELETE: ["delete", "contact"],
     CHANGE_STATUS: ["change", "status", "contact"],
