@@ -83,16 +83,15 @@ export default function ContactRequest() {
   async function getContacts() {
     try {
       const response = await _axios.get(API_ROUTES.CONTACTS);
-      console.log("API Response:", response.data); // Log the API response
+
 
       const contacts = response.data.data || []; // Access the contacts data
-      console.log("Contacts Data:", contacts); // Log the contacts data
 
-      setRequests(contacts); // Update state with fetched data
+      setRequests(contacts);
       return contacts;
     } catch (error) {
       console.error("Failed to fetch contacts:", error);
-      return []; // Return empty array in case of error
+      return []; 
     }
   }
 
@@ -152,7 +151,7 @@ export default function ContactRequest() {
               <TableRow>
                 <TableHead>Date</TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>Phone</TableHead> {/* Show phone number */}
+                <TableHead>Phone</TableHead> 
                 <TableHead>Status</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
