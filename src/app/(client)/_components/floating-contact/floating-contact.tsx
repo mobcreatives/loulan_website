@@ -20,15 +20,35 @@ export default function FloatingContact() {
             </div>
             <div>
               <p className="font-semibold">Contact Number:</p>
-              <p>(123) 456-7890</p>
+              {/* Link for phone call */}
+              <p>
+                <a href="tel:+1234567890" className="text-blue-400">
+                  (123) 456-7890
+                </a>
+              </p>
             </div>
             <div>
               <p className="font-semibold">Contact Email:</p>
-              <p>info@chineserestaurant.com.np</p>
+              {/* Link for email */}
+              <p>
+                <a href="mailto:info@chineserestaurant.com.np" className="text-blue-400">
+                  info@chineserestaurant.com.np
+                </a>
+              </p>
             </div>
             <div>
               <p className="font-semibold">Address:</p>
-              <p>Thamel, Kathmandu</p>
+              {/* Link for Google Maps */}
+              <p>
+                <a
+                  href="https://maps.app.goo.gl/dLLh33CwwPd6hyi68"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-400"
+                >
+                  Thamel, Kathmandu
+                </a>
+              </p>
             </div>
           </div>
         </PopoverContent>
