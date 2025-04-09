@@ -3,6 +3,7 @@ import { navItems } from "./data";
 import { FloatingNav } from "./_components/layout/floating-navbar";
 import Footer from "./_components/layout/footer";
 import FloatingReview from "./_components/floating-review/floating-review";
+import FloatingContact from "./_components/floating-contact/floating-contact";
 
 export default function ClientLayout({
   children,
@@ -14,6 +15,7 @@ export default function ClientLayout({
       <FloatingNav navItems={navItems} />
       {children}
       <Footer />
+      <FloatingContact />
       <FloatingReview />
     </main>
   );
