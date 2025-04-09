@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import MenuCard from "./menu-card";
 import { _axios } from "@/config/axios";
-import { API_ROUTES } from "@/config/routes";
 import { useQuery } from "@tanstack/react-query";
 import { KEYS } from "@/config/constants";
 import { TResponse } from "@/global/types";
@@ -15,27 +14,27 @@ export default function TrendingFood() {
 
   const { data: foods } = useQuery({
     queryFn: getAllFoods,
-    queryKey: KEYS.FOOD.GET,
+    queryKey: [KEYS.FOOD.GET, activeTab?.id],
+    enabled: !!activeTab?.id,
   });
   const [filteredFoods, setFilteredFoods] = useState(foods ?? []);
 
   async function getAllFoods() {
     try {
-      const response = await _axios.get<TResponse<TFoodDetails, "foodItems">>(
-        API_ROUTES.FOODS
+      const response = await _axios.get<TResponse<TFoodDetails, "foods">>(
+        `menus/${activeTab.id}/foods`
       );
-      return response.data.foodItems;
+
+      return response.data.foods;
     } catch {
       throw new Error("Failed to load food items");
     }
   }
-
   useEffect(() => {
-    if (foods && activeTab) {
-      const result = foods.filter((food) => food.menu.id === activeTab?.id);
-      setFilteredFoods(result);
+    if (foods) {
+      setFilteredFoods(foods);
     }
-  }, [foods, setFilteredFoods, activeTab]);
+  }, [foods, activeTab]);
 
   return (
     <section className="px-6 sm:px-10 md:px-16 lg:px-20 xl:px-24 2xl:px-44 bg-[#0A1316] text-white py-10 space-y-14 flex justify-center">
@@ -47,7 +46,9 @@ export default function TrendingFood() {
           Trending Food Menu
         </h3>
         <div className="p-10 mt-8 rounded-[12px] border-2 border-dotted border-white grid lg:grid-cols-2 gap-10 min-w-[25em] sm:min-w-[35em] xl:min-w-[60em]">
-          {Array.isArray(filteredFoods) && filteredFoods.length > 0 ? (
+          {!activeTab ? (
+            <p className="text-center text-white">Please select a menu tab</p>
+          ) : Array.isArray(filteredFoods) && filteredFoods.length > 0 ? (
             filteredFoods.map((food) => {
               return (
                 <MenuCard

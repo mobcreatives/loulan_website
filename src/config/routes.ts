@@ -19,5 +19,5 @@ export const APP_ROUTES = {
   BOOKING: "/booking",
   MENU: "/menu",
   GALLERY: "/gallery",
-  CONTACTS : "/contact",
+  CONTACTS: "/contact",
 };
