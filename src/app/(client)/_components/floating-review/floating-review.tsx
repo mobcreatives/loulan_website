@@ -27,7 +27,7 @@ export default function FloatingReview() {
     }
   }
   return (
-    <section className="fixed right-3 bottom-4">
+    <section className="fixed right-10 sm:right-24 md:right-36 lg:right-52 bottom-4">
       <Popover>
         <PopoverTrigger asChild>
           <button className="bg-primary rounded-full size-16 cursor-pointer font-semibold text-[clamp(0.75rem,0.7192rem+0.1299vw,0.875rem)]">

@@ -13,7 +13,7 @@ export function FloatingNav({ navItems }: Readonly<TFloatingNavProps>) {
     setActive(window.location.pathname);
   }, []);
   return (
-    <nav className="px-6 sm:px-10 md:px-16 lg:px-28 xl:px-36 2xl:px-44 bg-[#0A1316] text-white flex justify-around py-4 sticky top-0 z-50 items-center">
+    <nav className="bg-[#0A1316] text-white flex justify-between py-4 px-10 sm:px-24 md:px-36 lg:px-52 sticky top-0 z-50 items-center">
       <Link href={APP_ROUTES.HOME} className="flex items-center">
         <p className="w-20">
           <Image
