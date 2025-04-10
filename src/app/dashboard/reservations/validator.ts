@@ -7,7 +7,13 @@ export const addReservationSchema = z.object({
       message: "Name is required",
     })
     .max(255, { message: "Name is too long" }),
-  email: z.string().email({ message: "Enter a valid email" }).optional(),
+  email: z
+    .string({
+      invalid_type_error: "Invalid email format",
+    })
+    .email("Invalid email format")
+    .optional()
+    .or(z.literal("")),
   phone: z.string().min(7, { message: "Invalid phone number" }),
   date: z
     .string({ required_error: "Date is required" })
@@ -32,7 +38,14 @@ export const updateReservationSchema = z.object({
     })
     .max(255, { message: "Name is too long" })
     .optional(),
-  email: z.string().email({ message: "Invalid email" }).optional(),
+  email: z
+    .string({
+      invalid_type_error: "Invalid email format",
+    })
+    .email("Invalid email format")
+    .optional()
+    .or(z.literal("")),
+
   phone: z.string().min(7, { message: "Invalid phone number" }).optional(),
   date: z.string().min(1, { message: "Date is required" }).optional(),
   time: z.string().min(1, { message: "Time is required" }).optional(),
