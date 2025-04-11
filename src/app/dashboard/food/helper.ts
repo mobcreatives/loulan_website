@@ -7,7 +7,6 @@ import { foodSchema } from "./_add/validator";
 const prisma = new PrismaClient();
 
 export async function addFood(data: TAddFoodData) {
-  console.log("hi");
   const result = foodSchema.safeParse(data);
   if (!result.success) {
     throw new Error(result.error.errors[0].message);
