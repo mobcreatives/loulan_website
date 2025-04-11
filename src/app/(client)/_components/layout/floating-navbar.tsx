@@ -25,7 +25,7 @@ export function FloatingNav({ navItems }: Readonly<TFloatingNavProps>) {
           />
         </p>
       </Link>
-      <div className="flex gap-x-8">
+      <div className="md:flex gap-x-8 hidden">
         {navItems.map((navItem, idx: number) => (
           <Link
             key={`link=${navItem.name}-${idx}`}
@@ -44,7 +44,7 @@ export function FloatingNav({ navItems }: Readonly<TFloatingNavProps>) {
       </div>
       <Link
         href={APP_ROUTES.BOOKING}
-        className="bg-primary text-black px-4 rounded-[8px] py-2"
+        className="bg-primary text-black px-4 rounded-[8px] py-2 hidden md:block"
       >
         Reservation
       </Link>

@@ -1,7 +1,26 @@
+"use client";
+
 import React from "react";
 import FeaturedCard from "./featured-card";
 import { TextWithLine } from "@/components";
+import { useQuery } from "@tanstack/react-query";
+import { useAuthAxios } from "@/config/auth-axios";
+import { API_ROUTES } from "@/config/routes";
+import { TResponse } from "@/global/types";
+import { TFoodDetails } from "@/app/dashboard/food-items/types";
 export default function Featured() {
+  const { _axios } = useAuthAxios();
+  const { data } = useQuery({
+    queryKey: ["get", "featured"],
+    queryFn: getFeatured,
+  });
+
+  async function getFeatured() {
+    const { data } = await _axios.get<TResponse<TFoodDetails, "foodItems">>(
+      `${API_ROUTES.FOODS}?isFeatured=true`
+    );
+    return data.foodItems;
+  }
   return (
     <section className="px-6 sm:px-10 md:px-16 lg:px-28 xl:px-36 2xl:px-44 bg-[#0A1316] text-white py-10 space-y-10">
       <TextWithLine
@@ -10,18 +29,16 @@ export default function Featured() {
       />
       <div className="flex justify-center">
         <div className="grid lg:grid-cols-2 gap-x-8 gap-y-10">
-          <FeaturedCard
-            description="canonical classics to obscure tiki drinks"
-            price={200}
-            title="Steaks & BBQ"
-            image="/images/banners/bbq-banner.png"
-          />
-          <FeaturedCard
-            description="canonical classics to obscure tiki drinks"
-            price={120}
-            title="Cocktails"
-            image="/images/banners/cocktail-banner.png"
-          />
+          {Array.isArray(data) &&
+            data.map((item) => (
+              <FeaturedCard
+                key={item.id}
+                description={item.description}
+                price={item.price}
+                title={item.name}
+                image={item.imgUrl}
+              />
+            ))}
         </div>
       </div>
     </section>
