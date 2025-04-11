@@ -9,7 +9,7 @@ export default function FeaturedCard({
 }: Readonly<TFeaturedCardPros>) {
   return (
     <div
-      className="font-fredoka rounded-[20px] border-2 border-[#121A1D] px-10 pt-5 pb-10 h-60 w-120 lg:w-100 xl:w-110 relative bg-cover bg-center bg-no-repeat"
+      className="font-fredoka rounded-[20px] border-2 border-[#121A1D] px-10 pt-5 pb-10 h-60 w-full md:w-120 lg:w-100 xl:w-110 relative bg-cover bg-center bg-no-repeat"
       style={{
         backgroundImage: image
           ? `url(${image})`

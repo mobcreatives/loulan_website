@@ -61,9 +61,15 @@ export function FloatingNav({ navItems }: Readonly<TFloatingNavProps>) {
           <DropdownMenuTrigger>
             <HamburgerMenu />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="min-w-[125px] space-y-1 md:hidden">
+          <DropdownMenuContent
+            align="end"
+            className="min-w-[125px] space-y-1 md:hidden bg-[#0A1316] text-white border border-[#0A1316]"
+          >
             {navItems.map((navItem, idx: number) => (
-              <DropdownMenuItem key={`link=${navItem.name}-${idx}`} className="pb-2">
+              <DropdownMenuItem
+                key={`link=${navItem.name}-${idx}`}
+                className="pb-2"
+              >
                 <Link
                   href={navItem.link}
                   className={cn(
