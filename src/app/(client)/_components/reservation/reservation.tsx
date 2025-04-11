@@ -79,7 +79,7 @@ export default function Reservation() {
             <p className="mt-4">Discover our New Menu!</p>
           </div>
           <form
-            className="font-epilogue space-y-6 text-[clamp(0.875rem,0.85rem+0.125vw,1rem)] w-100 md:w-150 xl:w-200"
+            className="font-epilogue space-y-6 text-[clamp(0.875rem,0.85rem+0.125vw,1rem)] w-full sm:w-100 md:w-150 xl:w-200"
             onSubmit={handleSubmit(handleSubmitAdd)}
           >
             <div className="grid md:grid-cols-2 gap-4">

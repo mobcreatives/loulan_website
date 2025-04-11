@@ -25,7 +25,7 @@ export default function Footer() {
               />
             </p>
           </Link>
-          <p className="text-[clamp(0.75rem,0.725rem+0.125vw,0.875rem)] w-100">
+          <p className="text-[clamp(0.75rem,0.725rem+0.125vw,0.875rem)] w-full sm:w-100">
             Lorem ipsum dolor sit amet consectetur. Tristique cursus morbi nibh
             nec et vulputate. Turpis tortor nisi imperdiet quis accumsan. Ligula
             netus amet leo ultricies. Neque venenatis magnis amet eget sagittis
