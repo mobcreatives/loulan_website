@@ -225,6 +225,7 @@ export default function Gallery() {
 
   function handleDelete(data: TImageGalleryDetails) {
     setCurrentImage(data);
+    setIsDeleteOpen(true);
   }
 
   async function confirmDelete() {
