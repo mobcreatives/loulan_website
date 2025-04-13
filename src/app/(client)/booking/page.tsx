@@ -120,7 +120,7 @@ export default function Booking() {
                       {date ? (
                         <span>{format(new Date(date), "PPP")}</span>
                       ) : (
-                        <span className="mt-1 text-[#555555]">Pick a date</span>
+                        <span className="mt-1 text-[#555555]">Pick a date..</span>
                       )}
                     </Button>
                   </PopoverTrigger>
