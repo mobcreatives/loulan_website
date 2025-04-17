@@ -132,13 +132,13 @@ export default function Booking() {
                         if (date) setValue("date", format(date, "yyyy-MM-dd"));
                       }}
                       className="p-3 pointer-events-auto"
-{/*                       disabled={[
+                      disabled={[
                         {
                           before: new Date(),
                         },
-                      ]} */}
+                      ]} 
 
-                        disabled = {(date)=> date < new Date()}
+                       
                     />
                   </PopoverContent>
                 </Popover>
