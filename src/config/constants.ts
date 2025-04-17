@@ -1,3 +1,5 @@
+import Settings from "@/app/dashboard/settings/page";
+
 export const KEYS = {
   CUISINE: {
     GET: ["get", "cuisines"],
@@ -56,6 +58,10 @@ export const KEYS = {
     GET: ["get", "contacts"],
     DELETE: ["delete", "contact"],
     CHANGE_STATUS: ["change", "status", "contact"],
+  },
+  SETTINGS: {
+    GET: ["settings", "get"],
+    UPDATE: ["settings", "update"],
   },
 };
 

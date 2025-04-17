@@ -45,12 +45,12 @@ export default function Menu({ showMenuText = false }: Readonly<TMenuProps>) {
         {showMenuText && (
           <TextWithLine
             text="Menu"
-            className="before:w-[100%] before:h-[1px] before:-bottom-0.5"
+            className="text-white before:w-[100%] before:h-[1px] before:-bottom-0.5"
           />
         )}
         <TextWithLine
           text="Discover Menu"
-          className="font-fredoka text-[clamp(2.125rem,2.0325rem+0.3896vw,2.5rem)] font-bold before:w-[170px] before:h-[5px] before:-bottom-1"
+          className="text-white font-fredoka text-[clamp(2.125rem,2.0325rem+0.3896vw,2.5rem)] font-bold before:w-[170px] before:h-[5px] before:-bottom-1"
         />
       </div>
       <div className="w-full flex justify-center gap-5 ">

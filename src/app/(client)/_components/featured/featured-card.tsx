@@ -24,7 +24,7 @@ export default function FeaturedCard({
         <p className="text-[#F3274C] font-bold text-[clamp(1.25rem,1.1883rem+0.2597vw,1.5rem)]">
           Rs {price}
         </p>
-        <p className="text-black">person</p>
+        {/* <p className="text-black">person</p> */}
       </div>
     </div>
   );

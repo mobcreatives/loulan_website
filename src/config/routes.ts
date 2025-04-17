@@ -9,6 +9,7 @@ export const API_ROUTES = {
   GALLERY: "galleries",
   FOODS: "foods",
   CONTACTS: "contacts",
+  SETTINGS : "settings",
 };
 
 export const APP_ROUTES = {
@@ -20,4 +21,5 @@ export const APP_ROUTES = {
   MENU: "/menu",
   GALLERY: "/gallery",
   CONTACTS: "/contact",
+  
 };

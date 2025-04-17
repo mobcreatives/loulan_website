@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Save } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Save, Loader2 } from "lucide-react";
 import {
   Button,
   Card,
@@ -13,74 +13,126 @@ import {
   PageTitle,
 } from "@/components";
 import { toast } from "sonner";
-import { mockSettings } from "./data";
+import { useAuthAxios } from "@/config/auth-axios";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { API_ROUTES } from "@/config/routes";
+import { TSetting, TUpdateSettingData, TSettingResponse } from "./types";
+import { updateSettingSchema } from "./validator";
+import { KEYS } from "@/config/constants";
 
-interface Settings {
-  restaurantName: string;
-  address: string;
-  phone: string;
-  email: string;
-  openingHours: string;
-  socialMedia: {
-    facebook: string;
-    instagram: string;
-    twitter: string;
-  };
-  features: {
-    enableOnlineReservations: boolean;
-    enableOnlineOrdering: boolean;
-    showReviews: boolean;
-    enablePopups: boolean;
-  };
-}
 export default function Settings() {
-  const [settings, setSettings] = useState<Settings>(mockSettings);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
+  const { _axios } = useAuthAxios();
 
-    // Check if the field is nested
-    if (name.includes(".")) {
-      const [section, key] = name.split(".");
+  // Form setup
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<TUpdateSettingData>({
+    resolver: zodResolver(updateSettingSchema),
+  });
 
-      setSettings((prev) => ({
-        ...prev,
-        [section]: {
-          ...prev[section as keyof Pick<Settings, "socialMedia" | "features">],
-          [key]: value,
-        },
-      }));
-    } else {
-      // Handle flat fields
-      setSettings((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
+  // State for initial load
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+  // Fetch settings
+  const {
+    data: settingResponse,
+    isError,
+    isSuccess,
+    refetch,
+  } = useQuery<TSettingResponse>({
+    queryKey: KEYS.SETTINGS.GET,
+    queryFn: getSettings,
+  });
+
+  // Handle side effects after fetching
+  useEffect(() => {
+    if (isSuccess && settingResponse?.setting) {
+      const { setting } = settingResponse;
+      setValue("description", setting.description);
+      setValue("phone", setting.phone);
+      setValue("address", setting.address);
+      setValue("email", setting.email);
+      setValue("openingHours", setting.openingHours);
+      setValue("facebookUrl", setting.facebookUrl);
+      setValue("instagramUrl", setting.instagramUrl);
+      setValue("twitterUrl", setting.twitterUrl);
+      setValue("enableReservation", setting.enableReservation);
+      setValue("showReviews", setting.showReviews);
+      setIsInitialLoading(false);
     }
-  };
-  const handleSwitchChange = (name: string) => {
-    const [section, key] = name.split(".");
+    if (isError) {
+      toast.error("Failed to fetch settings");
+      setIsInitialLoading(false);
+    }
+  }, [isSuccess, isError, settingResponse, setValue]);
 
-    setSettings((prev) => ({
-      ...prev,
-      [section]: {
-        ...prev[section as "features"],
-        [key]: !prev[section as "features"][key as keyof Settings["features"]],
+  // Update settings mutation
+  const { mutateAsync: updateSettingMutateAsync, isPending: updatePending } =
+    useMutation({
+      mutationKey: KEYS.SETTINGS.UPDATE,
+      mutationFn: updateSetting,
+      onSuccess: () => {
+        refetch();
+        toast.success("Settings updated successfully");
       },
-    }));
-  };
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+      onError: () => {
+        toast.error("Failed to update settings");
+      },
+    });
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      toast("Your restaurant settings have been saved successfully.");
-    }, 1000);
-  };
+  // API handlers
+  async function getSettings() {
+    try {
+      const response = await _axios.get<TSettingResponse>(API_ROUTES.SETTINGS);
+      return response.data;
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || "Failed to fetch settings";
+      throw new Error(errorMessage);
+    }
+  }
+
+  async function updateSetting(data: TUpdateSettingData) {
+    try {
+      // Clean up social media URLs - convert empty strings to null
+      const cleanedData = {
+        ...data,
+        facebookUrl: data.facebookUrl || null,
+        instagramUrl: data.instagramUrl || null,
+        twitterUrl: data.twitterUrl || null,
+      };
+
+      const response = await _axios.patch<TSettingResponse>(
+        API_ROUTES.SETTINGS,
+        cleanedData
+      );
+      return response.data;
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || "Failed to update settings";
+      throw new Error(errorMessage);
+    }
+  }
+
+  // Form submission handler
+  async function handleSubmitForm(data: TUpdateSettingData) {
+    try {
+      await updateSettingMutateAsync(data);
+    } catch (error: any) {
+      // Handle specific validation errors if they exist
+      if (error.response?.data?.errors) {
+        const validationErrors = error.response.data.errors;
+        Object.keys(validationErrors).forEach((field) => {
+          toast.error(`${field}: ${validationErrors[field]}`);
+        });
+      } else {
+        toast.error(error.message || "Failed to update settings");
+      }
+    }
+  }
 
   return (
     <div>
@@ -88,176 +140,178 @@ export default function Settings() {
         title="Restaurant Settings"
         description="Manage your restaurant information and preferences"
       />
-      <form onSubmit={handleSubmit}>
-        <div className="space-y-6">
-          <Card className="p-6">
-            <h3 className="text-lg font-medium mb-4">Basic Information</h3>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="restaurantName">Restaurant Name</Label>
-                <Input
-                  id="restaurantName"
-                  name="restaurantName"
-                  value={settings.restaurantName}
-                  onChange={handleChange}
-                  className="mt-1"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="address">Address</Label>
-                <Input
-                  id="address"
-                  name="address"
-                  value={settings.address}
-                  onChange={handleChange}
-                  className="mt-1"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    value={settings.phone}
-                    onChange={handleChange}
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={settings.email}
-                    onChange={handleChange}
-                    className="mt-1"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="openingHours">Opening Hours</Label>
-                <Textarea
-                  id="openingHours"
-                  name="openingHours"
-                  value={settings.openingHours}
-                  onChange={handleChange}
-                  className="mt-1 h-24"
-                />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <h3 className="text-lg font-medium mb-4">Social Media</h3>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="socialMedia.facebook">Facebook</Label>
-                <Input
-                  id="socialMedia.facebook"
-                  name="socialMedia.facebook"
-                  value={settings.socialMedia.facebook}
-                  onChange={handleChange}
-                  className="mt-1"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="socialMedia.instagram">Instagram</Label>
-                <Input
-                  id="socialMedia.instagram"
-                  name="socialMedia.instagram"
-                  value={settings.socialMedia.instagram}
-                  onChange={handleChange}
-                  className="mt-1"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="socialMedia.twitter">Twitter</Label>
-                <Input
-                  id="socialMedia.twitter"
-                  name="socialMedia.twitter"
-                  value={settings.socialMedia.twitter}
-                  onChange={handleChange}
-                  className="mt-1"
-                />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <h3 className="text-lg font-medium mb-4">Features</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="features.enableOnlineReservations">
-                  Enable Online Reservations
-                </Label>
-                <Switch
-                  id="features.enableOnlineReservations"
-                  checked={settings.features.enableOnlineReservations}
-                  onCheckedChange={() =>
-                    handleSwitchChange("features.enableOnlineReservations")
-                  }
-                />
-              </div>
-              <Separator />
-
-              <div className="flex items-center justify-between">
-                <Label htmlFor="features.enableOnlineOrdering">
-                  Enable Online Ordering
-                </Label>
-                <Switch
-                  id="features.enableOnlineOrdering"
-                  checked={settings.features.enableOnlineOrdering}
-                  onCheckedChange={() =>
-                    handleSwitchChange("features.enableOnlineOrdering")
-                  }
-                />
-              </div>
-              <Separator />
-
-              <div className="flex items-center justify-between">
-                <Label htmlFor="features.showReviews">
-                  Show Customer Reviews
-                </Label>
-                <Switch
-                  id="features.showReviews"
-                  checked={settings.features.showReviews}
-                  onCheckedChange={() =>
-                    handleSwitchChange("features.showReviews")
-                  }
-                />
-              </div>
-              <Separator />
-
-              <div className="flex items-center justify-between">
-                <Label htmlFor="features.enablePopups">
-                  Enable Popup Products
-                </Label>
-                <Switch
-                  id="features.enablePopups"
-                  checked={settings.features.enablePopups}
-                  onCheckedChange={() =>
-                    handleSwitchChange("features.enablePopups")
-                  }
-                />
-              </div>
-            </div>
-          </Card>
-
-          <div className="flex justify-end">
-            <Button type="submit" className="btn-gold" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save Settings"}
-              {!isSubmitting && <Save size={16} className="ml-2" />}
-            </Button>
-          </div>
+      {isInitialLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin" />
         </div>
-      </form>
+      ) : (
+        <form onSubmit={handleSubmit(handleSubmitForm)}>
+          <div className="space-y-6">
+            <Card className="p-6">
+              <h3 className="text-lg font-medium mb-4">Basic Information</h3>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    {...register("description")}
+                    className="mt-1 h-24"
+                  />
+                  {errors.description && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.description.message}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="address">Address</Label>
+                  <Input
+                    id="address"
+                    {...register("address")}
+                    className="mt-1"
+                  />
+                  {errors.address && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.address.message}
+                    </p>
+                  )}
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="phone">Phone</Label>
+                    <Input
+                      id="phone"
+                      {...register("phone")}
+                      className="mt-1"
+                    />
+                    {errors.phone && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.phone.message}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      {...register("email")}
+                      className="mt-1"
+                    />
+                    {errors.email && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.email.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="openingHours">Opening Hours</Label>
+                  <Textarea
+                    id="openingHours"
+                    {...register("openingHours")}
+                    className="mt-1 h-24"
+                  />
+                  {errors.openingHours && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.openingHours.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="text-lg font-medium mb-4">Social Media</h3>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="facebookUrl">Facebook</Label>
+                  <Input
+                    id="facebookUrl"
+                    {...register("facebookUrl")}
+                    className="mt-1"
+                  />
+                  {errors.facebookUrl && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.facebookUrl.message}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="instagramUrl">Instagram</Label>
+                  <Input
+                    id="instagramUrl"
+                    {...register("instagramUrl")}
+                    className="mt-1"
+                  />
+                  {errors.instagramUrl && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.instagramUrl.message}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="twitterUrl">Twitter</Label>
+                  <Input
+                    id="twitterUrl"
+                    {...register("twitterUrl")}
+                    className="mt-1"
+                  />
+                  {errors.twitterUrl && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.twitterUrl.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="text-lg font-medium mb-4">Features</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="enableReservation">
+                    Enable Online Reservations
+                  </Label>
+                  <Switch
+                    id="enableReservation"
+                    checked={settingResponse?.setting?.enableReservation}
+                    onCheckedChange={(checked) =>
+                      setValue("enableReservation", checked)
+                    }
+                  />
+                </div>
+                <Separator />
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="showReviews">Show Customer Reviews</Label>
+                  <Switch
+                    id="showReviews"
+                    checked={settingResponse?.setting?.showReviews}
+                    onCheckedChange={(checked) =>
+                      setValue("showReviews", checked)
+                    }
+                  />
+                </div>
+              </div>
+            </Card>
+
+            <div className="flex justify-end">
+              <Button
+                type="submit"
+                className="btn-gold"
+                disabled={updatePending}
+              >
+                {updatePending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Save size={16} className="mr-2" />
+                )}
+                {updatePending ? "Saving..." : "Save Settings"}
+              </Button>
+            </div>
+          </div>
+        </form>
+      )}
     </div>
   );
 }
