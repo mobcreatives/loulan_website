@@ -21,9 +21,9 @@ export interface TUpdateSettingData {
   address: string;
   email: string;
   openingHours: string;
-  facebookUrl?: string | null; // Optional or null
-  instagramUrl?: string | null; // Optional or null
-  twitterUrl?: string | null; // Optional or null
+  facebookUrl?: string | null;
+  instagramUrl?: string | null;
+  twitterUrl?: string | null;
   enableReservation: boolean;
   showReviews: boolean;
 }

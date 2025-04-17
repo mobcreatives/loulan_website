@@ -18,9 +18,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { API_ROUTES } from "@/config/routes";
-import { TSetting, TUpdateSettingData, TSettingResponse } from "./types";
+import { TSetting, TSettingResponse } from "./types";
 import { updateSettingSchema } from "./validator";
 import { KEYS } from "@/config/constants";
+import { z } from "zod";
+
+type FormData = z.infer<typeof updateSettingSchema>;
 
 export default function Settings() {
   const { _axios } = useAuthAxios();
@@ -31,7 +34,7 @@ export default function Settings() {
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm<TUpdateSettingData>({
+  } = useForm<FormData>({
     resolver: zodResolver(updateSettingSchema),
   });
 
@@ -96,7 +99,7 @@ export default function Settings() {
     }
   }
 
-  async function updateSetting(data: TUpdateSettingData) {
+  async function updateSetting(data: FormData) {
     try {
       // Clean up social media URLs - convert empty strings to null
       const cleanedData = {
@@ -118,7 +121,7 @@ export default function Settings() {
   }
 
   // Form submission handler
-  async function handleSubmitForm(data: TUpdateSettingData) {
+  async function handleSubmitForm(data: FormData) {
     try {
       await updateSettingMutateAsync(data);
     } catch (error: any) {
