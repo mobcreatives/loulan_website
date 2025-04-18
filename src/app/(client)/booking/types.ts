@@ -7,7 +7,7 @@ export type TLoginDialogProps = {
   open: boolean;
   data: TAddReservationData;
   mutationFunction: UseMutateAsyncFunction<
-    any,
+    unknown,
     Error,
     {
       name?: string;

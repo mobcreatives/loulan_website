@@ -4,7 +4,7 @@ import { KEYS } from "@/config/constants";
 import { API_ROUTES } from "@/config/routes";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
-import React, { useState } from "react";
+import React from "react";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 
 export default function MasonryGallery() {
@@ -22,7 +22,7 @@ export default function MasonryGallery() {
     }
   }
 
-  if (isLoading) <div>Loading....</div>;
+  if (isLoading) return <div>Loading....</div>;
 
   return (
     <div className="min-h-screen p-4 mt-5">

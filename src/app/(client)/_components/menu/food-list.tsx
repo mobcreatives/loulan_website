@@ -6,7 +6,7 @@ import { useAuthAxios } from "@/config/auth-axios";
 import { API_ROUTES } from "@/config/routes";
 import { KEYS } from "@/config/constants";
 import Image from "next/image";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
@@ -64,7 +64,7 @@ export default function FoodList({ categoryId }: FoodListProps) {
     queryKey: [...KEYS.FOOD.GET, categoryId, currentPage, debouncedSearchQuery],
     queryFn: async () => {
       try {
-        const url = categoryId 
+        const url = categoryId
           ? `${API_ROUTES.FOODS}?menuId=${categoryId}&page=${currentPage}&limit=${itemsPerPage}&search=${debouncedSearchQuery}`
           : `${API_ROUTES.FOODS}?page=${currentPage}&limit=${itemsPerPage}&search=${debouncedSearchQuery}`;
         console.log("Fetching from URL:", url);
@@ -108,7 +108,10 @@ export default function FoodList({ categoryId }: FoodListProps) {
             onChange={handleSearch}
             className="w-full bg-[#121A1D] text-white border-primary pl-10"
           />
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary" size={20} />
+          <Search
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary"
+            size={20}
+          />
         </div>
       </div>
 
@@ -129,10 +132,14 @@ export default function FoodList({ categoryId }: FoodListProps) {
                     className="object-cover rounded-lg"
                   />
                 </div>
-                <h3 className="text-lg font-semibold mb-2 text-white">{food.name}</h3>
+                <h3 className="text-lg font-semibold mb-2 text-white">
+                  {food.name}
+                </h3>
                 <p className="text-sm text-gray-400 mb-4">{food.description}</p>
                 <div className="flex justify-between items-center">
-                  <span className="text-primary font-semibold">NRS {food.price}</span>
+                  <span className="text-primary font-semibold">
+                    NRS {food.price}
+                  </span>
                 </div>
               </Card>
             ))}
@@ -165,4 +172,4 @@ export default function FoodList({ categoryId }: FoodListProps) {
       )}
     </div>
   );
-} 
+}

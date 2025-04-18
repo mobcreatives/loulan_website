@@ -1,5 +1,3 @@
-import Settings from "@/app/dashboard/settings/page";
-
 export const KEYS = {
   CUISINE: {
     GET: ["get", "cuisines"],
@@ -54,7 +52,7 @@ export const KEYS = {
     TOGGLE_VISIBILITY: ["toggle", "visibility", "gallery"],
   },
   CONTACTS: {
-    ADD : ["add", "contact"],
+    ADD: ["add", "contact"],
     GET: ["get", "contacts"],
     DELETE: ["delete", "contact"],
     CHANGE_STATUS: ["change", "status", "contact"],

@@ -6,13 +6,12 @@ import {
   LinkedInIconComponent,
   TwitterIconComponent,
 } from "@/components";
-import { APP_ROUTES } from "@/config/routes";
+import { APP_ROUTES, API_ROUTES } from "@/config/routes";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { TSettingResponse } from "@/app/dashboard/settings/types";
-import { API_ROUTES } from "@/config/routes";
 import { useAuthAxios } from "@/config/auth-axios";
 import { KEYS } from "@/config/constants";
 
@@ -24,9 +23,11 @@ export default function Footer() {
     queryKey: KEYS.SETTINGS.GET,
     queryFn: async () => {
       try {
-        const response = await _axios.get<TSettingResponse>(API_ROUTES.SETTINGS);
+        const response = await _axios.get<TSettingResponse>(
+          API_ROUTES.SETTINGS
+        );
         return response.data;
-      } catch (error) {
+      } catch {
         throw new Error("Failed to fetch settings");
       }
     },
@@ -60,23 +61,38 @@ export default function Footer() {
           </p>
           <div className="flex items-center -mt-3">
             {data?.setting?.facebookUrl && (
-              <a href={data.setting.facebookUrl} target="_blank" rel="noopener noreferrer" className="size-12">
+              <a
+                href={data.setting.facebookUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="size-12"
+              >
                 <FacebookIconComponent />
               </a>
             )}
             {data?.setting?.twitterUrl && (
-              <a href={data.setting.twitterUrl} target="_blank" rel="noopener noreferrer" className="size-12">
+              <a
+                href={data.setting.twitterUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="size-12"
+              >
                 <TwitterIconComponent />
               </a>
             )}
             {data?.setting?.instagramUrl && (
-              <a href={data.setting.instagramUrl} target="_blank" rel="noopener noreferrer" className="size-12">
+              <a
+                href={data.setting.instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="size-12"
+              >
                 <InstagramIconComponent />
               </a>
             )}
-            <a href="#" className="size-12">
+            <p className="size-12">
               <LinkedInIconComponent />
-            </a>
+            </p>
           </div>
         </div>
         <div className="flex gap-x-8 mt-8 xl:mt-0 flex-col gap-y-5 lg:flex-row lg:justify-between ">
@@ -86,7 +102,9 @@ export default function Footer() {
             </h4>
             <div className="space-y-2">
               {data?.setting?.openingHours ? (
-                <p className="text-xs whitespace-pre-line">{data.setting.openingHours}</p>
+                <p className="text-xs whitespace-pre-line">
+                  {data.setting.openingHours}
+                </p>
               ) : (
                 <>
                   <p>Sa - We: 09:00am - 10:00pm</p>
@@ -102,7 +120,8 @@ export default function Footer() {
             </h4>
             <div className="space-y-4">
               <p>
-                {data?.setting?.address || "543 Country Club Ave, NC 27587, London, UK"}
+                {data?.setting?.address ||
+                  "543 Country Club Ave, NC 27587, London, UK"}
                 <br />
                 {data?.setting?.phone || "+1257 6541120"}
               </p>

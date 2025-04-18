@@ -18,10 +18,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { API_ROUTES } from "@/config/routes";
-import { TSetting, TSettingResponse } from "./types";
+import { TSettingResponse } from "./types";
 import { updateSettingSchema } from "./validator";
 import { KEYS } from "@/config/constants";
 import { z } from "zod";
+import { AxiosError } from "axios";
 
 type FormData = z.infer<typeof updateSettingSchema>;
 
@@ -93,8 +94,10 @@ export default function Settings() {
     try {
       const response = await _axios.get<TSettingResponse>(API_ROUTES.SETTINGS);
       return response.data;
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Failed to fetch settings";
+    } catch (error) {
+      const err = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        err.response?.data?.message ?? "Failed to fetch settings";
       throw new Error(errorMessage);
     }
   }
@@ -114,8 +117,10 @@ export default function Settings() {
         cleanedData
       );
       return response.data;
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Failed to update settings";
+    } catch (error) {
+      const err = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        err.response?.data?.message ?? "Failed to update settings";
       throw new Error(errorMessage);
     }
   }
@@ -124,7 +129,7 @@ export default function Settings() {
   async function handleSubmitForm(data: FormData) {
     try {
       await updateSettingMutateAsync(data);
-    } catch (error: any) {
+    } catch (error) {
       // Handle specific validation errors if they exist
       if (error.response?.data?.errors) {
         const validationErrors = error.response.data.errors;
@@ -132,7 +137,7 @@ export default function Settings() {
           toast.error(`${field}: ${validationErrors[field]}`);
         });
       } else {
-        toast.error(error.message || "Failed to update settings");
+        toast.error(error.message ?? "Failed to update settings");
       }
     }
   }
@@ -182,11 +187,7 @@ export default function Settings() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="phone">Phone</Label>
-                    <Input
-                      id="phone"
-                      {...register("phone")}
-                      className="mt-1"
-                    />
+                    <Input id="phone" {...register("phone")} className="mt-1" />
                     {errors.phone && (
                       <p className="text-red-500 text-sm mt-1">
                         {errors.phone.message}

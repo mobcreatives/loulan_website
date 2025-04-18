@@ -1,10 +1,10 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { navItems } from "./data";
 import { FloatingNav } from "./_components/layout/floating-navbar";
 import Footer from "./_components/layout/footer";
 import FloatingReview from "./_components/floating-review/floating-review";
 import FloatingContact from "./_components/floating-contact/floating-contact";
-import 'react-photo-view/dist/react-photo-view.css';
+import "react-photo-view/dist/react-photo-view.css";
 
 export default function ClientLayout({
   children,
@@ -14,7 +14,7 @@ export default function ClientLayout({
   return (
     <main className="bg-[#0A1316]">
       <FloatingNav navItems={navItems} />
-      {children}
+      <Suspense>{children}</Suspense>
       <Footer />
       <FloatingContact />
       <FloatingReview />

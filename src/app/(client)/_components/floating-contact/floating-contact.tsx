@@ -17,7 +17,7 @@ export default function FloatingContact() {
       try {
         const response = await _axios.get<TSettingResponse>(API_ROUTES.SETTINGS);
         return response.data;
-      } catch (error) {
+      } catch  {
         throw new Error("Failed to fetch settings");
       }
     },
@@ -51,8 +51,8 @@ export default function FloatingContact() {
             <div>
               <p className="font-semibold">Contact Number:</p>
               <p>
-                <a 
-                  href={`tel:${data?.setting?.phone || '+1234567890'}`} 
+                <a
+                  href={`tel:${data?.setting?.phone || '+1234567890'}`}
                   className="text-blue-400"
                 >
                   {data?.setting?.phone || "(123) 456-7890"}
@@ -83,7 +83,7 @@ export default function FloatingContact() {
                 </a>
               </p>
             </div>
-          
+
           </div>
         </PopoverContent>
       </Popover>

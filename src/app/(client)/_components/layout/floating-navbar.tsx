@@ -30,8 +30,7 @@ export function FloatingNav({ navItems }: Readonly<TFloatingNavProps>) {
           TResponse<TMenuCategoryDetails, "menus">
         >(API_ROUTES.MENU_CATEGORIES);
         return response.data;
-      } catch (error) {
-        console.error("Error fetching menu categories:", error);
+      } catch {
         throw new Error("Failed to fetch menu categories");
       }
     },
