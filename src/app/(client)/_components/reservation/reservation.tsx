@@ -19,17 +19,24 @@ import {
 import { useAuthAxios } from "@/config/auth-axios";
 import { KEYS } from "@/config/constants";
 import { API_ROUTES } from "@/config/routes";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import LoginDialog from "../../booking/_components/login-dialog";
 
 export default function Reservation() {
   const { _axios } = useAuthAxios();
+  const { getItem } = useLocalStorage();
+  const [openLoginDialog, setOpenLoginDialog] = useState(false);
+  const [formData, setFormData] = useState<TAddReservationData>(
+    {} as TAddReservationData
+  );
   const {
     register,
     handleSubmit,
@@ -41,12 +48,18 @@ export default function Reservation() {
     resolver: zodResolver(addReservationSchema),
   });
   const date = watch("date");
+  const numberOfGuests = watch("guestsNum");
   const { mutateAsync, isPending } = useMutation({
     mutationKey: KEYS.RESERVATIONS.ADD,
     mutationFn: addReservation,
     onSuccess: () => {
-      toast("Reservation added successfully");
+      toast(
+        `A ${
+          numberOfGuests > 4 ? "rounded" : "rectangle"
+        } table has been booked.`
+      );
       reset();
+      setOpenLoginDialog(false);
     },
     onError: () => {
       toast("Failed to add reservation");
@@ -62,6 +75,12 @@ export default function Reservation() {
   }
 
   async function handleSubmitAdd(data: TAddReservationData) {
+    const token = getItem("token");
+    if (!token) {
+      setFormData(data);
+      setOpenLoginDialog(true);
+      return;
+    }
     await mutateAsync(data);
   }
   return (
@@ -209,6 +228,12 @@ export default function Reservation() {
           </form>
         </div>
       </div>
+      <LoginDialog
+        data={formData}
+        open={openLoginDialog}
+        setOpen={setOpenLoginDialog}
+        mutationFunction={mutateAsync}
+      />
     </section>
   );
 }

@@ -19,16 +19,24 @@ import {
 import { useAuthAxios } from "@/config/auth-axios";
 import { KEYS } from "@/config/constants";
 import { API_ROUTES } from "@/config/routes";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import LoginDialog from "./_components/login-dialog";
 
 export default function Booking() {
   const { _axios } = useAuthAxios();
+  const { getItem } = useLocalStorage();
+  const [openLoginDialog, setOpenLoginDialog] = useState(false);
+  const [formData, setFormData] = useState<TAddReservationData>(
+    {} as TAddReservationData
+  );
   const {
     register,
     handleSubmit,
@@ -39,14 +47,19 @@ export default function Booking() {
   } = useForm<TAddReservationData>({
     resolver: zodResolver(addReservationSchema),
   });
-
   const date = watch("date");
+  const numberOfGuests = watch("guestsNum");
   const { mutateAsync, isPending } = useMutation({
     mutationKey: KEYS.RESERVATIONS.ADD,
     mutationFn: addReservation,
     onSuccess: () => {
-      toast("Reservation added successfully");
+      toast(
+        `A ${
+          numberOfGuests > 4 ? "rounded" : "rectangle"
+        } table has been booked.`
+      );
       reset();
+      setOpenLoginDialog(false);
     },
     onError: () => {
       toast("Failed to add reservation");
@@ -62,8 +75,15 @@ export default function Booking() {
   }
 
   async function handleSubmitAdd(data: TAddReservationData) {
+    const token = getItem("token");
+    if (!token) {
+      setFormData(data);
+      setOpenLoginDialog(true);
+      return;
+    }
     await mutateAsync(data);
   }
+
   return (
     <section className="flex flex-col items-center text-white pt-12 pb-15">
       <TextWithLine
@@ -120,7 +140,9 @@ export default function Booking() {
                       {date ? (
                         <span>{format(new Date(date), "PPP")}</span>
                       ) : (
-                        <span className="mt-1 text-[#555555]">Pick a date..</span>
+                        <span className="mt-1 text-[#555555]">
+                          Pick a date..
+                        </span>
                       )}
                     </Button>
                   </PopoverTrigger>
@@ -136,9 +158,7 @@ export default function Booking() {
                         {
                           before: new Date(),
                         },
-                      ]} 
-
-                       
+                      ]}
                     />
                   </PopoverContent>
                 </Popover>
@@ -216,6 +236,12 @@ export default function Booking() {
           </div>
         </form>
       </div>
+      <LoginDialog
+        data={formData}
+        open={openLoginDialog}
+        setOpen={setOpenLoginDialog}
+        mutationFunction={mutateAsync}
+      />
     </section>
   );
 }
