@@ -24,7 +24,7 @@ import {
   Switch,
 } from "@/components";
 import ImageCard from "./_components/image-card";
-import Image from "next/image";
+
 import {
   TAddGalleyData,
   TImageGalleryDetails,
@@ -105,7 +105,7 @@ export default function Gallery() {
       },
     });
 
-  const { mutateAsync: deleteMutateSync, isPending: deletePending } =
+  const { mutateAsync: deleteMutateSync } =
     useMutation({
       mutationKey: KEYS.GALLERY.DELETE,
       mutationFn: deleteGallery,

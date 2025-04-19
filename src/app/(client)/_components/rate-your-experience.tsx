@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Star } from "lucide-react";
+
 import { toast } from "sonner"; 
 import { useMutation } from "@tanstack/react-query";
 import { API_ROUTES } from "@/config/routes";
