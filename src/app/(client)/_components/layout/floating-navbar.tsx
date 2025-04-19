@@ -16,7 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 import { TMenuCategoryDetails } from "@/app/dashboard/menu-categories/types";
 import { useAuthAxios } from "@/config/auth-axios";
 import { KEYS } from "@/config/constants";
-import { TResponse } from "@/global/types";
+import { TResponse } from "@/global/types"; 
 import MenuNavItem from "./_components/menu-nav-item";
 
 export function FloatingNav({ navItems }: Readonly<TFloatingNavProps>) {
