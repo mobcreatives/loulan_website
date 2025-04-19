@@ -34,38 +34,37 @@ export default function FloatingReview() {
             Reviews
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-90 bg-[#0A1316] border-[#0A1316]">
-          <div className="max-h-[20em] overflow-y-auto text-white">
-            <div className="space-y-2">
-              <h4 className="font-medium leading-none mb-5">Reviews</h4>
-              {reviews?.map((review) => (
-                <div
-                  key={review.id}
-                  className="rounded-lg bg-[#1e2629] px-4 shadow-sm py-2"
-                >
-                  <div className="space-x-2">
-                    <div className="flex items-end gap-x-2">
-                      <p className="text-sm font-medium capitalize text-nowrap">
-                        {review.reviewerName}
-                      </p>
-                      <p className="text-xs text-muted-foreground text-nowrap">
-                        {format(review.createdAt, "MMM dd, yyyy")}
-                      </p>
-                    </div>
-                  </div>
-                  <p>
-                    {Array.from({ length: review.stars }, (_, i: number) => (
-                      <span key={`${i}stars`}>⭐</span>
-                    ))}
-                  </p>
-                  <p className="mt-2 text-[clamp(0.75rem,0.7192rem+0.1299vw,0.875rem)]">
-                    {review.comment}
-                  </p>
-                </div>
-              ))}
-            </div>
+        <PopoverContent className="w-90 max-h-[20em] overflow-y-auto text-white bg-transparent border-0">
+  <div className="space-y-2">
+  
+    {reviews?.map((review) => (
+      <div
+        key={review.id}
+        className="rounded-lg bg-[#1e2629] px-4 shadow-sm py-2"
+      >
+        <div className="space-x-2">
+          <div className="flex items-end gap-x-2">
+            <p className="text-sm font-medium capitalize text-nowrap">
+              {review.reviewerName}
+            </p>
+            <p className="text-xs text-muted-foreground text-nowrap">
+              {format(review.createdAt, "MMM dd, yyyy")}
+            </p>
           </div>
-        </PopoverContent>
+        </div>
+        <p>
+          {Array.from({ length: review.stars }, (_, i: number) => (
+            <span key={`${i}stars`}>⭐</span>
+          ))}
+        </p>
+        <p className="mt-2 text-[clamp(0.75rem,0.7192rem+0.1299vw,0.875rem)]">
+          {review.comment}
+        </p>
+      </div>
+    ))}
+  </div>
+</PopoverContent>
+
       </Popover>
     </section>
   );

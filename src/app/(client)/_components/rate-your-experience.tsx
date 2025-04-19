@@ -127,7 +127,7 @@ export default function RateYourExperience() {
             onMouseEnter={() => handleStarHover(i + 1)} 
             onMouseLeave={() => handleStarHover(0)} 
             className={`cursor-pointer ${
-              selectedRating >= i + 1 ? "text-amber-500" : "text-white"
+              selectedRating >= i + 1 ? "text-primary" : "text-white"
             }`}
           >
             <StarIcon filled={selectedRating >= i + 1} />
