@@ -79,10 +79,10 @@ export default function UpdateFood({
 
   async function updateFood(id: number, data: TUpdateFoodData) {
     let updateData = {};
-    if (data.imageUrl) {
+    if (data.imgUrl) {
       updateData = {
         ...data,
-        imageUrl: data.imageUrl[0],
+        imgUrl: data.imgUrl[0],
       };
     }
     updateData = data;
@@ -165,8 +165,8 @@ export default function UpdateFood({
             <AttachmentInput
               label="Image"
               setValue={setValue}
-              name="imageUrl"
-              error={errors.imageUrl?.message ?? ""}
+              name="imgUrl"
+              error={errors.imgUrl?.message ?? ""}
             />
             <div className="flex items-center space-x-2">
               <Switch

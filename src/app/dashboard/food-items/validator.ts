@@ -14,6 +14,6 @@ export const updateFoodSchema = z.object({
   description: z.string().min(1, "Description is required").optional(),
   price: z.coerce.number().min(1, "Price is required").optional(),
   menuId: z.number().min(1, "Price is required").optional(),
-  imageUrl: z.array(z.instanceof(File)).optional().optional(),
+  imgUrl: z.array(z.instanceof(File)).optional().optional(),
   isFeatured: z.boolean().optional().default(false).optional(),
 });
