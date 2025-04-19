@@ -85,7 +85,6 @@ export default function UpdateFood({
         imgUrl: data.imgUrl[0],
       };
     }
-    updateData = data;
     try {
       const response = await _axios.patch(
         `${API_ROUTES.FOODS}/${id}`,
