@@ -15,7 +15,7 @@ export default function MasonryGallery() {
 
   async function getAllGalleries() {
     try {
-      const response = await _axios.get(API_ROUTES.GALLERY);
+      const response = await _axios.get(`${API_ROUTES.GALLERY}?visible=true`);
       return response.data;
     } catch {
       throw new Error("Failed to load gallery");
