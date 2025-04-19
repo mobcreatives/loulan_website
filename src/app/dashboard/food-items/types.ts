@@ -1,7 +1,16 @@
 import { QueryObserverResult, RefetchOptions } from "@tanstack/react-query";
-import { TMenuDetails } from "../menu/types";
 import { foodSchema, updateFoodSchema } from "./validator";
 import { z } from "zod";
+
+ type TMenuDetails = {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  images: string[];
+  type: "korean" | "chinese";
+};
+
 
 export type TAddFoodProps = {
   open: boolean;
