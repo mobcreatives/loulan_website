@@ -53,9 +53,8 @@ export default function Gallery() {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [showHidden, setShowHidden] = useState(false);
-  const [currentImage, setCurrentImage] = useState<TImageGalleryDetails | null>(
-    null
-  );
+  const [showFeatured, setShowFeatured] = useState(false);
+  const [currentImage, setCurrentImage] = useState<TImageGalleryDetails | null>(null);
 
   const {
     handleSubmit: addHandleSubmit,
@@ -136,13 +135,22 @@ export default function Gallery() {
     queryKey: KEYS.GALLERY.GET,
     queryFn: getGalleryImages,
   });
+
+  // Dynamic filtering based on visibility and featured states
   const filteredImages = gallery?.filter((image) => {
     const matchesSearch = image.description
       ?.toLowerCase()
       .includes(searchQuery.toLowerCase());
-    // const matchesVisibility = showHidden ? true : !!image.isVisible; // yesle garda kunai pani image dekhako theyna, so comment gareko ho
-    return matchesSearch;
+
+    const matchesVisibility = showFeatured
+      ? image.isVisible === true // Show featured images
+      : showHidden
+      ? image.isVisible === false // Show hidden images
+      : true; // Show all images when neither is selected
+
+    return matchesSearch && matchesVisibility;
   });
+
   async function addGallery(data: TAddGalleyData) {
     try {
       const response = await _axios.post(
@@ -266,7 +274,8 @@ export default function Gallery() {
         actions={
           <Button
             onClick={() => setIsFormOpen(true)}
-            className="btn-gold cursor-pointer text-black"
+            className="cursor-pointer text-black"
+            variant="outline" // Change to outline or another valid variant
           >
             <Plus size={16} />
             Add Image
@@ -281,7 +290,7 @@ export default function Gallery() {
           </div>
           <input
             type="text"
-            className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block w-full pl-10 p-2.5 gold-focus-ring"
+            className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block w-full pl-10 p-2.5"
             placeholder="Search gallery..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -290,16 +299,33 @@ export default function Gallery() {
 
         <div className="flex items-center gap-2 self-end sm:self-auto">
           <div className="flex items-center space-x-2">
-            <input
-              id="showHidden"
-              type="checkbox"
-              className="gold-focus-ring rounded"
-              checked={showHidden}
-              onChange={() => setShowHidden(!showHidden)}
-            />
-            <label htmlFor="showHidden" className="text-sm font-medium">
+            <Button
+              variant={showHidden ? "outline" : "secondary"} // Changed gold to a valid variant
+              onClick={() => {
+                setShowHidden(true);
+                setShowFeatured(false);
+              }}
+            >
               Show Hidden Images
-            </label>
+            </Button>
+            <Button
+              variant={showFeatured ? "outline" : "secondary"} // Changed gold to a valid variant
+              onClick={() => {
+                setShowFeatured(true);
+                setShowHidden(false);
+              }}
+            >
+              Show Featured Images
+            </Button>
+            <Button
+              variant={!showFeatured && !showHidden ? "outline" : "secondary"} // Changed gold to a valid variant
+              onClick={() => {
+                setShowFeatured(false);
+                setShowHidden(false);
+              }}
+            >
+              Show All Images
+            </Button>
           </div>
         </div>
       </div>
@@ -318,7 +344,7 @@ export default function Gallery() {
         {filteredImages?.length === 0 && (
           <div className="col-span-full flex flex-col items-center justify-center p-12 bg-white rounded-lg border border-dashed border-gray-300">
             <p className="text-gray-500 mb-4">No images found</p>
-            <Button onClick={() => setIsFormOpen(true)} className="btn-gold">
+            <Button onClick={() => setIsFormOpen(true)} className="cursor-pointer">
               <Plus size={16} />
               Add Your First Image
             </Button>
@@ -361,7 +387,7 @@ export default function Gallery() {
                     <input
                       id="image"
                       type="file"
-                      className="w-full p-2 border rounded-md gold-focus-ring"
+                      className="w-full p-2 border rounded-md"
                       onChange={(e) => {
                         if (!e.target.files) return;
                         addSetValue("image", Array.from(e.target.files));
@@ -375,7 +401,7 @@ export default function Gallery() {
                     <input
                       id="caption"
                       type="text"
-                      className="w-full p-2 border rounded-md gold-focus-ring"
+                      className="w-full p-2 border rounded-md"
                       defaultValue={currentImage?.description ?? ""}
                       placeholder="Describe this image"
                       {...addRegister("description")}
@@ -398,13 +424,11 @@ export default function Gallery() {
             <DrawerFooter className="px-4 sm:px-6 border-t">
               <div className="flex justify-end gap-2">
                 <DrawerClose asChild>
-                  <Button className="cursor-pointer" variant="outline">
-                    Cancel
-                  </Button>
+                  <Button variant="outline">Cancel</Button>
                 </DrawerClose>
                 <Button
                   type="submit"
-                  className="btn-gold cursor-pointer"
+                  className="cursor-pointer"
                   disabled={addPending}
                 >
                   {addPending ? "Saving..." : "Add Image"}
@@ -427,7 +451,7 @@ export default function Gallery() {
           <form onSubmit={updateHandleSubmit(onUpdateSubmit)}>
             <DrawerHeader className="px-4 sm:px-6 py-0">
               <div className="flex items-center justify-between">
-                <DrawerTitle>Update Image of Gallery</DrawerTitle>
+                <DrawerTitle>Edit Image</DrawerTitle>
                 <DrawerClose asChild>
                   <Button
                     variant="ghost"
@@ -438,7 +462,7 @@ export default function Gallery() {
                   </Button>
                 </DrawerClose>
               </div>
-              <DrawerDescription>{`Manage images for your restaurant's gallery`}</DrawerDescription>
+              <DrawerDescription>Update your gallery image</DrawerDescription>
             </DrawerHeader>
             <div className="px-4 sm:px-6 pb-4 overflow-y-auto">
               <div className="space-y-4 py-4">
@@ -450,7 +474,7 @@ export default function Gallery() {
                     <input
                       id="image"
                       type="file"
-                      className="w-full p-2 border rounded-md gold-focus-ring"
+                      className="w-full p-2 border rounded-md"
                       onChange={(e) => {
                         if (!e.target.files) return;
                         updateSetValue("image", Array.from(e.target.files));
@@ -464,7 +488,7 @@ export default function Gallery() {
                     <input
                       id="caption"
                       type="text"
-                      className="w-full p-2 border rounded-md gold-focus-ring"
+                      className="w-full p-2 border rounded-md"
                       defaultValue={currentImage?.description ?? ""}
                       placeholder="Describe this image"
                       {...updateRegister("description")}
@@ -474,76 +498,64 @@ export default function Gallery() {
                     <Switch
                       id="isVisible"
                       name="isVisible"
-                      defaultChecked={true}
+                      checked={currentImage?.isVisible ?? false}
                       onCheckedChange={(isChecked) =>
                         updateSetValue("isVisible", isChecked)
                       }
                     />
-                    <Label htmlFor="isFeatured">Visible on website</Label>
+                    <Label htmlFor="isVisible">Visible on website</Label>
                   </div>
-
-                  {currentImage?.imgUrl && (
-                    <div className="mt-4">
-                      <p className="text-sm font-medium mb-2">Preview:</p>
-                      <div className="aspect-video bg-gray-100 rounded-md overflow-hidden">
-                        <Image
-                          src={currentImage.imgUrl}
-                          alt={currentImage.description}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src =
-                              "/images/placeholder.svg";
-                          }}
-                          height={200}
-                          width={300}
-                        />
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
             <DrawerFooter className="px-4 sm:px-6 border-t">
               <div className="flex justify-end gap-2">
                 <DrawerClose asChild>
-                  <Button className="cursor-pointer" variant="outline">
-                    Cancel
-                  </Button>
+                  <Button variant="outline">Cancel</Button>
                 </DrawerClose>
                 <Button
                   type="submit"
-                  className="btn-gold cursor-pointer"
+                  className="cursor-pointer"
                   disabled={updatePending}
                 >
-                  {updatePending ? "Saving..." : "Update Image"}
+                  {updatePending ? "Updating..." : "Update Image"}
                 </Button>
               </div>
             </DrawerFooter>
           </form>
         </DrawerContent>
       </Drawer>
-      {/* Delete Confirmation Dialog */}
+
+      {/* Confirm Delete Image */}
       <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Image</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this image from the gallery? This
-              action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              disabled={deletePending}
-              className="bg-red-500 hover:bg-red-600 text-white"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+  <AlertDialogContent>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+      <AlertDialogDescription>
+        Do you want to delete this image permanently from the gallery?
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel>
+        <Button variant="outline">Cancel</Button>
+      </AlertDialogCancel>
+      <AlertDialogAction>
+        <Button
+          className="btn-gold"
+          onClick={async () => {
+            if (currentImage) {
+              await confirmDelete();
+              setIsDeleteOpen(false);
+            }
+          }}
+        >
+          Confirm
+        </Button>
+      </AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+
     </div>
   );
 }
