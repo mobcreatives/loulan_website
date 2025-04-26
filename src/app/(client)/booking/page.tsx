@@ -1,6 +1,5 @@
 "use client";
 
-import { timeSlots } from "@/app/dashboard/reservations/data";
 import { TAddReservationData } from "@/app/dashboard/reservations/types";
 import { addReservationSchema } from "@/app/dashboard/reservations/validator";
 import {
@@ -23,12 +22,13 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { format } from "date-fns";
+import { format, isToday } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import LoginDialog from "./_components/login-dialog";
+import { motion } from "framer-motion";
 
 export default function Booking() {
   const { _axios } = useAuthAxios();
@@ -49,6 +49,56 @@ export default function Booking() {
   });
   const date = watch("date");
   const numberOfGuests = watch("guestsNum");
+
+  // Get current time in HH:mm format
+  const currentTime = useMemo(() => {
+    const now = new Date();
+    return format(now, "HH:mm");
+  }, []);
+
+  // Generate time slots from 10:00 to 23:30 with 30-minute intervals in Nepali format
+  const timeSlots = useMemo(() => {
+    const slots = [];
+    for (let hour = 10; hour < 24; hour++) {
+      const displayHour = hour > 12 ? hour - 12 : hour;
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      slots.push({
+        value: `${hour.toString().padStart(2, '0')}:00`,
+        label: `${displayHour}:00 ${ampm}`
+      });
+      if (hour < 23) {
+        slots.push({
+          value: `${hour.toString().padStart(2, '0')}:30`,
+          label: `${displayHour}:30 ${ampm}`
+        });
+      }
+    }
+    return slots;
+  }, []);
+
+  // Filter time slots based on current time if date is today
+  const availableTimeSlots = useMemo(() => {
+    if (!date) return timeSlots;
+    
+    const selectedDate = new Date(date);
+    if (!isToday(selectedDate)) return timeSlots;
+
+    const [currentHour, currentMinute] = currentTime.split(':').map(Number);
+    const currentTimeInMinutes = currentHour * 60 + currentMinute;
+    
+    return timeSlots.map(slot => {
+      const [slotHour, slotMinute] = slot.value.split(':').map(Number);
+      const slotTimeInMinutes = slotHour * 60 + slotMinute;
+      
+      // Add 30 minutes buffer to current time
+      const isDisabled = slotTimeInMinutes < (currentTimeInMinutes + 30);
+      return {
+        ...slot,
+        disabled: isDisabled
+      };
+    });
+  }, [date, currentTime, timeSlots]);
+
   const { mutateAsync, isPending } = useMutation({
     mutationKey: KEYS.RESERVATIONS.ADD,
     mutationFn: addReservation,
@@ -85,13 +135,33 @@ export default function Booking() {
   }
 
   return (
-    <section className="flex flex-col items-center text-white pt-12 pb-15">
-      <TextWithLine
-        text="Table Booking"
-        className="font-fredoka text-[clamp(2.125rem,2.0325rem+0.3896vw,2.5rem)] font-bold before:w-[170px] before:h-[5px] before:-bottom-1"
-      />
-      <div className="flex flex-col md:flex-row gap-15 mt-10">
-        <form
+    <motion.section 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="flex flex-col items-center text-white pt-12 pb-15"
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        <TextWithLine
+          text="Table Booking"
+          className="font-fredoka text-[clamp(2.125rem,2.0325rem+0.3896vw,2.5rem)] font-bold before:w-[170px] before:h-[5px] before:-bottom-1"
+        />
+      </motion.div>
+
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="flex flex-col md:flex-row gap-15 mt-10"
+      >
+        <motion.form
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
           className="font-epilogue space-y-8 text-[clamp(0.875rem,0.85rem+0.125vw,1rem)] w-100 mt-3"
           onSubmit={handleSubmit(handleSubmitAdd)}
         >
@@ -149,14 +219,15 @@ export default function Booking() {
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
-                      selected={date ? new Date(date) : new Date()}
+                      selected={date ? new Date(date) : undefined}
                       onSelect={(date) => {
-                        if (date) setValue("date", format(date, "yyyy-MM-dd"));
+                        if (date)
+                          setValue("date", format(date, "yyyy-MM-dd"));
                       }}
                       className="p-3 pointer-events-auto"
                       disabled={[
                         {
-                          before: new Date(),
+                          before: new Date(new Date().setHours(0, 0, 0, 0)),
                         },
                       ]}
                     />
@@ -173,14 +244,20 @@ export default function Booking() {
                 <Select
                   name="time"
                   onValueChange={(value) => setValue("time", value)}
+                  value={watch("time")}
                 >
                   <SelectTrigger className="w-full bg-white rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] !h-12 text-black">
                     <SelectValue placeholder="Select time" />
                   </SelectTrigger>
                   <SelectContent className="h-[20em] overflow-y-auto">
-                    {timeSlots.map((time) => (
-                      <SelectItem key={time} value={time}>
-                        {time}
+                    {availableTimeSlots.map((slot) => (
+                      <SelectItem 
+                        key={slot.value} 
+                        value={slot.value}
+                        disabled={slot.disabled}
+                        className={slot.disabled ? "opacity-50 cursor-not-allowed" : ""}
+                      >
+                        {slot.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -223,7 +300,11 @@ export default function Booking() {
               )}
             </div>
           </div>
-          <div className="flex justify-end lg:px-4">
+          <motion.div 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="flex justify-end lg:px-4"
+          >
             <button
               className={cn(
                 "bg-primary text-black px-6 py-2 rounded-[12px] font-medium capitalize font-fredoka relative before:content-[''] before:absolute before:inset-0 before:left-1 before:scale-y-125 before:w-[100.5%] before:rounded-[12px] before:border-2 before:border-primary before:-z-1 isolate cursor-pointer"
@@ -233,15 +314,16 @@ export default function Booking() {
             >
               {isPending ? "Loading..." : "Reserve"}
             </button>
-          </div>
-        </form>
-      </div>
+          </motion.div>
+        </motion.form>
+      </motion.div>
+
       <LoginDialog
         data={formData}
         open={openLoginDialog}
         setOpen={setOpenLoginDialog}
         mutationFunction={mutateAsync}
       />
-    </section>
+    </motion.section>
   );
 }

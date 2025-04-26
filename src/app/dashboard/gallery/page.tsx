@@ -12,7 +12,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   Button,
-  PageTitle,
   Drawer,
   DrawerClose,
   DrawerContent,
@@ -268,20 +267,20 @@ export default function Gallery() {
 
   return (
     <div>
-      <PageTitle
-        title="Gallery"
-        description="Manage the images shown on your restaurant's website"
-        actions={
-          <Button
-            onClick={() => setIsFormOpen(true)}
-            className="cursor-pointer text-black"
-            variant="outline" // Change to outline or another valid variant
-          >
-            <Plus size={16} />
-            Add Image
-          </Button>
-        }
-      />
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div>
+          <h1 className="text-2xl font-bold">Gallery</h1>
+          <p className="text-gray-500">Manage the images shown on your restaurant&apos;s website</p>
+        </div>
+        <Button
+          onClick={() => setIsFormOpen(true)}
+          className="cursor-pointer text-black"
+          variant="outline"
+        >
+          <Plus size={16} />
+          Add Image
+        </Button>
+      </div>
 
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
         <div className="relative w-full max-w-md">
@@ -375,7 +374,7 @@ export default function Gallery() {
                   </Button>
                 </DrawerClose>
               </div>
-              <DrawerDescription>{`Manage images for your restaurant's gallery`}</DrawerDescription>
+              <DrawerDescription>{`Manage images for your restaurant&apos;s gallery`}</DrawerDescription>
             </DrawerHeader>
             <div className="px-4 sm:px-6 pb-4 overflow-y-auto">
               <div className="space-y-4 py-4">

@@ -2,7 +2,7 @@ import React from "react";
 import { TTextWithLineProps } from "./types";
 import { cn } from "@/lib/utils";
 
-export default function TextWithLine({
+export function TextWithLine({
   className,
   text,
 }: Readonly<TTextWithLineProps>) {
@@ -17,5 +17,3 @@ export default function TextWithLine({
     </p>
   );
 }
-
-export { TextWithLine };

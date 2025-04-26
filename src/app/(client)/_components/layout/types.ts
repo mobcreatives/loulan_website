@@ -5,4 +5,6 @@ export type TMenuNavItemProps = {
   setActive: React.Dispatch<React.SetStateAction<string>>;
   active: string;
   side?: "top" | "bottom" | "left" | "right";
+  isOpen?: boolean;
+  onClose?: () => void;
 };

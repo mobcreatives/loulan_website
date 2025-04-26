@@ -4,6 +4,7 @@ import { APP_ROUTES } from "@/config/routes";
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import { cn } from "@/lib/utils";
 
 export default function HeroSection() {
   return (
@@ -22,13 +23,18 @@ export default function HeroSection() {
           </Link>
           <Link href={APP_ROUTES.MENU}>
             <button
-              className="capitalize text-black py-2 px-4 font-medium font-fredoka bg-primary flex items-center gap-x-3 hover:[&>p>svg]:translate-x-0.5 rounded-full text-[clamp(0.75rem,0.7192rem+0.1299vw,0.875rem)] cursor-pointer"
+              className={cn(
+                "capitalize text-black py-2 px-4 font-medium font-fredoka bg-primary flex items-center gap-x-3 rounded-full text-[clamp(0.75rem,0.7192rem+0.1299vw,0.875rem)] cursor-pointer",
+                "hover:scale-105 transition-all duration-300",
+                "active:scale-95",
+                "group"
+              )}
               type="button"
             >
               <span>Explore Menu</span>
-              <p className="bg-black rounded-full p-2">
+              <p className="bg-black rounded-full p-2 group-hover:scale-110 transition-transform duration-300">
                 <ArrowRightIcon
-                  className="text-white transition-transform duration-300"
+                  className="text-white transition-transform duration-300 group-hover:translate-x-0.5"
                   size={16}
                   aria-hidden="true"
                 />

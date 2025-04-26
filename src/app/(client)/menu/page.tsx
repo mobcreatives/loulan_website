@@ -3,14 +3,24 @@
 import { TextWithLine } from "@/components";
 import { useSearchParams } from "next/navigation";
 import FoodList from "../_components/menu/food-list";
+import { motion } from "framer-motion";
 
 export default function MenuPage() {
   const searchParams = useSearchParams();
   const categoryId = searchParams.get("category");
 
   return (
-    <main className="min-h-screen bg-[#0A1316]">
-      <section className="px-6 sm:px-10 md:px-16 lg:px-28 xl:px-36 2xl:px-44 py-10 space-y-14">
+    <motion.main
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="px-6 sm:px-10 md:px-16 lg:px-28 xl:px-36 2xl:px-44 py-10 space-y-14"
+      >
         <div className="space-y-3 flex flex-col items-center">
           <TextWithLine
             text="Discover Menu"
@@ -18,7 +28,7 @@ export default function MenuPage() {
           />
         </div>
         <FoodList categoryId={categoryId ? parseInt(categoryId) : undefined} />
-      </section>
-    </main>
+      </motion.section>
+    </motion.main>
   );
 }

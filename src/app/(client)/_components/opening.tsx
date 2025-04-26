@@ -1,12 +1,11 @@
 "use client";
 
 import { TextWithLine } from "@/components";
-import { APP_ROUTES } from "@/config/routes";
+import { APP_ROUTES, API_ROUTES } from "@/config/routes";
 import Link from "next/link";
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { TSettingResponse } from "@/app/dashboard/settings/types";
-import { API_ROUTES } from "@/config/routes";
 import { useAuthAxios } from "@/config/auth-axios";
 import { KEYS } from "@/config/constants";
 

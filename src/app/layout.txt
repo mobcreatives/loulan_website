@@ -1,0 +1,54 @@
+import type { Metadata } from "next";
+import { Fredoka } from "next/font/google";
+import "./globals.css";
+import TanstackQueryProvider from "./_components/tanstack-query-provider";
+import { Toaster as Sonner } from "@/components";
+import { Head } from "next/document";
+
+const fredoka = Fredoka({
+  variable: "--font-fredoka",
+  subsets: ["latin"],
+});
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    name: "Loulan Chinese Restaurant and Bar",
+    image: "https://loulanrestaurant.com/og-image.jpg",
+    "@id": "https://loulanrestaurant.com.np",
+    url: "https://loulanrestaurant.com.np",
+    telephone: "+977-9851240960",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "SanjyaKosh Chowk, Thamel",
+      addressLocality: "Kathmandu",
+      addressRegion: "Bagmati",
+      postalCode: "44600",
+      addressCountry: "NP"
+    },
+    servesCuisine: ["Chinese", "Korean", "Other"],
+    priceRange: "$$"
+  };
+
+  return (
+    <html lang="en">
+      <Head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </Head>
+      <TanstackQueryProvider>
+        <body className={`${fredoka.variable} antialiased`}>
+          <Sonner />
+          {children}
+        </body>
+      </TanstackQueryProvider>
+    </html>
+  );
+}

@@ -1,4 +1,15 @@
-export default function HamburgerMenu() {
+import { TFloatingItem } from "@/components";
+import { TMenuCategoryDetails } from "@/app/dashboard/menu-categories/types";
+import { Dispatch, SetStateAction } from "react";
+
+export interface THamburgerMenuProps {
+  navItems: TFloatingItem[];
+  active: string;
+  setActive: Dispatch<SetStateAction<string>>;
+  menuCategories: TMenuCategoryDetails[];
+}
+
+export default function HamburgerMenu({  }: THamburgerMenuProps) {
   return (
     <div className="group flex items-center justify-center relative z-10 [transition:all_0.5s_ease] rounded-[0.375rem] p-[5px] cursor-pointer border border-[#E9C506] outline-none focus-visible:outline-0">
       <svg
