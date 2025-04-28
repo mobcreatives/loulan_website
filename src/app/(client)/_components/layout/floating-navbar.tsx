@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import {
-
   TFloatingNavProps,
 } from "@/components";
 import Image from "next/image";
@@ -43,8 +42,8 @@ export function FloatingNav({ navItems }: Readonly<TFloatingNavProps>) {
   };
 
   return (
-    <nav className="bg-[#0A1316] flex justify-between items-center md:block text-white py-4 px-10 sm:px-24 lg:px-52 sticky top-0 z-50">
-      <div className="flex justify-between items-center">
+    <nav className="bg-[#0A1316] flex justify-between items-center text-white py-4 px-10 sm:px-24 lg:px-52 sticky top-0 z-50">
+      <div className="flex justify-between items-center w-full">
         <Link href={APP_ROUTES.HOME} className="flex items-center">
           <p className="w-20">
             <Image
@@ -82,12 +81,14 @@ export function FloatingNav({ navItems }: Readonly<TFloatingNavProps>) {
             </React.Fragment>
           ))}
         </div>
-        <HamburgerMenu
-          navItems={navItems}
-          active={active}
-          setActive={setActive}
-          menuCategories={data?.menus || []}
-        />
+        <div className="flex items-center">
+          <HamburgerMenu
+            navItems={navItems}
+            active={active}
+            setActive={setActive}
+            menuCategories={data?.menus || []}
+          />
+        </div>
       </div>
     </nav>
   );

@@ -32,10 +32,10 @@ export default function FloatingContact() {
   }
 
   return (
-    <section className="fixed left-10 sm:left-24 md:left-36 lg:left-52 bottom-4">
+    <section className="fixed left-10 sm:left-24 md:left-36 lg:left-52 bottom-4 z-50">
       <Popover>
         <PopoverTrigger asChild>
-          <button className="bg-primary rounded-full size-16 cursor-pointer font-semibold text-[clamp(0.75rem,0.7192rem+0.1299vw,0.875rem)]">
+          <button className="bg-primary rounded-full size-16 cursor-pointer font-semibold text-[clamp(0.75rem,0.7192rem+0.1299vw,0.875rem)] hover:scale-105 transition-transform duration-200">
             Contact
           </button>
         </PopoverTrigger>
@@ -53,7 +53,7 @@ export default function FloatingContact() {
               <p>
                 <a
                   href={`tel:${data?.setting?.phone || '+1234567890'}`}
-                  className="text-blue-400"
+                  className="text-blue-400 hover:underline"
                 >
                   {data?.setting?.phone || "(123) 456-7890"}
                 </a>
@@ -64,7 +64,7 @@ export default function FloatingContact() {
               <p>
                 <a
                   href={`mailto:${data?.setting?.email || 'info@chineserestaurant.com.np'}`}
-                  className="text-blue-400"
+                  className="text-blue-400 hover:underline"
                 >
                   {data?.setting?.email || "info@chineserestaurant.com.np"}
                 </a>
@@ -77,13 +77,12 @@ export default function FloatingContact() {
                   href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data?.setting?.address || 'Thamel, Kathmandu')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-400"
+                  className="text-blue-400 hover:underline"
                 >
                   {data?.setting?.address || "Thamel, Kathmandu"}
                 </a>
               </p>
             </div>
-
           </div>
         </PopoverContent>
       </Popover>

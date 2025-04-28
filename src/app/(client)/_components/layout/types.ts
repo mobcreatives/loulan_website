@@ -2,9 +2,9 @@ import { TMenuCategoryDetails } from "@/app/dashboard/menu-categories/types";
 
 export type TMenuNavItemProps = {
   data: TMenuCategoryDetails[];
-  setActive: React.Dispatch<React.SetStateAction<string>>;
   active: string;
-  side?: "top" | "bottom" | "left" | "right";
-  isOpen?: boolean;
+  setActive: (link: string) => void;
+  side?: "top" | "right" | "bottom" | "left";
   onClose?: () => void;
+  isOpen?: boolean;
 };
