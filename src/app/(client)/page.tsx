@@ -19,13 +19,13 @@ export default function Home() {
         <meta property="og:title" content="Loulan Restaurant and Bar | Chinese & Korean Cuisine in Thamel, Kathmandu" />
         <meta property="og:description" content="Loulan Restaurant and Bar offers authentic Chinese and Korean cuisine in the heart of Thamel, Kathmandu. Open daily from 10 AM to 1 AM. View our menus, make a reservation, browse our gallery, or contact us for more information." />
         <meta property="og:type" content="restaurant" />
-        <meta property="og:url" content="https://yourdomain.com/" />
-        <meta property="og:image" content="https://yourdomain.com/og-image.jpg" />
+        <meta property="og:url" content="https://www.loulanrestaurant.com.np/" />
+        <meta property="og:image" content="https://www.loulanrestaurant.com.np/og-image.jpg" />
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Loulan Restaurant and Bar | Chinese & Korean Cuisine in Thamel, Kathmandu" />
         <meta name="twitter:description" content="Loulan Restaurant and Bar offers authentic Chinese and Korean cuisine in the heart of Thamel, Kathmandu. Open daily from 10 AM to 1 AM. View our menus, make a reservation, browse our gallery, or contact us for more information." />
-        <meta name="twitter:image" content="https://yourdomain.com/og-image.jpg" />
+        <meta name="twitter:image" content="https://www.loulanrestaurant.com.np/og-image.jpg" />
         {/* Structured Data (JSON-LD) */}
         <script
           type="application/ld+json"
@@ -34,7 +34,7 @@ export default function Home() {
               "@context": "https://schema.org",
               "@type": "Restaurant",
               "name": "Loulan Restaurant and Bar",
-              "image": "https://yourdomain.com/og-image.jpg",
+              "image": "https://www.loulanrestaurant.com.np/og-image.jpg",
               "servesCuisine": ["Chinese", "Korean"],
               "address": {
                 "@type": "PostalAddress",
@@ -43,7 +43,7 @@ export default function Home() {
                 "addressCountry": "NP"
               },
               "openingHours": "Mo-Su 10:00-01:00",
-              "url": "https://yourdomain.com/",
+              "url": "https://www.loulanrestaurant.com.np/",
               "telephone": "+977-XXXXXXXXX"
             }),
           }}
