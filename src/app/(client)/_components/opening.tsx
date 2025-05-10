@@ -48,12 +48,12 @@ export default function Opening() {
                 </button>
               </Link>
               <Link href={APP_ROUTES.CONTACTS}>
-                <button
-                  type="button"
-                  className="uppercase text-white px-4 pb-1.5 pt-2 rounded-[4px] cursor-pointer focus:outline-none"
-                >
-                  contact us
-                </button>
+              <button
+                type="button"
+                className="uppercase text-white px-4 pb-1.5 pt-2 rounded-[4px] cursor-pointer focus:outline-none"
+              >
+                contact us
+              </button>
               </Link>
             </div>
           </div>
@@ -67,14 +67,14 @@ export default function Opening() {
                 <p className="font-semibold text-sm">Error loading hours</p>
               </div>
             ) : data?.setting?.openingHours ? (
-              <div className="space-y-1">
+            <div className="space-y-1">
                 <p className="text-xs whitespace-pre-line">{data.setting.openingHours}</p>
-              </div>
+            </div>
             ) : (
-              <div className="space-y-1">
+            <div className="space-y-1">
                 <p className="text-xs">Sunday to Tuesday: 9:00 AM - 10:00 PM</p>
                 <p className="text-xs">Friday to Saturday: 9:00 AM - 10:00 PM</p>
-              </div>
+            </div>
             )}
           </div>
         </div>

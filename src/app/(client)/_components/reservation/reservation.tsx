@@ -141,82 +141,82 @@ export default function Reservation() {
           text="Reservation"
           className="before:w-[100%] before:h-[1px] before:-bottom-0.5"
         />
-        <TextWithLine
+              <TextWithLine
           text="Book Your Table"
           className="font-fredoka text-[clamp(2.125rem,2.0325rem+0.3896vw,2.5rem)] font-bold before:w-[170px] before:h-[5px] before:-bottom-1"
-        />
-      </div>
+              />
+            </div>
 
       <form onSubmit={handleSubmit(handleSubmitAdd)}>
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="w-full">
-            <input
-              name="number-of-guest"
-              id="number-of-guest"
-              placeholder="No. of Guests"
-              {...register("guestsNum")}
-              type="number"
-              className="bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black w-full"
-            />
-            {errors.guestsNum && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.guestsNum.message}
-              </p>
-            )}
-          </div>
-          <div className="grid md:grid-cols-2 gap-4 ">
-            <div className="">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className="w-full flex items-center justify-start text-left bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black"
-                    name="date"
-                    id="date-trigger"
-                  >
-                    <CalendarIcon className="mr-1 size-4" />
-                    {date ? (
-                      <span>{format(new Date(date), "PPP")}</span>
-                    ) : (
-                      <span className="mt-1 text-[#555555]">
-                        Pick a date
-                      </span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="w-full">
+                <input
+                  name="number-of-guest"
+                  id="number-of-guest"
+                  placeholder="No. of Guests"
+                  {...register("guestsNum")}
+                  type="number"
+                  className="bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black w-full"
+                />
+                {errors.guestsNum && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {errors.guestsNum.message}
+                  </p>
+                )}
+              </div>
+              <div className="grid md:grid-cols-2 gap-4 ">
+                <div className="">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className="w-full flex items-center justify-start text-left bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black"
+                        name="date"
+                        id="date-trigger"
+                      >
+                        <CalendarIcon className="mr-1 size-4" />
+                        {date ? (
+                          <span>{format(new Date(date), "PPP")}</span>
+                        ) : (
+                          <span className="mt-1 text-[#555555]">
+                            Pick a date
+                          </span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
                     selected={date ? new Date(date) : undefined}
-                    onSelect={(date) => {
-                      if (date)
-                        setValue("date", format(date, "yyyy-MM-dd"));
-                    }}
-                    className="p-3 pointer-events-auto"
-                    disabled={[
-                      {
+                        onSelect={(date) => {
+                          if (date)
+                            setValue("date", format(date, "yyyy-MM-dd"));
+                        }}
+                        className="p-3 pointer-events-auto"
+                        disabled={[
+                          {
                         before: new Date(new Date().setHours(0, 0, 0, 0)),
-                      },
-                    ]}
-                  />
-                </PopoverContent>
-              </Popover>
-              {errors.date && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.date.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <Select
-                name="time"
-                onValueChange={(value) => setValue("time", value)}
+                          },
+                        ]}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  {errors.date && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.date.message}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Select
+                    name="time"
+                    onValueChange={(value) => setValue("time", value)}
                 value={watch("time")}
-              >
-                <SelectTrigger className="w-full bg-white rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] !h-12 text-black">
-                  <SelectValue placeholder="Select time" />
-                </SelectTrigger>
-                <SelectContent className="h-[20em] overflow-y-auto">
+                  >
+                    <SelectTrigger className="w-full bg-white rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] !h-12 text-black">
+                      <SelectValue placeholder="Select time" />
+                    </SelectTrigger>
+                    <SelectContent className="h-[20em] overflow-y-auto">
                   {availableTimeSlots.map((slot) => (
                     <SelectItem 
                       key={slot.value} 
@@ -225,47 +225,47 @@ export default function Reservation() {
                       className={slot.disabled ? "opacity-50 cursor-not-allowed" : ""}
                     >
                       {slot.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.time && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.time.message}
-                </p>
-              )}
-            </div>
-          </div>
-          <div className="w-full">
-            <input
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.time && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.time.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className="w-full">
+                <input
+                  type="text"
+                  name="name"
+                  id="name"
+                  {...register("name")}
+                  placeholder="Fullname"
+                  className="bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black w-full"
+                />
+                {errors.name && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {errors.name.message}
+                  </p>
+                )}
+              </div>
+              <div className="w-full">
+                <input
               type="text"
-              name="name"
-              id="name"
-              {...register("name")}
-              placeholder="Fullname"
-              className="bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black w-full"
-            />
-            {errors.name && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.name.message}
-              </p>
-            )}
-          </div>
-          <div className="w-full">
-            <input
-              type="text"
-              name="phone"
-              id="phone"
-              {...register("phone")}
+                  name="phone"
+                  id="phone"
+                  {...register("phone")}
               placeholder="Phone"
-              className="bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black w-full"
-            />
-            {errors.phone && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.phone.message}
-              </p>
-            )}
-          </div>
+                  className="bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black w-full"
+                />
+                {errors.phone && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {errors.phone.message}
+                  </p>
+                )}
+              </div>
           <div className="w-full">
             <input
               type="email"
@@ -281,18 +281,18 @@ export default function Reservation() {
               </p>
             )}
           </div>
-        </div>
+            </div>
         <div className="mt-8 flex justify-center">
           <Button
             type="submit"
-            className={cn(
+                className={cn(
               "btn-gold",
               "hover:scale-105 transition-all duration-300",
               "active:scale-95",
               isPending && "opacity-50 cursor-not-allowed"
-            )}
-            disabled={isPending}
-          >
+                )}
+                disabled={isPending}
+              >
             {isPending ? "Booking..." : "Book a Table"}
           </Button>
         </div>

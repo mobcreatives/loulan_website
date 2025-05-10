@@ -72,9 +72,11 @@ const FoodItemCard = ({
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-medium line-clamp-1">{data?.name}</h3>
-            <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-              {data?.description}
-            </p>
+            <div className="text-sm text-gray-500 mt-1 space-y-1">
+              {data?.description.split('\n').map((line, index) => (
+                <p key={index} className="line-clamp-1">{line}</p>
+              ))}
+            </div>
           </div>
           <div className="flex items-center">
             <button className="p-2 rounded-full text-gray-400 hover:text-amber-500 hover:bg-amber-50 transition-colors">

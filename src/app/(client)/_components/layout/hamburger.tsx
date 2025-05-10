@@ -60,39 +60,39 @@ export default function HamburgerMenu({
             aria-label="Toggle menu"
             onClick={() => setIsOpen(!isOpen)}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
-              stroke="none"
-              strokeWidth="0"
-              viewBox="0 0 24 24"
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+        stroke="none"
+        strokeWidth="0"
+        viewBox="0 0 24 24"
               className={cn(
                 "w-7 h-7 fill-[#E9C507] overflow-visible [transition:transform_.35s_ease] group-hover:[transition-delay:.25s] [&>_path]:[transition:transform_.35s_ease]",
                 isOpen && "rotate-45"
               )}
-            >
-              <path
+      >
+        <path
                 className={cn(
                   "group-hover:[transform:rotate(112.5deg)_translate(-27.2%,-80.2%)]",
                   isOpen && "[transform:rotate(112.5deg)_translate(-27.2%,-80.2%)]"
                 )}
-                d="m3.45,8.83c-.39,0-.76-.23-.92-.62-.21-.51.03-1.1.54-1.31L14.71,2.08c.51-.21,1.1.03,1.31.54.21.51-.03,1.1-.54,1.31L3.84,8.75c-.13.05-.25.08-.38.08Z"
-              ></path>
-              <path
+          d="m3.45,8.83c-.39,0-.76-.23-.92-.62-.21-.51.03-1.1.54-1.31L14.71,2.08c.51-.21,1.1.03,1.31.54.21.51-.03,1.1-.54,1.31L3.84,8.75c-.13.05-.25.08-.38.08Z"
+        ></path>
+        <path
                 className={cn(
                   "group-hover:[transform:rotate(22.5deg)_translate(15.5%,-23%)]",
                   isOpen && "[transform:rotate(22.5deg)_translate(15.5%,-23%)]"
                 )}
-                d="m2.02,17.13c-.39,0-.76-.23-.92-.62-.21-.51.03-1.1.54-1.31L21.6,6.94c.51-.21,1.1.03,1.31.54.21.51-.03,1.1-.54,1.31L2.4,17.06c-.13.05-.25.08-.38.08Z"
-              ></path>
-              <path
+          d="m2.02,17.13c-.39,0-.76-.23-.92-.62-.21-.51.03-1.1.54-1.31L21.6,6.94c.51-.21,1.1.03,1.31.54.21.51-.03,1.1-.54,1.31L2.4,17.06c-.13.05-.25.08-.38.08Z"
+        ></path>
+        <path
                 className={cn(
                   "group-hover:[transform:rotate(112.5deg)_translate(-15%,-149.5%)]",
                   isOpen && "[transform:rotate(112.5deg)_translate(-15%,-149.5%)]"
                 )}
-                d="m8.91,21.99c-.39,0-.76-.23-.92-.62-.21-.51.03-1.1.54-1.31l11.64-4.82c.51-.21,1.1.03,1.31.54.21.51-.03,1.1-.54,1.31l-11.64,4.82c-.13.05-.25.08-.38.08Z"
-              ></path>
-            </svg>
+          d="m8.91,21.99c-.39,0-.76-.23-.92-.62-.21-.51.03-1.1.54-1.31l11.64-4.82c.51-.21,1.1.03,1.31.54.21.51-.03,1.1-.54,1.31l-11.64,4.82c-.13.05-.25.08-.38.08Z"
+        ></path>
+      </svg>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -136,7 +136,7 @@ export default function HamburgerMenu({
             >
               Login
             </motion.button>
-          </div>
+    </div>
         </DropdownMenuContent>
       </DropdownMenu>
       <LoginDialog

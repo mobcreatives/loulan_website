@@ -2,9 +2,7 @@ import React from "react";
 import { TFeaturedCardPros } from "./types";
 
 export default function FeaturedCard({
-  description,
-  price,
-  title,
+
   image,
 }: Readonly<TFeaturedCardPros>) {
   return (
