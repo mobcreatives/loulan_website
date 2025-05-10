@@ -10,6 +10,8 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
+import { PhotoProvider, PhotoView } from "react-photo-view";
+import "react-photo-view/dist/react-photo-view.css";
 
 interface FoodItem {
   id: number;
@@ -121,30 +123,34 @@ export default function FoodList({ categoryId }: FoodListProps) {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {foods.map((food) => (
-              <Card key={food.id} className="p-4 bg-[#121A1D] text-white">
-                <div className="relative h-48 mb-4">
-                  <Image
-                    src={food.imgUrl || "/placeholder-food.jpg"}
-                    alt={food.name}
-                    fill
-                    className="object-cover rounded-lg"
-                  />
-                </div>
-                <div className="text-sm text-gray-400 mb-4 space-y-1">
-                  {food.description.split('\n').map((line, index) => (
-                    <p key={index} className="line-clamp-1">{line}</p>
-                  ))}
-                </div>
-                <div className="flex justify-between items-center">
-                  {/* <span className="text-primary font-semibold">
-                    NRS {food.price}
-                  </span> */}
-                </div>
-              </Card>
-            ))}
-          </div>
+          <PhotoProvider>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {foods.map((food) => (
+                <Card key={food.id} className="p-4 bg-[#121A1D] text-white">
+                  <div className="relative h-48 mb-4 overflow-hidden rounded-lg">
+                    <PhotoView src={food.imgUrl || "/placeholder-food.jpg"}>
+                      <Image
+                        src={food.imgUrl || "/placeholder-food.jpg"}
+                        alt={food.name}
+                        fill
+                        className="object-cover rounded-lg hover:scale-105 transition-transform duration-500 cursor-pointer"
+                      />
+                    </PhotoView>
+                  </div>
+                  <div className="text-sm text-gray-400 mb-4 space-y-1">
+                    {food.description.split('\n').map((line, index) => (
+                      <p key={index} className="line-clamp-1">{line}</p>
+                    ))}
+                  </div>
+                  <div className="flex justify-between items-center">
+                    {/* <span className="text-primary font-semibold">
+                      NRS {food.price}
+                    </span> */}
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </PhotoProvider>
 
           {totalPages > 1 && (
             <div className="flex justify-center gap-2 mt-6">
