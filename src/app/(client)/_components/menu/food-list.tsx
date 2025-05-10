@@ -132,14 +132,14 @@ export default function FoodList({ categoryId }: FoodListProps) {
                     className="object-cover rounded-lg"
                   />
                 </div>
-                <h3 className="text-lg font-semibold mb-2 text-white">
+                {/* <h3 className="text-lg font-semibold mb-2 text-white">
                   {food.name}
-                </h3>
+                </h3> */}
                 <p className="text-sm text-gray-400 mb-4">{food.description}</p>
                 <div className="flex justify-between items-center">
-                  <span className="text-primary font-semibold">
+                  {/* <span className="text-primary font-semibold">
                     NRS {food.price}
-                  </span>
+                  </span> */}
                 </div>
               </Card>
             ))}
