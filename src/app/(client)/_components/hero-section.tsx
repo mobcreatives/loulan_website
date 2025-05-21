@@ -11,7 +11,7 @@ export default function HeroSection() {
     <section className="bg-[url('/images/hero-image.png')] bg-center bg-cover bg-no-repeat h-[79dvh] md:h-[83.5dvh] flex items-center justify-center">
       <div className="bg-[#000000cb] size-full flex flex-col items-center justify-center text-white space-y-2">
         <TextWithLine
-          text="Hello"
+          text="Hello, Welcome to Loulan Restaurant and Bar"
           className="before:h-[3px] before:w-[60px] before:-top-2 font-medium"
         />
         <h3 className="text-[clamp(2.125rem,2.0325rem+0.3896vw,2.5rem)] font-bold">
