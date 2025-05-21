@@ -1,5 +1,5 @@
-import { APP_ROUTES } from "@/config/routes";
-import { IconBrandAppgallery, IconHome, IconMenu, IconMessage2,  } from "@tabler/icons-react";
+
+
 
 export const navItems = [
   { name: "Home", link: "/" },
