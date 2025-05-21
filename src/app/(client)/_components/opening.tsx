@@ -35,9 +35,7 @@ export default function Opening() {
               text="RESERVATION"
               className="before:w-[50px] before:left-0 before:translate-x-0 before:-bottom-0.5 before:h-[2px] text-xs"
             />
-            <p className="text-[clamp(2.25rem,2.1266rem+0.5195vw,2.75rem)] font-bold">
-              Working Hours
-            </p>
+            
             <div className="text-[clamp(0.875rem,0.8442rem+0.1299vw,1rem)] space-x-3">
               <Link href={APP_ROUTES.BOOKING}>
                 <button
@@ -56,6 +54,9 @@ export default function Opening() {
               </button>
               </Link>
             </div>
+            <p className="text-[clamp(2.25rem,2.1266rem+0.5195vw,2.75rem)] font-bold">
+              Working Hours
+            </p>
           </div>
           <div className="bg-[#121A1D] p-12 text-center space-y-11">
             {isLoading ? (

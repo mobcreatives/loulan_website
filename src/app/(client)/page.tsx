@@ -5,6 +5,7 @@ import Featured from "./_components/featured/featured";
 import Opening from "./_components/opening";
 import Reservation from "./_components/reservation/reservation";
 import AnimatedSection from "./_components/animated-section";
+import Link from "next/link";
 
 export default function Home() {
   return (
