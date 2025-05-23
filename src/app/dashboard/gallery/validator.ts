@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 export const addGallerySchema = z.object({
-  image: z.array(z.instanceof(File)),
-  description: z.string().nonempty(),
+  images: z.array(z.instanceof(File)).min(1, "At least one image is required"),
+  description: z.string().optional(),
   isVisible: z.boolean().optional().default(true),
 });
 

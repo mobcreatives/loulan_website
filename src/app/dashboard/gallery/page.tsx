@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Search, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Search, X } from "lucide-react";
+import Image from "next/image";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,6 +42,21 @@ import { KEYS } from "@/config/constants";
 import { toast } from "sonner";
 import { TResponse } from "@/global/types";
 
+// Add this type for paginated gallery response
+type GalleryPaginatedResponse = {
+  galleries: TImageGalleryDetails[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+    nextPage: number | null;
+    prevPage: number | null;
+  };
+};
+
 export default function Gallery() {
   // hooks
   const isMobile = useIsMobile();
@@ -54,14 +70,21 @@ export default function Gallery() {
   const [showHidden, setShowHidden] = useState(false);
   const [showFeatured, setShowFeatured] = useState(false);
   const [currentImage, setCurrentImage] = useState<TImageGalleryDetails | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const {
     handleSubmit: addHandleSubmit,
     register: addRegister,
     setValue: addSetValue,
     reset: addReset,
+    formState: { errors },
   } = useForm<TAddGalleyData>({
     resolver: zodResolver(addGallerySchema),
+    defaultValues: {
+      isVisible: true
+    }
   });
 
   const {
@@ -73,17 +96,34 @@ export default function Gallery() {
     resolver: zodResolver(updateGallerySchema),
   });
 
+  const { data, refetch, isLoading } = useQuery<GalleryPaginatedResponse>({
+    queryKey: [
+      KEYS.GALLERY.GET,
+      currentPage,
+      searchQuery,
+      showHidden,
+      showFeatured
+    ],
+    queryFn: () => getGalleryImages(currentPage, itemsPerPage, searchQuery, showHidden, showFeatured),
+    placeholderData: (prev) => prev,
+  });
+
+  const gallery = data?.galleries || [];
+  const pagination = data?.pagination || { page: 1, totalPages: 1 };
+
   const { mutateAsync: addMutateSync, isPending: addPending } = useMutation({
-    mutationKey: KEYS.GALLERY.ADD,
+    mutationKey: [KEYS.GALLERY.ADD],
     mutationFn: addGallery,
-    onSuccess: () => {
-      refetch();
+    onSuccess: async () => {
+      await refetch(); // Wait for refetch to complete
       setIsFormOpen(false);
-      toast("Image added to the gallery successfully");
+      toast.success("Images added to the gallery successfully");
       addReset();
+      setSelectedFiles([]);
     },
-    onError: () => {
-      toast("Fail to add image to the gallery.");
+    onError: (error) => {
+      console.error("Mutation error:", error);
+      toast.error("Failed to add images to the gallery");
     },
   });
 
@@ -130,44 +170,101 @@ export default function Gallery() {
     },
   });
 
-  const { data: gallery, refetch } = useQuery({
-    queryKey: KEYS.GALLERY.GET,
-    queryFn: getGalleryImages,
-  });
+  function handleEdit(data: TImageGalleryDetails) {
+    setCurrentImage(data);
+    setIsEditOpen(true);
+  }
 
-  // Dynamic filtering based on visibility and featured states
-  const filteredImages = gallery?.filter((image) => {
-    const matchesSearch = image.description
-      ?.toLowerCase()
-      .includes(searchQuery.toLowerCase());
+  function handleDelete(data: TImageGalleryDetails) {
+    setCurrentImage(data);
+    setIsDeleteOpen(true);
+  }
 
-    const matchesVisibility = showFeatured
-      ? image.isVisible === true // Show featured images
-      : showHidden
-      ? image.isVisible === false // Show hidden images
-      : true; // Show all images when neither is selected
+  async function confirmDelete() {
+    if (!currentImage) return;
+    await deleteMutateSync(currentImage.id);
+  }
 
-    return matchesSearch && matchesVisibility;
-  });
+  async function handleToggleVisibility(data: TImageGalleryDetails) {
+    await toggleVisibilityMutateSync(data.id);
+  }
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const files = Array.from(e.target.files);
+    console.log("Selected files:", files); // Debug log
+    setSelectedFiles(files);
+    addSetValue("images", files, { shouldValidate: true });
+  };
+
+  const onAddSubmit = async (data: TAddGalleyData) => {
+    console.log("Form submitted with data:", data); // Debug log
+    if (!data.images || data.images.length === 0) {
+      toast.error("Please select at least one image");
+      return;
+    }
+    try {
+      await addMutateSync(data);
+    } catch (error) {
+      console.error("Submit error:", error);
+      toast.error("Failed to submit form");
+    }
+  };
+
+  async function onUpdateSubmit(data: TUpdateGalleryData) {
+    if (!currentImage) return;
+    await updateMutateSync({
+      id: currentImage.id,
+      data,
+    });
+  }
+
+  useEffect(() => {
+    if (currentImage) {
+      updateReset({
+        description: currentImage.description,
+        isVisible: currentImage.isVisible,
+      });
+    }
+  }, [currentImage, updateReset]);
 
   async function addGallery(data: TAddGalleyData) {
+    console.log("Submitting data:", data); // Debug log
     try {
+      const formData = new FormData();
+      
+      // Log the files being added
+      console.log("Files to be added:", data.images);
+      
+      data.images.forEach((file, index) => {
+        console.log(`Adding file ${index}:`, file.name); // Debug log
+        formData.append(`files`, file);
+      });
+      
+      if (data.description) {
+        formData.append('description', data.description);
+      }
+      formData.append('isVisible', String(data.isVisible));
+
+      // Log the FormData contents
+      for (let pair of formData.entries()) {
+        console.log(pair[0], pair[1]);
+      }
+
       const response = await _axios.post(
         API_ROUTES.GALLERY,
-        {
-          imgUrl: data.image[0],
-          description: data.description,
-          iseVisible: data.isVisible,
-        },
+        formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         }
       );
+      console.log("Response:", response.data); // Debug log
       return response.data;
-    } catch {
-      throw new Error("Fail to add image to gallery");
+    } catch (error) {
+      console.error("Error in addGallery:", error);
+      throw error;
     }
   }
 
@@ -214,56 +311,25 @@ export default function Gallery() {
     }
   }
 
-  async function getGalleryImages() {
+  async function getGalleryImages(
+    page = 1,
+    limit = 10,
+    search = "",
+    hidden = false,
+    featured = false
+  ): Promise<GalleryPaginatedResponse> {
     try {
-      const response = await _axios.get<
-        TResponse<TImageGalleryDetails, "galleries">
-      >(API_ROUTES.GALLERY);
-      return response.data.galleries;
-    } catch {
-      throw new Error("Fail to fetch images.");
+      let params = `?page=${page}&limit=${limit}`;
+      if (search) params += `&search=${encodeURIComponent(search)}`;
+      if (hidden) params += `&isVisible=false`;
+      if (featured) params += `&isVisible=true`;
+      const response = await _axios.get(`${API_ROUTES.GALLERY}${params}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching gallery images:", error);
+      throw new Error("Failed to fetch images.");
     }
   }
-
-  function handleEdit(data: TImageGalleryDetails) {
-    setCurrentImage(data);
-    setIsEditOpen(true);
-  }
-
-  function handleDelete(data: TImageGalleryDetails) {
-    setCurrentImage(data);
-    setIsDeleteOpen(true);
-  }
-
-  async function confirmDelete() {
-    if (!currentImage) return;
-    await deleteMutateSync(currentImage.id);
-  }
-
-  async function handleToggleVisibility(data: TImageGalleryDetails) {
-    await toggleVisibilityMutateSync(data.id);
-  }
-
-  async function onAddSubmit(data: TAddGalleyData) {
-    await addMutateSync(data);
-  }
-
-  async function onUpdateSubmit(data: TUpdateGalleryData) {
-    if (!currentImage) return;
-    await updateMutateSync({
-      id: currentImage.id,
-      data,
-    });
-  }
-
-  useEffect(() => {
-    if (currentImage) {
-      updateReset({
-        description: currentImage.description,
-        isVisible: currentImage.isVisible,
-      });
-    }
-  }, [currentImage, updateReset]);
 
   return (
     <div>
@@ -330,17 +396,11 @@ export default function Gallery() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredImages?.map((image) => (
-          <ImageCard
-            key={image.id}
-            data={image}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onToggleVisibility={handleToggleVisibility}
-          />
-        ))}
-
-        {filteredImages?.length === 0 && (
+        {isLoading ? (
+          <div className="col-span-full flex items-center justify-center p-12">
+            <p className="text-gray-500">Loading gallery...</p>
+          </div>
+        ) : gallery.length === 0 ? (
           <div className="col-span-full flex flex-col items-center justify-center p-12 bg-white rounded-lg border border-dashed border-gray-300">
             <p className="text-gray-500 mb-4">No images found</p>
             <Button onClick={() => setIsFormOpen(true)} className="cursor-pointer">
@@ -348,7 +408,49 @@ export default function Gallery() {
               Add Your First Image
             </Button>
           </div>
+        ) : (
+          <>
+            {gallery.map((image) => (
+              <ImageCard
+                key={image.id}
+                data={image}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onToggleVisibility={handleToggleVisibility}
+              />
+            ))}
+          </>
         )}
+      </div>
+
+      {/* Pagination (always show) */}
+      <div className="flex items-center justify-center gap-2 mt-8">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          disabled={pagination.page === 1}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((page) => (
+          <Button
+            key={page}
+            variant={pagination.page === page ? "default" : "outline"}
+            onClick={() => setCurrentPage(page)}
+            className="w-8 h-8"
+          >
+            {page}
+          </Button>
+        ))}
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setCurrentPage((p) => Math.min(pagination.totalPages, p + 1))}
+          disabled={pagination.page === pagination.totalPages}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
       </div>
 
       {/* Add Image Form */}
@@ -360,15 +462,19 @@ export default function Gallery() {
               : "max-h-[85vh] max-w-2xl mx-auto rounded-t-lg"
           }
         >
-          <form onSubmit={addHandleSubmit(onAddSubmit)}>
+          <form onSubmit={addHandleSubmit(onAddSubmit)} noValidate>
             <DrawerHeader className="px-4 sm:px-6 py-0">
               <div className="flex items-center justify-between">
-                <DrawerTitle>Add Image to Gallery</DrawerTitle>
+                <DrawerTitle>Add Images to Gallery</DrawerTitle>
                 <DrawerClose asChild>
                   <Button
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 cursor-pointer"
+                    onClick={() => {
+                      setSelectedFiles([]);
+                      addReset();
+                    }}
                   >
                     <X size={16} />
                   </Button>
@@ -381,31 +487,36 @@ export default function Gallery() {
                 <div className="grid gap-4">
                   <div className="space-y-2">
                     <label htmlFor="image" className="text-sm font-medium">
-                      Image
+                      Images (Select multiple)
                     </label>
                     <input
                       id="image"
                       type="file"
+                      multiple
+                      accept="image/*"
                       className="w-full p-2 border rounded-md"
-                      onChange={(e) => {
-                        if (!e.target.files) return;
-                        addSetValue("image", Array.from(e.target.files));
-                      }}
+                      onChange={handleFileSelect}
                     />
+                    {selectedFiles.length > 0 && (
+                      <p className="text-sm text-gray-500">
+                        {selectedFiles.length} image(s) selected
+                      </p>
+                    )}
                   </div>
+
                   <div className="space-y-2">
-                    <label htmlFor="caption" className="text-sm font-medium">
-                      Caption
+                    <label htmlFor="description" className="text-sm font-medium">
+                      Description (Optional)
                     </label>
                     <input
-                      id="caption"
+                      id="description"
                       type="text"
                       className="w-full p-2 border rounded-md"
-                      defaultValue={currentImage?.description ?? ""}
-                      placeholder="Describe this image"
+                      placeholder="Enter a description for the images"
                       {...addRegister("description")}
                     />
                   </div>
+
                   <div className="flex items-center space-x-2">
                     <Switch
                       id="isVisible"
@@ -415,7 +526,7 @@ export default function Gallery() {
                         addSetValue("isVisible", isChecked)
                       }
                     />
-                    <Label htmlFor="isFeatured">Visible on website</Label>
+                    <Label htmlFor="isVisible">Visible on website</Label>
                   </div>
                 </div>
               </div>
@@ -423,14 +534,23 @@ export default function Gallery() {
             <DrawerFooter className="px-4 sm:px-6 border-t">
               <div className="flex justify-end gap-2">
                 <DrawerClose asChild>
-                  <Button variant="outline">Cancel</Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => {
+                      setSelectedFiles([]);
+                      addReset();
+                    }}
+                  >
+                    Cancel
+                  </Button>
                 </DrawerClose>
                 <Button
                   type="submit"
                   className="cursor-pointer"
-                  disabled={addPending}
+                  disabled={addPending || selectedFiles.length === 0}
+                  onClick={() => console.log("Submit button clicked")}
                 >
-                  {addPending ? "Saving..." : "Add Image"}
+                  {addPending ? "Saving..." : "Add Images"}
                 </Button>
               </div>
             </DrawerFooter>

@@ -10,21 +10,23 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Loulan Restaurant and Bar | Chinese & Korean Cuisine in Thamel, Kathmandu</title>
+        <title>Loulan Chinese Restaurant and Bar | Authentic Chinese & Korean Cuisine in Kathmandu</title>
         <meta
           name="description"
-          content="Loulan Restaurant and Bar offers authentic Chinese and Korean cuisine in the heart of Thamel, Kathmandu. Open daily from 10 AM to 1 AM. View our menus, make a reservation, browse our gallery, or contact us for more information."
+          content="Experience authentic Chinese and Korean cuisine at Loulan Chinese Restaurant and Bar in Thamel, Kathmandu. Reserve your table, explore our menu, view our gallery, or contact us for more information. Open daily from 10 AM to 1 AM."
         />
+        <meta name="keywords" content="Chinese Restaurant, Korean Restaurant, Kathmandu, Thamel, Loulan, Reserve Table, Menu, Gallery, Contact" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         {/* Open Graph / Facebook */}
-        <meta property="og:title" content="Loulan Restaurant and Bar | Chinese & Korean Cuisine in Thamel, Kathmandu" />
-        <meta property="og:description" content="Loulan Restaurant and Bar offers authentic Chinese and Korean cuisine in the heart of Thamel, Kathmandu. Open daily from 10 AM to 1 AM. View our menus, make a reservation, browse our gallery, or contact us for more information." />
+        <meta property="og:title" content="Loulan Chinese Restaurant and Bar | Authentic Chinese & Korean Cuisine in Kathmandu" />
+        <meta property="og:description" content="Experience authentic Chinese and Korean cuisine at Loulan Chinese Restaurant and Bar in Thamel, Kathmandu. Reserve your table, explore our menu, view our gallery, or contact us for more information. Open daily from 10 AM to 1 AM." />
         <meta property="og:type" content="restaurant" />
         <meta property="og:url" content="https://www.loulanrestaurant.com.np/" />
         <meta property="og:image" content="https://www.loulanrestaurant.com.np/og-image.jpg" />
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Loulan Restaurant and Bar | Chinese & Korean Cuisine in Thamel, Kathmandu" />
-        <meta name="twitter:description" content="Loulan Restaurant and Bar offers authentic Chinese and Korean cuisine in the heart of Thamel, Kathmandu. Open daily from 10 AM to 1 AM. View our menus, make a reservation, browse our gallery, or contact us for more information." />
+        <meta name="twitter:title" content="Loulan Chinese Restaurant and Bar | Authentic Chinese & Korean Cuisine in Kathmandu" />
+        <meta name="twitter:description" content="Experience authentic Chinese and Korean cuisine at Loulan Chinese Restaurant and Bar in Thamel, Kathmandu. Reserve your table, explore our menu, view our gallery, or contact us for more information. Open daily from 10 AM to 1 AM." />
         <meta name="twitter:image" content="https://www.loulanrestaurant.com.np/og-image.jpg" />
         {/* Structured Data (JSON-LD) */}
         <script
@@ -33,7 +35,7 @@ export default function Home() {
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Restaurant",
-              "name": "Loulan Restaurant and Bar",
+              "name": "Loulan Chinese Restaurant and Bar",
               "image": "https://www.loulanrestaurant.com.np/og-image.jpg",
               "servesCuisine": ["Chinese", "Korean"],
               "address": {
@@ -50,6 +52,7 @@ export default function Home() {
         />
       </Head>
       <main>
+        <h1 className="sr-only">Loulan Chinese Restaurant and Bar | Authentic Chinese & Korean Cuisine in Kathmandu</h1>
         <AnimatedSection className="hero-section" delay={0.2}>
           <HeroSection />
         </AnimatedSection>
