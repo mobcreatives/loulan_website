@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Plus, Search, X } from "lucide-react";
-import Image from "next/image";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,7 +40,7 @@ import { API_ROUTES } from "@/config/routes";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { KEYS } from "@/config/constants";
 import { toast } from "sonner";
-import { TResponse } from "@/global/types";
+
 
 // Add this type for paginated gallery response
 type GalleryPaginatedResponse = {
@@ -79,7 +79,7 @@ export default function Gallery() {
     register: addRegister,
     setValue: addSetValue,
     reset: addReset,
-    formState: { errors },
+    formState: { },
   } = useForm<TAddGalleyData>({
     resolver: zodResolver(addGallerySchema),
     defaultValues: {
@@ -247,9 +247,7 @@ export default function Gallery() {
       formData.append('isVisible', String(data.isVisible));
 
       // Log the FormData contents
-      for (let pair of formData.entries()) {
-        console.log(pair[0], pair[1]);
-      }
+
 
       const response = await _axios.post(
         API_ROUTES.GALLERY,
