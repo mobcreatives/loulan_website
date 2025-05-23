@@ -66,9 +66,13 @@ export default function FoodList({ categoryId }: FoodListProps) {
     queryKey: [...KEYS.FOOD.GET, categoryId, currentPage, debouncedSearchQuery],
     queryFn: async () => {
       try {
-        const url = categoryId
-          ? `${API_ROUTES.FOODS}?menuId=${categoryId}&page=${currentPage}&limit=${itemsPerPage}&search=${debouncedSearchQuery}`
-          : `${API_ROUTES.FOODS}?page=${currentPage}&limit=${itemsPerPage}&search=${debouncedSearchQuery}`;
+        let url = categoryId
+          ? `${API_ROUTES.FOODS}?menuId=${categoryId}&page=${currentPage}&limit=${itemsPerPage}`
+          : `${API_ROUTES.FOODS}?page=${currentPage}&limit=${itemsPerPage}`;
+        const trimmedSearch = debouncedSearchQuery.trim();
+        if (trimmedSearch) {
+          url += `&search=${encodeURIComponent(trimmedSearch)}`;
+        }
         console.log("Fetching from URL:", url);
         const response = await _axios.get<FoodResponse>(url);
         console.log("API Response:", response.data);

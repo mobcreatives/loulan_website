@@ -28,7 +28,7 @@ export default function Featured() {
         className="font-fredoka text-[clamp(2.125rem,2.0325rem+0.3896vw,2.5rem)] font-bold before:w-[225px] before:h-[5px] before:-bottom-1 text-center"
       />
       <div className="flex justify-center">
-        <div className="grid lg:grid-cols-2 gap-x-8 gap-y-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-12 gap-y-12 w-full max-w-5xl mx-auto justify-items-center">
           {Array.isArray(data) &&
             data.map((item) => (
               <FeaturedCard
