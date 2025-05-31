@@ -2,9 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import {
-  TFloatingNavProps,
-} from "@/components";
+import { TFloatingNavProps } from "@/components";
 import Image from "next/image";
 import { APP_ROUTES, API_ROUTES } from "@/config/routes";
 import HamburgerMenu from "./hamburger";
@@ -15,11 +13,13 @@ import { KEYS } from "@/config/constants";
 import { TResponse } from "@/global/types";
 import MenuNavItem from "./_components/menu-nav-item";
 import LoginDialog from "@/app/(client)/booking/_components/login-dialog";
+import { useAuth } from "@/context/auth-context";
 
 type MenuCategoriesResponse = TResponse<TMenuCategoryDetails, "menus">;
 
-export function FloatingNav({ navItems }: Readonly<TFloatingNavProps>) {
+export default function FloatingNav({ navItems }: Readonly<TFloatingNavProps>) {
   const { _axios } = useAuthAxios();
+  const { user, logout } = useAuth();
   const [active, setActive] = useState(navItems[0].link);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -88,17 +88,28 @@ export function FloatingNav({ navItems }: Readonly<TFloatingNavProps>) {
             ))}
           </div>
 
-          {/* Login button and hamburger menu */}
+          {/* Login/Logout button and hamburger menu */}
           <div className="flex items-center space-x-4">
-            <button
-              className={cn(
-                "hidden md:block text-sm capitalize bg-primary text-black px-4 py-2 rounded-md hover:bg-primary/90 transition-colors",
-                isLoginOpen && "bg-primary/90"
-              )}
-              onClick={() => setIsLoginOpen(true)}
-            >
-              Login
-            </button>
+            {user ? (
+              <button
+                className={cn(
+                  "hidden md:block text-sm capitalize bg-primary text-black px-4 py-2 rounded-md hover:bg-primary/90 transition-colors"
+                )}
+                onClick={logout}
+              >
+                Logout
+              </button>
+            ) : (
+              <button
+                className={cn(
+                  "hidden md:block text-sm capitalize bg-primary text-black px-4 py-2 rounded-md hover:bg-primary/90 transition-colors",
+                  isLoginOpen && "bg-primary/90"
+                )}
+                onClick={() => setIsLoginOpen(true)}
+              >
+                Login
+              </button>
+            )}
             <HamburgerMenu
               navItems={navItems}
               active={active}
@@ -109,7 +120,7 @@ export function FloatingNav({ navItems }: Readonly<TFloatingNavProps>) {
         </div>
       </nav>
 
-      <LoginDialog open={isLoginOpen} setOpen={setIsLoginOpen} data={undefined} mutationFunction={async () => { }} />
+      <LoginDialog open={isLoginOpen} setOpen={setIsLoginOpen} data={undefined} mutationFunction={async () => {}} />
     </>
   );
 }

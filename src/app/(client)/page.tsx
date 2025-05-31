@@ -1,3 +1,5 @@
+"use client";
+
 import Head from "next/head";
 import HeroSection from "./_components/hero-section";
 import RateYourExperience from "./_components/rate-your-experience";

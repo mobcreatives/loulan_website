@@ -6,10 +6,8 @@ import { useAuthAxios } from "@/config/auth-axios";
 import { API_ROUTES } from "@/config/routes";
 import { KEYS } from "@/config/constants";
 import Image from "next/image";
-import { useState, useEffect } from "react";
-import { Input } from "@/components/ui/input";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import "react-photo-view/dist/react-photo-view.css";
 
@@ -47,29 +45,18 @@ interface FoodListProps {
 
 export default function FoodList({ categoryId }: FoodListProps) {
   const { _axios } = useAuthAxios();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery] = useState("");
   const itemsPerPage = 9;
 
-  // Debounce search query
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchQuery(searchQuery);
-      setCurrentPage(1); // Reset to first page when search query changes
-    }, 500); // 500ms delay
-
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
-  const { data: response, isLoading } = useQuery<FoodResponse>({
-    queryKey: [...KEYS.FOOD.GET, categoryId, currentPage, debouncedSearchQuery],
+  const { data: response, isLoading: queryLoading } = useQuery<FoodResponse>({
+    queryKey: [...KEYS.FOOD.GET, categoryId, currentPage, searchQuery],
     queryFn: async () => {
       try {
         let url = categoryId
           ? `${API_ROUTES.FOODS}?menuId=${categoryId}&page=${currentPage}&limit=${itemsPerPage}`
           : `${API_ROUTES.FOODS}?page=${currentPage}&limit=${itemsPerPage}`;
-        const trimmedSearch = debouncedSearchQuery.trim();
+        const trimmedSearch = searchQuery.trim();
         if (trimmedSearch) {
           url += `&search=${encodeURIComponent(trimmedSearch)}`;
         }
@@ -87,15 +74,11 @@ export default function FoodList({ categoryId }: FoodListProps) {
   const foods = response?.foodItems || [];
   const totalPages = response?.pagination?.totalPages || 1;
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  };
-
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
 
-  if (isLoading) {
+  if (queryLoading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -106,7 +89,7 @@ export default function FoodList({ categoryId }: FoodListProps) {
   return (
     <div className="space-y-6">
       <div className="flex justify-center">
-        <div className="relative max-w-md w-full">
+        {/* <div className="relative max-w-md w-full">
           <Input
             type="text"
             placeholder="Search food items..."
@@ -118,7 +101,7 @@ export default function FoodList({ categoryId }: FoodListProps) {
             className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary"
             size={20}
           />
-        </div>
+        </div> */}
       </div>
 
       {foods.length === 0 ? (

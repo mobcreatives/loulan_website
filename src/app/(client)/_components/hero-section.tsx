@@ -1,3 +1,5 @@
+"use client";
+
 import { TextWithLine } from "@/components";
 import ButtonWithBorder from "@/components/buttons/button-with-border";
 import { APP_ROUTES } from "@/config/routes";

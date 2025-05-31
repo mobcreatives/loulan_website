@@ -1,6 +1,6 @@
 import React, { Suspense } from "react";
 import { navItems } from "./data";
-import { FloatingNav } from "./_components/layout/floating-navbar";
+import FloatingNavbar from "./_components/layout/floating-navbar";
 import Footer from "./_components/layout/footer";
 import FloatingReview from "./_components/floating-review/floating-review";
 import FloatingContact from "./_components/floating-contact/floating-contact";
@@ -14,16 +14,16 @@ export default function ClientLayout({
 }>) {
   return (
     <main className="bg-[#0A1316]">
-      <FloatingNav navItems={navItems} />
+      <FloatingNavbar navItems={navItems} />
       <Suspense>{children}</Suspense>
       <Footer />
       <FloatingContact />
       <FloatingReview />
-      <FacebookMessenger
+      <FacebookMessenger 
+        appId={process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || ""} 
         pageId={process.env.NEXT_PUBLIC_FACEBOOK_PAGE_ID || ""}
-        appId={process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || ""}
-        minimized={true}
         themeColor="#FF5A5F"
+        minimized={true}
       />
     </main>
   );

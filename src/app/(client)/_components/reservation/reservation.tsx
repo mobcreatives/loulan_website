@@ -282,12 +282,12 @@ export default function Reservation() {
             )}
           </div>
             </div>
-        <div className="mt-8 flex justify-center">
+        <div className="mt-8 flex justify-center ">
           <Button
             type="submit"
                 className={cn(
               "btn-gold",
-              "hover:scale-105 transition-all duration-300",
+              "hover:scale-105 text-black transition-all duration-300",
               "active:scale-95",
               isPending && "opacity-50 cursor-not-allowed"
                 )}

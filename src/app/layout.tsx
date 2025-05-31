@@ -3,6 +3,7 @@ import { Fredoka } from "next/font/google";
 import "./globals.css";
 import TanstackQueryProvider from "./_components/tanstack-query-provider";
 import { Toaster as Sonner } from "@/components";
+import { AuthProvider } from "@/context/auth-context";
 
 const fredoka = Fredoka({
   variable: "--font-fredoka",
@@ -11,7 +12,7 @@ const fredoka = Fredoka({
 
 export const metadata: Metadata = {
   title: "Loulan Chinese Restaurant and Bar",
-  description: "Chinese Restuarant In Nepal",
+  description: "Chinese Restaurant In Nepal",
 };
 
 export default function RootLayout({
@@ -23,8 +24,10 @@ export default function RootLayout({
     <html lang="en">
       <TanstackQueryProvider>
         <body className={`${fredoka.variable} antialiased`}>
-          <Sonner />
-          {children}
+          <AuthProvider>
+            {children}
+            <Sonner />
+          </AuthProvider>
         </body>
       </TanstackQueryProvider>
     </html>
