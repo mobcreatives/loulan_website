@@ -1,8 +1,8 @@
 "use client";
 
-import { TextWithLine } from "@/components";
-import { APP_ROUTES, API_ROUTES } from "@/config/routes";
-import Link from "next/link";
+import {  } from "@/components";
+import {  API_ROUTES } from "@/config/routes";
+
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { TSettingResponse } from "@/app/dashboard/settings/types";
@@ -31,7 +31,7 @@ export default function Opening() {
       <div className="bg-[#000000cb] flex justify-center px-6 sm:px-10 md:px-16 lg:px-40 2xl:px-44 py-12">
         <div className="flex items-center flex-col gap-y-12 md:flex-row md:gap-y-0 w-full justify-between max-w-[1200px]">
           <div className="space-y-2">
-            <TextWithLine
+            {/* <TextWithLine
               text="RESERVATION"
               className="before:w-[50px] before:left-0 before:translate-x-0 before:-bottom-0.5 before:h-[2px] text-xs"
             />
@@ -53,7 +53,7 @@ export default function Opening() {
                 contact us
               </button>
               </Link>
-            </div>
+            </div> */}
             <p className="text-[clamp(2.25rem,2.1266rem+0.5195vw,2.75rem)] font-bold">
               Working Hours
             </p>
