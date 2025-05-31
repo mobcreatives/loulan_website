@@ -3,7 +3,6 @@
 import {
   FacebookIconComponent,
   InstagramIconComponent,
-  LinkedInIconComponent,
   TwitterIconComponent,
 } from "@/components";
 import { APP_ROUTES, API_ROUTES } from "@/config/routes";
