@@ -4,6 +4,7 @@ import { FloatingNav } from "./_components/layout/floating-navbar";
 import Footer from "./_components/layout/footer";
 import FloatingReview from "./_components/floating-review/floating-review";
 import FloatingContact from "./_components/floating-contact/floating-contact";
+import { FacebookMessenger } from "@/components/FacebookMessenger";
 import "react-photo-view/dist/react-photo-view.css";
 
 export default function ClientLayout({
@@ -18,6 +19,12 @@ export default function ClientLayout({
       <Footer />
       <FloatingContact />
       <FloatingReview />
+      <FacebookMessenger
+        pageId={process.env.NEXT_PUBLIC_FACEBOOK_PAGE_ID || ""}
+        appId={process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || ""}
+        minimized={true}
+        themeColor="#FF5A5F"
+      />
     </main>
   );
 }

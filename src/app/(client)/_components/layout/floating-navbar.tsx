@@ -12,7 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { TMenuCategoryDetails } from "@/app/dashboard/menu-categories/types";
 import { useAuthAxios } from "@/config/auth-axios";
 import { KEYS } from "@/config/constants";
-import { TResponse } from "@/global/types"; 
+import { TResponse } from "@/global/types";
 import MenuNavItem from "./_components/menu-nav-item";
 import LoginDialog from "@/app/(client)/booking/_components/login-dialog";
 
@@ -46,19 +46,22 @@ export function FloatingNav({ navItems }: Readonly<TFloatingNavProps>) {
   return (
     <>
       <nav className="bg-[#0A1316] flex justify-between items-center text-white py-4 px-10 sm:px-24 lg:px-52 sticky top-0 z-50">
-        <div className="flex justify-between items-center w-full">
+        <div className="flex items-center justify-between w-full">
+          {/* Logo */}
           <Link href={APP_ROUTES.HOME} className="flex items-center">
             <p className="w-20">
               <Image
                 className="size-full object-cover"
-                src={"/images/logo.png"}
+                src="/images/logo.png"
                 alt="Logo"
                 width={80}
                 height={80}
               />
             </p>
           </Link>
-          <div className="hidden md:flex items-center space-x-8">
+
+          {/* Middle navigation items */}
+          <div className="hidden md:flex items-center space-x-8 flex-1 justify-center">
             {navItems.map((item) => (
               <React.Fragment key={item.link}>
                 {item.link === APP_ROUTES.MENU ? (
@@ -83,17 +86,19 @@ export function FloatingNav({ navItems }: Readonly<TFloatingNavProps>) {
                 )}
               </React.Fragment>
             ))}
+          </div>
+
+          {/* Login button and hamburger menu */}
+          <div className="flex items-center space-x-4">
             <button
               className={cn(
-                "text-sm capitalize bg-primary text-black px-4 py-2 rounded-md hover:bg-primary/90 transition-colors",
+                "hidden md:block text-sm capitalize bg-primary text-black px-4 py-2 rounded-md hover:bg-primary/90 transition-colors",
                 isLoginOpen && "bg-primary/90"
               )}
               onClick={() => setIsLoginOpen(true)}
             >
               Login
             </button>
-          </div>
-          <div className="flex items-center">
             <HamburgerMenu
               navItems={navItems}
               active={active}
@@ -103,7 +108,8 @@ export function FloatingNav({ navItems }: Readonly<TFloatingNavProps>) {
           </div>
         </div>
       </nav>
-      <LoginDialog open={isLoginOpen} setOpen={setIsLoginOpen} data={undefined} mutationFunction={async () => {}} />
+
+      <LoginDialog open={isLoginOpen} setOpen={setIsLoginOpen} data={undefined} mutationFunction={async () => { }} />
     </>
   );
 }
