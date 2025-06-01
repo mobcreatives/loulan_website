@@ -3,7 +3,7 @@
 import { APP_ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useState, Fragment } from "react";
+import { useState, Fragment, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import MenuNavItem from "./_components/menu-nav-item";
 import { TMenuCategoryDetails } from "@/app/dashboard/menu-categories/types";
@@ -14,9 +14,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import LoginDialog from "@/app/(client)/booking/_components/login-dialog";
 import { motion } from "framer-motion";
-import { useMutation } from "@tanstack/react-query";
-import { login } from "@/app/(auth)/login/helper";
-import { toast } from "sonner";
+import { useAuth } from "@/context/auth-context";
+import { useRouter } from "next/navigation";
 
 type THamburgerMenuProps = {
   navItems: {
@@ -36,18 +35,12 @@ export default function HamburgerMenu({
 }: Readonly<THamburgerMenuProps>) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const router = useRouter();
 
-  const { mutateAsync } = useMutation({
-    mutationKey: ["login", "user"],
-    mutationFn: login,
-    onSuccess: () => {
-      toast.success("Login successful");
-      setIsLoginOpen(false);
-    },
-    onError: () => {
-      toast.error("Login failed");
-    },
-  });
+  useEffect(() => {
+    // Force re-render on user change
+  }, [user]);
 
   return (
     <>
@@ -125,17 +118,32 @@ export default function HamburgerMenu({
                 )}
               </Fragment>
             ))}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-full bg-primary py-2.5 rounded-[6px] font-medium cursor-pointer"
-              onClick={() => {
-                setIsOpen(false);
-                setIsLoginOpen(true);
-              }}
-            >
-              Login
-            </motion.button>
+            {user ? (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-full bg-primary py-2.5 rounded-[6px] font-medium cursor-pointer"
+                onClick={() => {
+                  setIsOpen(false);
+                  logout();
+                  router.push("/");
+                }}
+              >
+                Logout
+              </motion.button>
+            ) : (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-full bg-primary py-2.5 rounded-[6px] font-medium cursor-pointer"
+                onClick={() => {
+                  setIsOpen(false);
+                  setIsLoginOpen(true);
+                }}
+              >
+                Login
+              </motion.button>
+            )}
     </div>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -143,7 +151,7 @@ export default function HamburgerMenu({
         open={isLoginOpen}
         setOpen={setIsLoginOpen}
         data={null}
-        mutationFunction={mutateAsync}
+        mutationFunction={async () => {}}
       />
     </>
   );

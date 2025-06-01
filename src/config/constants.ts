@@ -1,22 +1,22 @@
 export const KEYS = {
   CUISINE: {
-    GET: ["get", "cuisines"],
-    ADD: ["add", "cuisine"],
-    UPDATE: ["update", "cuisine"],
-    DELETE: ["delete", "cuisine"],
+    GET: ["cuisines"],
+    ADD: ["cuisines", "add"],
+    UPDATE: ["cuisines", "update"],
+    DELETE: ["cuisines", "delete"],
   },
   MENU: {
-    GET: ["get", "menus"],
-    ADD: ["add", "menu"],
-    UPDATE: ["update", "menu"],
-    DELETE: ["delete", "menu"],
+    GET: ["menu"],
+    ADD: ["menu", "add"],
+    UPDATE: ["menu", "update"],
+    DELETE: ["menu", "delete"],
   },
   FOOD: {
-    GET: ["get", "foods"],
-    ADD: ["add", "food"],
-    UPDATE: ["update", "food"],
-    DELETE: ["delete", "food"],
-    TOGGLE_FEATURED: ["toggle", "featured", "food"],
+    GET: ["food"],
+    ADD: ["food", "add"],
+    UPDATE: ["food", "update"],
+    DELETE: ["food", "delete"],
+    TOGGLE_FEATURED: ["food", "toggle-featured"],
   },
   FEATURED_FOOD: {
     GET: ["get", "featured", "foods"],
@@ -31,12 +31,11 @@ export const KEYS = {
     DELETE: ["delete", "review"],
     FEATURED: ["toggle", "featured", "review"],
   },
-  RESERVATIONS: {
-    GET: ["get", "reservations"],
-    ADD: ["add", "reservation"],
-    UPDATE: ["update", "reservation"],
-    DELETE: ["delete", "reservation"],
-    FEATURED: ["toggle", "featured", "review"],
+  RESERVATION: {
+    GET: ["reservations"],
+    ADD: ["reservations", "add"],
+    UPDATE: ["reservations", "update"],
+    DELETE: ["reservations", "delete"],
   },
   MENU_CATEGORIES: {
     GET: ["get", "menu", "categories"],
@@ -57,8 +56,17 @@ export const KEYS = {
     DELETE: ["delete", "contact"],
     CHANGE_STATUS: ["change", "status", "contact"],
   },
+  USER: {
+    GET: ["users"],
+    ADD: ["users", "add"],
+    UPDATE: ["users", "update"],
+    DELETE: ["users", "delete"],
+  },
+  AUTH: {
+    CURRENT_USER: ["auth", "current-user"],
+  },
   SETTINGS: {
-    GET: ["settings", "get"],
+    GET: ["settings"],
     UPDATE: ["settings", "update"],
   },
 };

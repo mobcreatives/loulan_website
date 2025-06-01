@@ -3,17 +3,19 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { APP_ROUTES, API_ROUTES } from "@/config/routes";
+import { useAuthAxios } from "@/config/auth-axios";
+import { useQuery } from "@tanstack/react-query";
+import { KEYS } from "@/config/constants";
 
 interface User {
-  id: string;
   username: string;
   email: string;
-  isAdmin: boolean;
+  role: "USER" | "ADMIN";
 }
 
 interface AuthContextType {
   user: User | null;
-  login: (user: User) => void;
+  login: (token: string) => void;
   logout: () => void;
   register: (name: string, email: string, password: string) => Promise<void>;
   isAdmin: boolean;
@@ -23,28 +25,41 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [isClient, setIsClient] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const { _axios } = useAuthAxios();
 
+  // Set isClient to true when component mounts (client-side only)
   useEffect(() => {
-    // Check if user data exists in localStorage
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    setIsClient(true);
   }, []);
 
-  const login = (userData: User) => {
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
-    
-    // Handle redirects based on the current path
-    if (pathname.includes("/booking")) {
-      // If on booking page, stay there
-      return;
-    } else if (pathname === APP_ROUTES.LOGIN || pathname === APP_ROUTES.REGISTER) {
-      // If on login/register page, redirect to home
-      router.push(APP_ROUTES.HOME);
+  // Fetch current user data
+  const { data: currentUser, refetch: refetchUser } = useQuery({
+    queryKey: KEYS.AUTH.CURRENT_USER,
+    queryFn: async () => {
+      try {
+        const response = await _axios.get(API_ROUTES.AUTH.CURRENT_USER);
+        return response.data.user;
+      } catch {
+        return null;
+      }
+    },
+    enabled: isClient && !!localStorage.getItem("token"),
+  });
+
+  useEffect(() => {
+    if (currentUser) {
+      setUser(currentUser);
+    }
+  }, [currentUser]);
+
+  const login = (token: string) => {
+    if (isClient) {
+      localStorage.setItem("token", token);
+      refetchUser();
+      window.location.reload();
     }
   };
 
@@ -63,8 +78,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error(error.message || "Registration failed");
       }
 
-      const userData = await response.json();
-      login(userData);
+      const data = await response.json();
+      login(data.token);
     } catch (error) {
       throw error;
     }
@@ -72,13 +87,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("user");
+    if (isClient) {
+      localStorage.removeItem("token");
+    }
     router.push(APP_ROUTES.HOME);
   };
 
   // Protect dashboard route
   useEffect(() => {
-    if (pathname.startsWith("/dashboard") && (!user || !user.isAdmin)) {
+    if (pathname.startsWith("/dashboard") && (!user || user.role !== "ADMIN")) {
       router.push(APP_ROUTES.HOME);
     }
   }, [pathname, user, router]);
@@ -90,7 +107,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         logout,
         register,
-        isAdmin: user?.isAdmin || false,
+        isAdmin: user?.role === "ADMIN",
       }}
     >
       {children}

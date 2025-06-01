@@ -1,7 +1,8 @@
 export const API_ROUTES = {
   AUTH: {
-    LOGIN: "auth/login",
-    REGISTER: "auth/register",
+    LOGIN: "/auth/login",
+    REGISTER: "/auth/register",
+    CURRENT_USER: "/auth/currentUser",
   },
   REVIEW: "reviews",
   RESERVATIONS: "reservations",
@@ -10,7 +11,7 @@ export const API_ROUTES = {
   FOODS: "foods",
   CONTACTS: "contacts",
   SETTINGS : "settings",
-};
+} as const;
 
 export const APP_ROUTES = {
   HOME: "/",

@@ -46,19 +46,19 @@ export default function RegisterDialog({
     onSuccess: async (data) => {
       toast.success("Registration successful");
       // After successful registration, log the user in
-      authLogin({
-        id: data.id,
-        username: data.username,
-        email: data.email,
-        isAdmin: data.isAdmin,
-      });
+      authLogin(data.token);
       setOpen(false);
       if (onSuccess) {
         onSuccess();
       }
     },
-    onError: () => {
-      toast.error("Registration failed");
+    onError: (error: unknown) => {
+      let message = "Registration failed";
+      if (typeof error === "object" && error !== null && "response" in error) {
+        const err = error as { response?: { data?: { message?: string } } };
+        message = err.response?.data?.message || message;
+      }
+      toast.error(message);
     },
   });
 

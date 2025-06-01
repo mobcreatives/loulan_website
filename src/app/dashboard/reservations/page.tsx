@@ -97,7 +97,7 @@ export default function Reservations() {
   // tanstack queries
   const { mutateAsync: addReservationMutateSync, isPending: addPending } =
     useMutation({
-      mutationKey: KEYS.RESERVATIONS.ADD,
+      mutationKey: KEYS.RESERVATION.ADD,
       mutationFn: addReservation,
       onSuccess: () => {
         refetch();
@@ -110,7 +110,7 @@ export default function Reservations() {
     });
   const { mutateAsync: deleteReservationMutateSync, isPending: deletePending } =
     useMutation({
-      mutationKey: KEYS.RESERVATIONS.DELETE,
+      mutationKey: KEYS.RESERVATION.DELETE,
       mutationFn: deleteReservation,
       onSuccess: () => {
         refetch();
@@ -124,7 +124,7 @@ export default function Reservations() {
 
   const { mutateAsync: updateReservationMutateSync, isPending: updatePending } =
     useMutation({
-      mutationKey: KEYS.RESERVATIONS.UPDATE,
+      mutationKey: KEYS.RESERVATION.UPDATE,
       mutationFn: (updateData: TUpdateReservationArgs) =>
         updateReservation(updateData.id, updateData.data),
       onSuccess: () => {
@@ -138,7 +138,7 @@ export default function Reservations() {
     });
 
   const { data: reservations, refetch } = useQuery({
-    queryKey: KEYS.RESERVATIONS.GET,
+    queryKey: KEYS.RESERVATION.GET,
     queryFn: getReservations,
   });
   // handlers

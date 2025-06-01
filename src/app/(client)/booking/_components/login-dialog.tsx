@@ -40,11 +40,16 @@ export default function LoginDialog({
     mutationFn: login,
     onSuccess: async () => {
       toast.success("Login successful");
-      mutationFunction(data);
+      window.location.reload();
       setOpen(false);
     },
-    onError: () => {
-      toast.error("Login failed");
+    onError: (error: unknown) => {
+      let message = "Login failed";
+      if (typeof error === "object" && error !== null && "response" in error) {
+        const err = error as { response?: { data?: { message?: string } } };
+        message = err.response?.data?.message || message;
+      }
+      toast.error(message);
     },
   });
 

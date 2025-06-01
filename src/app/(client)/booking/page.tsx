@@ -1,9 +1,28 @@
 "use client";
 
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/context/auth-context";
+import { useAuthAxios } from "@/config/auth-axios";
+import { API_ROUTES } from "@/config/routes";
+import { KEYS } from "@/config/constants";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+import Head from "next/head";
 import { TAddReservationData } from "@/app/dashboard/reservations/types";
 import { addReservationSchema } from "@/app/dashboard/reservations/validator";
 import {
-  Button,
   Calendar,
   Popover,
   PopoverContent,
@@ -15,25 +34,18 @@ import {
   SelectValue,
   TextWithLine,
 } from "@/components";
-import { useAuthAxios } from "@/config/auth-axios";
-import { KEYS } from "@/config/constants";
-import { API_ROUTES } from "@/config/routes";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { cn } from "@/lib/utils";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { format, isToday } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { useState, useMemo } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { useMemo } from "react";
 import LoginDialog from "./_components/login-dialog";
 import { motion } from "framer-motion";
-import Head from "next/head";
 
 export default function Booking() {
   const { _axios } = useAuthAxios();
   const { getItem } = useLocalStorage();
+  const { user } = useAuth();
   const [openLoginDialog, setOpenLoginDialog] = useState(false);
   const [formData, setFormData] = useState<TAddReservationData>(
     {} as TAddReservationData
@@ -47,6 +59,14 @@ export default function Booking() {
     formState: { errors },
   } = useForm<TAddReservationData>({
     resolver: zodResolver(addReservationSchema),
+    defaultValues: {
+      name: user?.username || "",
+      email: user?.email || "",
+      guestsNum: undefined,
+      phone: "",
+      date: "",
+      time: "",
+    },
   });
   const date = watch("date");
   const numberOfGuests = watch("guestsNum");
@@ -100,8 +120,22 @@ export default function Booking() {
     });
   }, [date, currentTime, timeSlots]);
 
+  // Fetch user's previous reservations
+  const { data: previousReservations } = useQuery({
+    queryKey: KEYS.RESERVATION.GET,
+    queryFn: async () => {
+      try {
+        const response = await _axios.get("/users/reservations");
+        return response.data.reservations;
+      } catch (error) {
+        console.error("Error fetching reservations:", error);
+        return [];
+      }
+    },
+  });
+
   const { mutateAsync, isPending } = useMutation({
-    mutationKey: KEYS.RESERVATIONS.ADD,
+    mutationKey: KEYS.RESERVATION.ADD,
     mutationFn: addReservation,
     onSuccess: () => {
       toast(
@@ -163,6 +197,51 @@ export default function Booking() {
           />
         </motion.div>
 
+        {/* Previous Reservations Table */}
+        {user && (
+          <div className="w-full max-w-2xl mb-8 mt-8">
+            <h2 className="text-2xl font-semibold mb-4">Your Previous Reservations</h2>
+            <div className="overflow-x-auto ">
+              <Table>
+                <TableHeader className="bg-white">
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Time</TableHead>
+                    <TableHead>Guests</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {previousReservations && previousReservations.length > 0 ? (
+                    previousReservations.map((reservation: Record<string, unknown>) => (
+                      <TableRow key={reservation._id as string}>
+                        <TableCell>{new Date(reservation.date as string).toLocaleDateString()}</TableCell>
+                        <TableCell>{reservation.time as string}</TableCell>
+                        <TableCell>{String(reservation.guestsNum ?? reservation.guests ?? '')}</TableCell>
+                        <TableCell>
+                          <span className={`px-2 py-1 rounded-full text-sm ${
+                            reservation.status === "CONFIRMED" || reservation.status === "confirmed"
+                              ? "bg-green-100 text-green-800"
+                              : reservation.status === "PENDING" || reservation.status === "pending"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : "bg-red-100 text-red-800"
+                          }`}>
+                            {reservation.status as string}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center">No reservations found.</TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        )}
+
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -192,18 +271,76 @@ export default function Booking() {
                   </p>
                 )}
               </div>
+              {/* Name and Email fields: autofill and disable if user is logged in */}
+              {!user ? (
+                <>
+                  <div className="w-full">
+                    <input
+                      type="text"
+                      name="name"
+                      id="name"
+                      placeholder="Fullname"
+                      {...register("name")}
+                      className="bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black w-full"
+                    />
+                    {errors.name && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {errors.name.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="w-full">
+                    <input
+                      type="email"
+                      name="email"
+                      id="email"
+                      placeholder="Email Address"
+                      {...register("email")}
+                      className="bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black w-full"
+                    />
+                    {errors.email && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {errors.email.message}
+                      </p>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="w-full">
+                    <input
+                      type="text"
+                      name="name"
+                      id="name"
+                      value={user.username}
+                      disabled
+                      className="bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black w-full opacity-60 cursor-not-allowed"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <input
+                      type="email"
+                      name="email"
+                      id="email"
+                      value={user.email}
+                      disabled
+                      className="bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black w-full opacity-60 cursor-not-allowed"
+                    />
+                  </div>
+                </>
+              )}
               <div className="w-full">
                 <input
-                  type="text"
-                  name="name"
-                  id="name"
-                  placeholder="Fullname"
-                  {...register("name")}
+                  type="number"
+                  name="phone"
+                  id="phone"
+                  placeholder="Phone Number"
+                  {...register("phone")}
                   className="bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black w-full"
                 />
-                {errors.name && (
+                {errors.phone && (
                   <p className="text-xs text-red-500 mt-1">
-                    {errors.name.message}
+                    {errors.phone.message}
                   </p>
                 )}
               </div>
@@ -279,36 +416,6 @@ export default function Booking() {
                     </p>
                   )}
                 </div>
-              </div>
-              <div className="w-full">
-                <input
-                  type="number"
-                  name="phone"
-                  id="phone"
-                  placeholder="Phone Number"
-                  {...register("phone")}
-                  className="bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black w-full"
-                />
-                {errors.phone && (
-                  <p className="text-xs text-red-500 mt-1">
-                    {errors.phone.message}
-                  </p>
-                )}
-              </div>
-              <div className="w-full">
-                <input
-                  type="email"
-                  name="email"
-                  id="email"
-                  placeholder="Email Address"
-                  {...register("email")}
-                  className="bg-white h-12 rounded-[8px] placeholder-[#555555] px-4 font-semibold focus:outline-[#FFD700] text-black w-full"
-                />
-                {errors.email && (
-                  <p className="text-xs text-red-500 mt-1">
-                    {errors.email.message}
-                  </p>
-                )}
               </div>
             </div>
             <motion.div 

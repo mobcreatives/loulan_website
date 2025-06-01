@@ -14,12 +14,16 @@ import { TResponse } from "@/global/types";
 import MenuNavItem from "./_components/menu-nav-item";
 import LoginDialog from "@/app/(client)/booking/_components/login-dialog";
 import { useAuth } from "@/context/auth-context";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { getInitials } from "@/lib/utils";
+import { toast } from "sonner";
 
 type MenuCategoriesResponse = TResponse<TMenuCategoryDetails, "menus">;
 
 export default function FloatingNav({ navItems }: Readonly<TFloatingNavProps>) {
   const { _axios } = useAuthAxios();
   const { user, logout } = useAuth();
+
   const [active, setActive] = useState(navItems[0].link);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -38,6 +42,11 @@ export default function FloatingNav({ navItems }: Readonly<TFloatingNavProps>) {
   useEffect(() => {
     setActive(window.location.pathname);
   }, []);
+
+  // Force re-render on user change to update navbar
+  useEffect(() => {
+    // This will trigger a re-render when user changes
+  }, [user]);
 
   const handleMenuClose = () => {
     setIsMenuOpen(false);
@@ -91,14 +100,23 @@ export default function FloatingNav({ navItems }: Readonly<TFloatingNavProps>) {
           {/* Login/Logout button and hamburger menu */}
           <div className="flex items-center space-x-4">
             {user ? (
-              <button
-                className={cn(
-                  "hidden md:block text-sm capitalize bg-primary text-black px-4 py-2 rounded-md hover:bg-primary/90 transition-colors"
-                )}
-                onClick={logout}
-              >
-                Logout
-              </button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-primary text-black font-bold text-lg uppercase">
+                    {getInitials(user.username)}
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={() => {
+                      logout();
+                      toast.success("Logged out successfully");
+                    }}
+                  >
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <button
                 className={cn(
