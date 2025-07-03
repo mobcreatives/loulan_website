@@ -45,7 +45,7 @@ import { motion } from "framer-motion";
 export default function Booking() {
   const { _axios } = useAuthAxios();
   const { getItem } = useLocalStorage();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [openLoginDialog, setOpenLoginDialog] = useState(false);
   const [formData, setFormData] = useState<TAddReservationData>(
     {} as TAddReservationData
@@ -191,14 +191,15 @@ export default function Booking() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <TextWithLine
-            text="Table Booking"
-            className="font-fredoka text-[clamp(2.125rem,2.0325rem+0.3896vw,2.5rem)] font-bold before:w-[170px] before:h-[5px] before:-bottom-1"
-          />
+          {!isAdmin && (
+            <TextWithLine
+              text="Table Booking"
+              className="font-fredoka text-[clamp(2.125rem,2.0325rem+0.3896vw,2.5rem)] font-bold before:w-[170px] before:h-[5px] before:-bottom-1"
+            />
+          )}
         </motion.div>
-
         {/* Previous Reservations Table */}
-        {user && (
+        {!isAdmin && (
           <div className="w-full max-w-2xl mb-8 mt-8">
             <h2 className="text-2xl font-semibold mb-4">Your Previous Reservations</h2>
             <div className="overflow-x-auto ">

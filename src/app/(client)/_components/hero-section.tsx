@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/auth-context";
 
 export default function HeroSection() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   return (
     <section className="bg-[url('/images/hero-image.png')] bg-center bg-cover bg-no-repeat h-[79dvh] md:h-[83.5dvh] flex items-center justify-center">
       <div className="bg-[#000000cb] size-full flex flex-col items-center justify-center text-white space-y-2">
@@ -22,9 +22,11 @@ export default function HeroSection() {
           Reserve Your Table
         </h3>
         <div className="mt-2 flex gap-x-5 items-center ">
-          <Link href={APP_ROUTES.BOOKING}>
-            <ButtonWithBorder text="Book a Table" />
-          </Link>
+          {!isAdmin && (
+            <Link href={APP_ROUTES.BOOKING}>
+              <ButtonWithBorder text="Book a Table" />
+            </Link>
+          )}
           <Link href={APP_ROUTES.MENU}>
             <button
               className={cn(

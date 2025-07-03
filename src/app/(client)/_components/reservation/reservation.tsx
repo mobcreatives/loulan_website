@@ -33,7 +33,7 @@ import { useAuth } from "@/context/auth-context";
 export default function Reservation() {
   const { _axios } = useAuthAxios();
   const { getItem } = useLocalStorage();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [openLoginDialog, setOpenLoginDialog] = useState(false);
   const [formData, setFormData] = useState<TAddReservationData>(
     {} as TAddReservationData
@@ -138,16 +138,18 @@ export default function Reservation() {
 
   return (
     <section className="px-6 sm:px-10 md:px-16 lg:px-28 xl:px-36 2xl:px-44 bg-[#0A1316] text-white py-10 space-y-14">
-      <div className="space-y-3 flex flex-col items-center">
-        <TextWithLine
-          text="Reservation"
-          className="before:w-[100%] before:h-[1px] before:-bottom-0.5"
-        />
-        <TextWithLine
-          text="Book Your Table"
-          className="font-fredoka text-[clamp(2.125rem,2.0325rem+0.3896vw,2.5rem)] font-bold before:w-[170px] before:h-[5px] before:-bottom-1"
-        />
-      </div>
+      {!isAdmin && (
+        <div className="space-y-3 flex flex-col items-center">
+          <TextWithLine
+            text="Reservation"
+            className="before:w-[100%] before:h-[1px] before:-bottom-0.5"
+          />
+          <TextWithLine
+            text="Book Your Table"
+            className="font-fredoka text-[clamp(2.125rem,2.0325rem+0.3896vw,2.5rem)] font-bold before:w-[170px] before:h-[5px] before:-bottom-1"
+          />
+        </div>
+      )}
       <form onSubmit={handleSubmit(handleSubmitAdd)}>
         <div className="grid md:grid-cols-2 gap-4">
           <div className="w-full">

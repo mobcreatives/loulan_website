@@ -1,18 +1,16 @@
 import type { Metadata } from "next";
-import { Fredoka } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import TanstackQueryProvider from "./_components/tanstack-query-provider";
-import { Toaster as Sonner } from "@/components";
+import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/context/auth-context";
 
-const fredoka = Fredoka({
-  variable: "--font-fredoka",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Loulan Chinese Restaurant and Bar",
-  description: "Chinese Restaurant In Nepal",
+  title: "Loulan Chinese Restaurant and Bar | Authentic Chinese & Korean Cuisine in Kathmandu",
+  description:
+    "Experience authentic Chinese and Korean cuisine at Loulan Chinese Restaurant and Bar in Thamel, Kathmandu. Reserve your table, explore our menu, view our gallery, or contact us for more information. Open daily from 10 AM to 1 AM.",
 };
 
 export default function RootLayout({
@@ -23,10 +21,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <TanstackQueryProvider>
-        <body className={`${fredoka.variable} antialiased`}>
+        <body className={`${inter.className} antialiased`}>
           <AuthProvider>
             {children}
-            <Sonner />
+            <Toaster />
           </AuthProvider>
         </body>
       </TanstackQueryProvider>

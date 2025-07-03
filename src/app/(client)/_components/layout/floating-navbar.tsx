@@ -22,7 +22,7 @@ type MenuCategoriesResponse = TResponse<TMenuCategoryDetails, "menus">;
 
 export default function FloatingNav({ navItems }: Readonly<TFloatingNavProps>) {
   const { _axios } = useAuthAxios();
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
 
   const [active, setActive] = useState(navItems[0].link);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -82,16 +82,19 @@ export default function FloatingNav({ navItems }: Readonly<TFloatingNavProps>) {
                     onClose={handleMenuClose}
                   />
                 ) : item.link === APP_ROUTES.LOGIN ? null : (
-                  <Link
-                    href={item.link}
-                    className={cn(
-                      "text-sm capitalize",
-                      active === item.link && "text-primary"
-                    )}
-                    onClick={() => setActive(item.link)}
-                  >
-                    {item.name}
-                  </Link>
+                  // Only show Reservation link if not admin
+                  item.link === APP_ROUTES.BOOKING && isAdmin ? null : (
+                    <Link
+                      href={item.link}
+                      className={cn(
+                        "text-sm capitalize",
+                        active === item.link && "text-primary"
+                      )}
+                      onClick={() => setActive(item.link)}
+                    >
+                      {item.name}
+                    </Link>
+                  )
                 )}
               </React.Fragment>
             ))}

@@ -35,7 +35,7 @@ export default function HamburgerMenu({
 }: Readonly<THamburgerMenuProps>) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -102,19 +102,21 @@ export default function HamburgerMenu({
                     setActive={setActive}
                   />
                 ) : (
-                  <Link
-                    href={item.link}
-                    className={cn(
-                      "text-sm capitalize py-2",
-                      active === item.link && "text-primary"
-                    )}
-                    onClick={() => {
-                      setActive(item.link);
-                      setIsOpen(false);
-                    }}
-                  >
-                    {item.name}
-                  </Link>
+                  item.link === APP_ROUTES.BOOKING && isAdmin ? null : (
+                    <Link
+                      href={item.link}
+                      className={cn(
+                        "text-sm capitalize py-2",
+                        active === item.link && "text-primary"
+                      )}
+                      onClick={() => {
+                        setActive(item.link);
+                        setIsOpen(false);
+                      }}
+                    >
+                      {item.name}
+                    </Link>
+                  )
                 )}
               </Fragment>
             ))}

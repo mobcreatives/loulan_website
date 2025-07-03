@@ -1,59 +1,35 @@
 "use client";
 
-import Head from "next/head";
 import HeroSection from "./_components/hero-section";
 import RateYourExperience from "./_components/rate-your-experience";
 import Featured from "./_components/featured/featured";
 import Opening from "./_components/opening";
 import Reservation from "./_components/reservation/reservation";
 import AnimatedSection from "./_components/animated-section";
+import { useAuth } from "@/context/auth-context";
+import { useQuery } from "@tanstack/react-query";
+import { API_ROUTES } from "@/config/routes";
 
 export default function Home() {
+  const { isAdmin } = useAuth();
+  const { data: stats } = useQuery({
+    queryKey: ["admin-stats"],
+    queryFn: async () => {
+      const res = await fetch(API_ROUTES.RESERVATIONS);
+      const data = await res.json();
+      return { totalReservations: data.reservations?.length || 0 };
+    },
+    enabled: isAdmin,
+  });
   return (
     <>
-      <Head>
-        <title>Loulan Chinese Restaurant and Bar | Authentic Chinese & Korean Cuisine in Kathmandu</title>
-        <meta
-          name="description"
-          content="Experience authentic Chinese and Korean cuisine at Loulan Chinese Restaurant and Bar in Thamel, Kathmandu. Reserve your table, explore our menu, view our gallery, or contact us for more information. Open daily from 10 AM to 1 AM."
-        />
-        <meta name="keywords" content="Chinese Restaurant, Korean Restaurant, Kathmandu, Thamel, Loulan, Reserve Table, Menu, Gallery, Contact" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        {/* Open Graph / Facebook */}
-        <meta property="og:title" content="Loulan Chinese Restaurant and Bar | Authentic Chinese & Korean Cuisine in Kathmandu" />
-        <meta property="og:description" content="Experience authentic Chinese and Korean cuisine at Loulan Chinese Restaurant and Bar in Thamel, Kathmandu. Reserve your table, explore our menu, view our gallery, or contact us for more information. Open daily from 10 AM to 1 AM." />
-        <meta property="og:type" content="restaurant" />
-        <meta property="og:url" content="https://www.loulanrestaurant.com.np/" />
-        <meta property="og:image" content="https://www.loulanrestaurant.com.np/og-image.jpg" />
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Loulan Chinese Restaurant and Bar | Authentic Chinese & Korean Cuisine in Kathmandu" />
-        <meta name="twitter:description" content="Experience authentic Chinese and Korean cuisine at Loulan Chinese Restaurant and Bar in Thamel, Kathmandu. Reserve your table, explore our menu, view our gallery, or contact us for more information. Open daily from 10 AM to 1 AM." />
-        <meta name="twitter:image" content="https://www.loulanrestaurant.com.np/og-image.jpg" />
-        {/* Structured Data (JSON-LD) */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Restaurant",
-              "name": "Loulan Chinese Restaurant and Bar",
-              "image": "https://www.loulanrestaurant.com.np/og-image.jpg",
-              "servesCuisine": ["Chinese", "Korean"],
-              "address": {
-                "@type": "PostalAddress",
-                "streetAddress": "Thamel",
-                "addressLocality": "Kathmandu",
-                "addressCountry": "NP"
-              },
-              "openingHours": "Mo-Su 10:00-01:00",
-              "url": "https://www.loulanrestaurant.com.np/",
-              "telephone": "+977-XXXXXXXXX"
-            }),
-          }}
-        />
-      </Head>
       <main>
+        {isAdmin && (
+          <div className="bg-primary text-black rounded-lg p-6 mb-8 max-w-md mx-auto text-center shadow-lg">
+            <h2 className="text-2xl font-bold mb-2">Admin Stats</h2>
+            <p className="text-lg">Total Reservations: <span className="font-semibold">{stats?.totalReservations ?? '...'}</span></p>
+          </div>
+        )}
         <h1 className="sr-only">Loulan Chinese Restaurant and Bar | Authentic Chinese & Korean Cuisine in Kathmandu</h1>
         <AnimatedSection className="hero-section" delay={0.2}>
           <HeroSection />
@@ -72,7 +48,7 @@ export default function Home() {
         </AnimatedSection>
 
         <AnimatedSection delay={1}>
-          <Reservation />
+          {!isAdmin && <Reservation />}
         </AnimatedSection>
       </main>
     </>

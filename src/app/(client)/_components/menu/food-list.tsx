@@ -10,6 +10,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import "react-photo-view/dist/react-photo-view.css";
+import { useAuth } from "@/context/auth-context";
+import UpdateFood from "@/app/dashboard/food-items/update-food";
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
+import { TFoodDetails } from "@/app/dashboard/food-items/types";
 
 interface FoodItem {
   id: number;
@@ -43,13 +48,33 @@ interface FoodListProps {
   categoryId?: number;
 }
 
+// Helper to map FoodItem to TFoodDetails
+function mapFoodItemToTFoodDetails(food: FoodItem): TFoodDetails {
+  return {
+    ...food,
+    createdAt: '',
+    updatedAt: '',
+    menu: {
+      id: food.menu.id,
+      name: food.menu.name,
+      description: '',
+      price: 0,
+      images: [],
+      type: 'chinese',
+    },
+  };
+}
+
 export default function FoodList({ categoryId }: FoodListProps) {
   const { _axios } = useAuthAxios();
+  const { isAdmin } = useAuth();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery] = useState("");
   const itemsPerPage = 9;
-
-  const { data: response, isLoading: queryLoading } = useQuery<FoodResponse>({
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [selectedFood, setSelectedFood] = useState<TFoodDetails | null>(null);
+  const { data: response, isLoading: queryLoading, refetch } = useQuery<FoodResponse>({
     queryKey: [...KEYS.FOOD.GET, categoryId, currentPage, searchQuery],
     queryFn: async () => {
       try {
@@ -60,12 +85,9 @@ export default function FoodList({ categoryId }: FoodListProps) {
         if (trimmedSearch) {
           url += `&search=${encodeURIComponent(trimmedSearch)}`;
         }
-        console.log("Fetching from URL:", url);
         const response = await _axios.get<FoodResponse>(url);
-        console.log("API Response:", response.data);
         return response.data;
       } catch (error) {
-        console.error("Error fetching foods:", error);
         throw new Error("Failed to fetch foods");
       }
     },
@@ -77,6 +99,19 @@ export default function FoodList({ categoryId }: FoodListProps) {
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
+
+  async function handleDeleteFood() {
+    if (!selectedFood) return;
+    try {
+      await _axios.delete(`${API_ROUTES.FOODS}/${selectedFood.id}`);
+      toast.success("Food item deleted successfully");
+      setDeleteOpen(false);
+      setSelectedFood(null);
+      refetch();
+    } catch {
+      toast.error("Failed to delete food item");
+    }
+  }
 
   if (queryLoading) {
     return (
@@ -133,6 +168,12 @@ export default function FoodList({ categoryId }: FoodListProps) {
                     {/* <span className="text-primary font-semibold">
                       NRS {food.price}
                     </span> */}
+                    {isAdmin && (
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline" onClick={() => { setSelectedFood(mapFoodItemToTFoodDetails(food)); setEditOpen(true); }}>Edit</Button>
+                        <Button size="sm" variant="destructive" onClick={() => { setSelectedFood(mapFoodItemToTFoodDetails(food)); setDeleteOpen(true); }}>Delete</Button>
+                      </div>
+                    )}
                   </div>
                 </Card>
               ))}
@@ -161,6 +202,34 @@ export default function FoodList({ categoryId }: FoodListProps) {
                 Next
               </Button>
             </div>
+          )}
+          {/* Edit Dialog */}
+          {isAdmin && selectedFood && (
+            <UpdateFood
+              open={editOpen}
+              setOpen={setEditOpen}
+              refetch={refetch as any}
+              data={selectedFood}
+            />
+          )}
+          {/* Delete Dialog */}
+          {isAdmin && (
+            <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Food Item</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to delete this food item? This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDeleteFood} className="bg-red-500 hover:bg-red-600 text-white">
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
         </>
       )}
