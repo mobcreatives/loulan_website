@@ -4,7 +4,7 @@ import FloatingNavbar from "./_components/layout/floating-navbar";
 import Footer from "./_components/layout/footer";
 import FloatingReview from "./_components/floating-review/floating-review";
 import FloatingContact from "./_components/floating-contact/floating-contact";
-import { FacebookMessenger } from "@/components/FacebookMessenger";
+import { WhatsApp } from "@/components/WhatsApp";
 import "react-photo-view/dist/react-photo-view.css";
 
 export default function ClientLayout({
@@ -19,10 +19,9 @@ export default function ClientLayout({
       <Footer />
       <FloatingContact />
       <FloatingReview />
-      <FacebookMessenger 
-        appId={process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || ""} 
-        pageId={process.env.NEXT_PUBLIC_FACEBOOK_PAGE_ID || ""}
-        themeColor="#FF5A5F"
+      <WhatsApp 
+        phoneNumber="9851240960"
+        message="Hello! Can I make a booking?"
         minimized={true}
       />
     </main>

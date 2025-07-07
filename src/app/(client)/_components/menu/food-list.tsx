@@ -1,7 +1,7 @@
 "use client";
 
 import { Card } from "@/components";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, QueryObserverResult, RefetchOptions } from "@tanstack/react-query";
 import { useAuthAxios } from "@/config/auth-axios";
 import { API_ROUTES } from "@/config/routes";
 import { KEYS } from "@/config/constants";
@@ -87,7 +87,7 @@ export default function FoodList({ categoryId }: FoodListProps) {
         }
         const response = await _axios.get<FoodResponse>(url);
         return response.data;
-      } catch (error) {
+      } catch {
         throw new Error("Failed to fetch foods");
       }
     },
@@ -208,7 +208,7 @@ export default function FoodList({ categoryId }: FoodListProps) {
             <UpdateFood
               open={editOpen}
               setOpen={setEditOpen}
-              refetch={refetch as any}
+              refetch={refetch as unknown as (options?: RefetchOptions) => Promise<QueryObserverResult<TFoodDetails[], Error>>}
               data={selectedFood}
             />
           )}

@@ -199,6 +199,36 @@
     @apply rounded-xl border border-amber-500/20 bg-white shadow-md hover:shadow-lg transition-all duration-300;
   }
 
+  .whatsapp_float {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    bottom: 40px;
+    right: 40px;
+    background-color: #25d366;
+    color: #FFF;
+    border-radius: 50px;
+    text-align: center;
+    font-size: 30px;
+    box-shadow: 2px 2px 3px #999;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .whatsapp_float:hover {
+    background-color: #128c7e;
+    transform: scale(1.1);
+    color: #FFF;
+  }
+
+  .whatsapp-icon {
+    font-size: 30px;
+  }
+
   .dashboard-card-header {
     @apply flex items-center justify-between p-4 border-b border-amber-500/20;
   }
