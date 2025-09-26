@@ -1,74 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Plus } from "lucide-react";
-import { mockPopupProducts } from "./data";
 import { toast } from "sonner";
 import { Button, PageTitle, ItemFormDrawer } from "@/components";
-import FoodItemCard from "../food-items/_components/food-item-card";
-import { TPopupProductsDetails } from "./types";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { KEYS } from "@/config/constants";
-import { TResponse } from "@/global/types";
-import { TFoodDetails } from "../food-items/types";
 import { API_ROUTES } from "@/config/routes";
 import { useAuthAxios } from "@/config/auth-axios";
+import { TPopupNews } from "./types";
 
 export default function PopupProducts() {
   const { _axios } = useAuthAxios();
-  const [products, setProducts] = useState(mockPopupProducts);
+  const queryClient = useQueryClient();
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [currentProduct, setCurrentProduct] =
-    useState<TPopupProductsDetails | null>(null);
-  const { data: foods } = useQuery({
-    queryKey: KEYS.FOOD.GET,
-    queryFn: getFoods,
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const [currentPopup, setCurrentPopup] = useState<TPopupNews | null>(null);
+
+  const { data } = useQuery<{ message: string; popup: TPopupNews | null }>({
+    queryKey: KEYS.POPUP_NEWS.GET,
+    queryFn: async () => {
+      const res = await _axios.get(API_ROUTES.POPUP_NEWS);
+      return res.data;
+    },
   });
 
-  async function getFoods() {
-    try {
-      const response = await _axios.get<TResponse<TFoodDetails, "foodItems">>(
-        API_ROUTES.FOODS
-      );
-      return response.data.foodItems;
-    } catch {
-      throw new Error("Failed to fetch food items");
-    }
-  }
-  const handleEdit = (data: TFoodDetails) => {
-    console.log("💀 -> handleEdit -> data <3", data);
-  };
-
-  const handleDelete = (data: TFoodDetails) => {
-    console.log("💀 -> handleDelete -> id <3", data);
-  };
+  const { mutateAsync: savePopup } = useMutation({
+    mutationFn: async (formData: FormData) => {
+      const res = await _axios.patch(API_ROUTES.POPUP_NEWS, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      toast("Popup news saved.");
+      queryClient.invalidateQueries({ queryKey: KEYS.POPUP_NEWS.GET });
+      setIsFormOpen(false);
+    },
+  });
 
   const handleAdd = () => {
-    setCurrentProduct(null); // Reset to null for adding new
+    setCurrentPopup(data?.popup ?? null);
     setIsFormOpen(true);
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleFormSubmit = (data: any) => {
-    if (currentProduct) {
-      // Edit existing
-      setProducts(
-        products.map((product) =>
-          product.id === currentProduct.id ? { ...product, ...data } : product
-        )
-      );
-      toast("Your changes have been saved successfully.");
-    } else {
-      // Add new
-      const newProduct = {
-        id: Date.now().toString(),
-        ...data,
-        isPopup: true,
-      };
-      setProducts([...products, newProduct]);
-      toast("New popup product has been added successfully.");
-    }
-    setIsFormOpen(false);
   };
 
   return (
@@ -84,100 +57,88 @@ export default function PopupProducts() {
         }
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-        {foods?.map((product) => (
-          <FoodItemCard
-            key={product.id}
-            data={product}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onToggleFeatured={() => {}}
-          />
-        ))}
+      <div className="mt-6">
+        {data?.popup ? (
+          <div className="space-y-2">
+            <div className="text-lg font-semibold">{data.popup.title}</div>
+            <div className="text-sm text-muted-foreground">{data.popup.details}</div>
+            <div className="text-sm">Redirect: {data.popup.redirectUrl ?? "—"}</div>
+            <div className="text-sm">Active: {data.popup.isActive ? "Yes" : "No"}</div>
+            {data.popup.image && (
+              <img src={data.popup.image} alt="popup" className="w-64 h-36 object-cover rounded" />
+            )}
+          </div>
+        ) : (
+          <div className="text-sm text-muted-foreground">No popup news configured yet.</div>
+        )}
       </div>
 
       <ItemFormDrawer
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
-        title={currentProduct ? "Edit Popup Product" : "Add New Popup Product"}
-        description="Fill in the details for this limited time menu item"
-        onSubmit={handleFormSubmit}
-        submitLabel={currentProduct ? "Save Changes" : "Add Product"}
+        title={currentPopup ? "Edit Popup News" : "Create Popup News"}
+        description="Manage the popup announcement shown to users"
+        onSubmit={async () => {
+          const form = new FormData();
+          const title = (document.getElementById("title") as HTMLInputElement)?.value;
+          const details = (document.getElementById("details") as HTMLTextAreaElement)?.value;
+          const redirectUrl = (document.getElementById("redirectUrl") as HTMLInputElement)?.value;
+          const isActive = (document.getElementById("isActive") as HTMLInputElement)?.checked;
+          if (title) form.append("title", title);
+          if (details) form.append("details", details);
+          if (redirectUrl) form.append("redirectUrl", redirectUrl);
+          form.append("isActive", String(isActive));
+          const file = fileRef.current?.files?.[0];
+          if (file) form.append("image", file);
+          await savePopup(form);
+        }}
+        submitLabel={currentPopup ? "Save Changes" : "Save"}
       >
         <div className="space-y-4 py-4">
           <div className="grid gap-4">
             <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-medium">
-                Product Name
+              <label htmlFor="title" className="text-sm font-medium">
+                Title
               </label>
               <input
-                id="name"
+                id="title"
                 type="text"
                 className="w-full p-2 border rounded-md gold-focus-ring"
-                defaultValue={currentProduct?.name ?? ""}
-                placeholder="Enter product name"
+                defaultValue={currentPopup?.title ?? ""}
+                placeholder="Enter popup title"
               />
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="description" className="text-sm font-medium">
-                Description
+              <label htmlFor="details" className="text-sm font-medium">
+                Details
               </label>
               <textarea
-                id="description"
+                id="details"
                 className="w-full p-2 border rounded-md gold-focus-ring min-h-[100px]"
-                defaultValue={currentProduct?.description ?? ""}
-                placeholder="Describe your product"
+                defaultValue={currentPopup?.details ?? ""}
+                placeholder="Describe the popup"
               />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label htmlFor="price" className="text-sm font-medium">
-                  Price ($)
-                </label>
-                <input
-                  id="price"
-                  type="number"
-                  step="0.01"
-                  className="w-full p-2 border rounded-md gold-focus-ring"
-                  defaultValue={currentProduct?.price ?? ""}
-                  placeholder="0.00"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="category" className="text-sm font-medium">
-                  Category
-                </label>
-                <select
-                  id="category"
-                  className="w-full p-2 border rounded-md gold-focus-ring"
-                  defaultValue={currentProduct?.category ?? ""}
-                >
-                  <option value="">Select category</option>
-                  <option value="Main Course">Main Course</option>
-                  <option value="Appetizers">Appetizers</option>
-                  <option value="Desserts">Desserts</option>
-                  <option value="Seafood">Seafood</option>
-                  <option value="Beverages">Beverages</option>
-                </select>
-              </div>
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="image" className="text-sm font-medium">
-                Image URL
+              <label htmlFor="redirectUrl" className="text-sm font-medium">
+                Redirect URL
               </label>
               <input
-                id="image"
+                id="redirectUrl"
                 type="text"
                 className="w-full p-2 border rounded-md gold-focus-ring"
-                defaultValue={
-                  currentProduct?.imageUrl ?? "/images/placeholder.svg"
-                }
-                placeholder="Enter image URL"
+                defaultValue={currentPopup?.redirectUrl ?? ""}
+                placeholder="https://example.com"
               />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="imageFile" className="text-sm font-medium">
+                Image
+              </label>
+              <input id="imageFile" ref={fileRef} type="file" accept="image/*" className="w-full" />
             </div>
 
             <div className="flex items-center space-x-2">
@@ -185,7 +146,7 @@ export default function PopupProducts() {
                 id="isActive"
                 type="checkbox"
                 className="gold-focus-ring rounded"
-                defaultChecked={currentProduct ? currentProduct.isActive : true}
+                defaultChecked={currentPopup ? currentPopup.isActive : true}
               />
               <label htmlFor="isActive" className="text-sm font-medium">
                 Active

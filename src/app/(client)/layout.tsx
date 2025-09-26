@@ -6,6 +6,7 @@ import FloatingReview from "./_components/floating-review/floating-review";
 import FloatingContact from "./_components/floating-contact/floating-contact";
 import { WhatsApp } from "@/components/WhatsApp";
 import "react-photo-view/dist/react-photo-view.css";
+import PopupNewsModal from "./_components/popup-news-modal";
 
 export default function ClientLayout({
   children,
@@ -16,6 +17,7 @@ export default function ClientLayout({
     <main className="bg-[#0A1316]">
       <FloatingNavbar navItems={navItems} />
       <Suspense>{children}</Suspense>
+      <PopupNewsModal />
       <Footer />
       <FloatingContact />
       <FloatingReview />

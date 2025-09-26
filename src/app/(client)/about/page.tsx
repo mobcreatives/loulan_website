@@ -4,8 +4,46 @@ import { TextWithLine } from "@/components";
 import React from "react";
 import Head from "next/head";
 import { AnimatedSection } from "@/components/animated-section";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { KEYS } from "@/config/constants";
+import { _axios } from "@/config/axios";
+import { API_ROUTES } from "@/config/routes";
+import { useAuth } from "@/context/auth-context";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import AboutEditor from "./_components/about-editor";
+
+type TAbout = {
+  id: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+} | null;
 
 export default function About() {
+  const { isAdmin } = useAuth();
+  const queryClient = useQueryClient();
+  const [isEditing, setIsEditing] = useState(false);
+  const { data: about } = useQuery<{ message: string; about: TAbout }>({
+    queryKey: KEYS.ABOUT.GET,
+    queryFn: async () => {
+      const res = await _axios.get(API_ROUTES.ABOUT);
+      return res.data;
+    },
+  });
+
+  // Editor is rendered only when editing to avoid any SSR window access
+
+  const { mutateAsync: saveAbout, isPending } = useMutation({
+    mutationFn: async (content: string) => {
+      const res = await _axios.patch(API_ROUTES.ABOUT, { content });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: KEYS.ABOUT.GET });
+      setIsEditing(false);
+    },
+  });
   return (
     <>
       <Head>
@@ -42,43 +80,44 @@ export default function About() {
               text="About Us"
               className="font-fredoka text-[clamp(2.125rem,2.0325rem+0.3896vw,2.5rem)] font-bold before:w-[110px] before:h-[5px] before:-bottom-1"
             />
-            <div className="mt-8 text-lg leading-relaxed text-center space-y-6">
-              <p>
-                <span className="font-bold text-primary">
-                  Loulan Chinese Korean Restaurant & Bar
-                </span>{" "}
-                is a semi-fine dining destination nestled in the vibrant heart of
-                Thamel, Kathmandu. We specialize in authentic Chinese and Korean
-                cuisines, offering a culinary journey that blends tradition with
-                innovation.
-              </p>
-              <p>
-                Our menu features a diverse range of dishes, from the bold
-                flavors of Sichuan cuisine to the comforting tastes of Korean
-                jjigae. Highlights include our{" "}
-                <span className="font-semibold">Spicy Stuffed Wings</span>, a
-                popular appetizer known for its flavorful stuffing and spicy kick{" "}
-        
-              </p>
-              <p>
-                At Loulan, we&apos;re committed to providing an exceptional dining
-                experience. Our chefs use only the finest ingredients to craft
-                each dish, ensuring authenticity and quality. Whether you&apos;re
-                joining us for a family gathering, a night out with friends, or a
-                special celebration, Loulan is the perfect place to create
-                lasting memories.
-              </p>
-              <p>
-                We are open daily from 9:00 AM to 10:00 PM, welcoming guests for
-                lunch, dinner, and late-night cravings. We invite you to discover
-                Loulan and become part of our story.
-              </p>
+            <div className="mt-8 text-lg leading-relaxed text-center space-y-6 w-full">
+              {isEditing && isAdmin ? (
+                <AboutEditor
+                  initialHTML={about?.about?.content}
+                  isPending={isPending}
+                  onCancel={() => setIsEditing(false)}
+                  onSave={async (html) => {
+                    await saveAbout(html);
+                  }}
+                />
+              ) : (
+                <>
+                  {about?.about?.content ? (
+                    <div
+                      className="prose prose-invert max-w-none"
+                      dangerouslySetInnerHTML={{ __html: about.about.content }}
+                    />
+                  ) : (
+                    <p>About content coming soon.</p>
+                  )}
+                  {isAdmin && (
+                    <div className="mt-6 flex justify-end w-full">
+                      <Button
+                        className="btn-gold"
+                        onClick={() => {
+                          setIsEditing(true);
+                        }}
+                      >
+                        Edit About
+                      </Button>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
             <div className="mt-10 flex flex-col items-center">
               
-              <div className="text-primary font-bold text-xl">
-                Experience the Taste of Tradition &amp; Innovation
-              </div>
+              
             </div>
           </div>
         </AnimatedSection>

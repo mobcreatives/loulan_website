@@ -69,6 +69,14 @@ export const KEYS = {
     GET: ["settings"],
     UPDATE: ["settings", "update"],
   },
+  ABOUT: {
+    GET: ["about"],
+    UPDATE: ["about", "update"],
+  },
+  POPUP_NEWS: {
+    GET: ["popupnews"],
+    UPDATE: ["popupnews", "update"],
+  },
 };
 
 export const CONSTANTS = {

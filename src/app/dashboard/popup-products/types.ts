@@ -1,10 +1,10 @@
-export type TPopupProductsDetails = {
+export type TPopupNews = {
   id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  imageUrl: string;
+  title: string | null;
+  details: string | null;
+  image: string | null;
+  redirectUrl: string | null;
   isActive: boolean;
-  isPopup: boolean;
+  createdAt: string;
+  updatedAt: string;
 };

@@ -8,7 +8,7 @@ import {
   MessageSquare,
   Mail,
   Settings,
-  
+  Megaphone,
   Image,
 } from "lucide-react";
 
@@ -33,11 +33,11 @@ export const sidebarItems: TSidebarItemsData[] = [
     href: "/dashboard/featured-products",
     icon: Star,
   },
-  // {
-  //   label: "Popup Products",
-  //   href: "/dashboard/popup-products",
-  //   icon: Sparkles,
-  // },
+  {
+    label: "Popup News",
+    href: "/dashboard/popup-products",
+    icon: Megaphone,
+  },
   {
     label: "Gallery",
     href: "/dashboard/gallery",

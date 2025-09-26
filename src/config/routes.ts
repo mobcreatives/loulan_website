@@ -11,6 +11,8 @@ export const API_ROUTES = {
   FOODS: "foods",
   CONTACTS: "contacts",
   SETTINGS : "settings",
+  ABOUT: "about",
+  POPUP_NEWS: "popupnews",
 } as const;
 
 export const APP_ROUTES = {
