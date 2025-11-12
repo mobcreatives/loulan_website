@@ -9,6 +9,7 @@ import { KEYS } from "@/config/constants";
 import { API_ROUTES } from "@/config/routes";
 import { useAuthAxios } from "@/config/auth-axios";
 import { TPopupNews } from "./types";
+import Image from "next/image";
 
 export default function PopupProducts() {
   const { _axios } = useAuthAxios();
@@ -65,7 +66,13 @@ export default function PopupProducts() {
             <div className="text-sm">Redirect: {data.popup.redirectUrl ?? "—"}</div>
             <div className="text-sm">Active: {data.popup.isActive ? "Yes" : "No"}</div>
             {data.popup.image && (
-              <img src={data.popup.image} alt="popup" className="w-64 h-36 object-cover rounded" />
+              <Image
+                src={data.popup.image}
+                alt="popup"
+                width={256}
+                height={144}
+                className="w-64 h-36 object-cover rounded"
+              />
             )}
           </div>
         ) : (

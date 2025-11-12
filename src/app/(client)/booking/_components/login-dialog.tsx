@@ -44,7 +44,7 @@ export default function LoginDialog({
       if (data && Object.keys(data).length > 0) {
         try {
           await mutationFunction(data);
-        } catch (error) {
+        } catch {
           // Silently handle reservation submission errors
         }
       }
