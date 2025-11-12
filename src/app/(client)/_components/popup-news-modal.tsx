@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuthAxios } from "@/config/auth-axios";
 import { API_ROUTES } from "@/config/routes";
 import { KEYS } from "@/config/constants";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
@@ -62,10 +62,12 @@ export default function PopupNewsModal() {
             </div>
           )}
           {popup.title && (
-            <h3 className="text-2xl md:text-3xl font-semibold text-black">{popup.title}</h3>
+            <DialogTitle className="text-2xl md:text-3xl font-semibold text-black">
+              {popup.title}
+            </DialogTitle>
           )}
           {popup.details && (
-            <p className="text-base md:text-lg text-white/80 leading-relaxed">{popup.details}</p>
+            <p className="text-base md:text-lg text-black leading-relaxed">{popup.details}</p>
           )}
           <div className="flex justify-end gap-3 pt-2">
             {popup.redirectUrl && (
