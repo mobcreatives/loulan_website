@@ -29,7 +29,7 @@ export default function Login() {
       router.push(APP_ROUTES.DASHBOARD);
     },
     onError: () => {
-      toast.error("Login failed");
+      // Backend warnings should not show on design - silently handle
     },
   });
 

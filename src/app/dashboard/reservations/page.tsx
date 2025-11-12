@@ -797,7 +797,7 @@ export default function Reservations() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="PENDING">Pending</SelectItem>
-                        <SelectItem value="CONFIRM">Confirmed</SelectItem>
+                        <SelectItem value="CONFIRMED">Confirmed</SelectItem>
                         <SelectItem value="CANCELLED">Cancelled</SelectItem>
                       </SelectContent>
                     </Select>

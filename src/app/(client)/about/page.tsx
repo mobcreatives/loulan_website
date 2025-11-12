@@ -94,7 +94,7 @@ export default function About() {
                 <>
                   {about?.about?.content ? (
                     <div
-                      className="prose prose-invert max-w-none"
+                      className="about-content max-w-none"
                       dangerouslySetInnerHTML={{ __html: about.about.content }}
                     />
                   ) : (

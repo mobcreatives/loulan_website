@@ -236,4 +236,114 @@
   .gold-focus-ring {
     @apply focus:outline-none focus:ring-2 focus:ring-amber-500;
   }
+
+  .about-content {
+    color: white; /* Default color for content without inline styles */
+  }
+
+  /* Ensure inline color styles from HTML content take precedence */
+  /* Inline styles have the highest specificity, so they should work automatically */
+  .about-content [style*="color"] {
+    /* Inline color styles will automatically override parent color */
+  }
+
+  /* Handle BlockNote editor data attributes for text colors */
+  .about-content [data-style-type="textColor"][data-value="yellow"] {
+    color: yellow !important;
+  }
+
+  .about-content [data-style-type="textColor"][data-value="red"] {
+    color: red !important;
+  }
+
+  .about-content [data-style-type="textColor"][data-value="blue"] {
+    color: blue !important;
+  }
+
+  .about-content [data-style-type="textColor"][data-value="green"] {
+    color: green !important;
+  }
+
+  .about-content [data-style-type="textColor"][data-value="orange"] {
+    color: orange !important;
+  }
+
+  .about-content [data-style-type="textColor"][data-value="purple"] {
+    color: purple !important;
+  }
+
+  .about-content [data-style-type="textColor"][data-value="pink"] {
+    color: pink !important;
+  }
+
+  .about-content [data-style-type="textColor"][data-value="cyan"] {
+    color: cyan !important;
+  }
+
+  .about-content [data-style-type="textColor"][data-value="lime"] {
+    color: lime !important;
+  }
+
+  .about-content [data-style-type="textColor"][data-value="gray"],
+  .about-content [data-style-type="textColor"][data-value="grey"] {
+    color: gray !important;
+  }
+
+  .about-content [data-style-type="textColor"][data-value="black"] {
+    color: black !important;
+  }
+
+  .about-content [data-style-type="textColor"][data-value="white"] {
+    color: white !important;
+  }
+
+  /* Handle data-text-color attribute on block elements */
+  .about-content [data-text-color="yellow"] {
+    color: yellow !important;
+  }
+
+  .about-content [data-text-color="red"] {
+    color: red !important;
+  }
+
+  .about-content [data-text-color="blue"] {
+    color: blue !important;
+  }
+
+  .about-content [data-text-color="green"] {
+    color: green !important;
+  }
+
+  .about-content [data-text-color="orange"] {
+    color: orange !important;
+  }
+
+  .about-content [data-text-color="purple"] {
+    color: purple !important;
+  }
+
+  .about-content [data-text-color="pink"] {
+    color: pink !important;
+  }
+
+  .about-content [data-text-color="cyan"] {
+    color: cyan !important;
+  }
+
+  .about-content [data-text-color="lime"] {
+    color: lime !important;
+  }
+
+  .about-content [data-text-color="gray"],
+  .about-content [data-text-color="grey"] {
+    color: gray !important;
+  }
+
+  .about-content [data-text-color="black"] {
+    color: black !important;
+  }
+
+  .about-content [data-text-color="white"] {
+    color: white !important;
+  }
 }

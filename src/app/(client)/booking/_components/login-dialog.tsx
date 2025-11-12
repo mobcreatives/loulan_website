@@ -40,16 +40,22 @@ export default function LoginDialog({
     mutationFn: login,
     onSuccess: async () => {
       toast.success("Login successful");
-      window.location.reload();
-      setOpen(false);
-    },
-    onError: (error: unknown) => {
-      let message = "Login failed";
-      if (typeof error === "object" && error !== null && "response" in error) {
-        const err = error as { response?: { data?: { message?: string } } };
-        message = err.response?.data?.message || message;
+      // Submit reservation after successful login
+      if (data && Object.keys(data).length > 0) {
+        try {
+          await mutationFunction(data);
+        } catch (error) {
+          // Silently handle reservation submission errors
+        }
       }
-      toast.error(message);
+      setOpen(false);
+      // Reload to update auth state
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    },
+    onError: () => {
+      // Backend warnings should not show on design - silently handle
     },
   });
 

@@ -9,15 +9,18 @@ import AnimatedSection from "./_components/animated-section";
 import { useAuth } from "@/context/auth-context";
 import { useQuery } from "@tanstack/react-query";
 import { API_ROUTES } from "@/config/routes";
+import { useAuthAxios } from "@/config/auth-axios";
+import { TResponse } from "@/global/types";
+import { TReservationDetails } from "@/app/dashboard/reservations/types";
 
 export default function Home() {
   const { isAdmin } = useAuth();
-  const { data: stats } = useQuery({
+  const { _axios } = useAuthAxios();
+  const { data: stats, isLoading } = useQuery({
     queryKey: ["admin-stats"],
     queryFn: async () => {
-      const res = await fetch(API_ROUTES.RESERVATIONS);
-      const data = await res.json();
-      return { totalReservations: data.reservations?.length || 0 };
+      const response = await _axios.get<TResponse<TReservationDetails, "reservations">>(API_ROUTES.RESERVATIONS);
+      return { totalReservations: response.data.reservations?.length || 0 };
     },
     enabled: isAdmin,
   });
@@ -27,7 +30,7 @@ export default function Home() {
         {isAdmin && (
           <div className="bg-primary text-black rounded-lg p-6 mb-8 max-w-md mx-auto text-center shadow-lg">
             <h2 className="text-2xl font-bold mb-2">Admin Stats</h2>
-            <p className="text-lg">Total Reservations: <span className="font-semibold">{stats?.totalReservations ?? '...'}</span></p>
+            <p className="text-lg">Total Reservations: <span className="font-semibold">{isLoading ? 'Loading...' : (stats?.totalReservations ?? 0)}</span></p>
           </div>
         )}
         <h1 className="sr-only">Loulan Chinese Restaurant and Bar | Authentic Chinese & Korean Cuisine in Kathmandu</h1>

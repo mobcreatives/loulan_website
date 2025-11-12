@@ -29,52 +29,32 @@ export default function Opening() {
   return (
     <section className="bg-[url('/images/opening-bg.png')] bg-cover bg-no-repeat bg-center text-white my-16">
       <div className="bg-[#000000cb] flex justify-center px-6 sm:px-10 md:px-16 lg:px-40 2xl:px-44 py-12">
-        <div className="flex items-center flex-col gap-y-12 md:flex-row md:gap-y-0 w-full justify-between max-w-[1200px]">
-          <div className="space-y-2">
-            {/* <TextWithLine
-              text="RESERVATION"
-              className="before:w-[50px] before:left-0 before:translate-x-0 before:-bottom-0.5 before:h-[2px] text-xs"
-            />
-            
-            <div className="text-[clamp(0.875rem,0.8442rem+0.1299vw,1rem)] space-x-3">
-              <Link href={APP_ROUTES.BOOKING}>
-                <button
-                  type="button"
-                  className="uppercase bg-primary text-black px-4 pb-1.5 pt-2 rounded-[4px] cursor-pointer focus:outline-none"
-                >
-                  Book A Table
-                </button>
-              </Link>
-              <Link href={APP_ROUTES.CONTACTS}>
-              <button
-                type="button"
-                className="uppercase text-white px-4 pb-1.5 pt-2 rounded-[4px] cursor-pointer focus:outline-none"
-              >
-                contact us
-              </button>
-              </Link>
-            </div> */}
-            <p className="text-[clamp(2.25rem,2.1266rem+0.5195vw,2.75rem)] font-bold">
+        <div className="flex items-center justify-center flex-col gap-y-12 md:flex-row md:gap-y-0 md:gap-x-12 w-full max-w-[1200px]">
+          <div className="flex-shrink-0">
+            <p className="text-[clamp(2.25rem,2.1266rem+0.5195vw,2.75rem)] font-bold text-center md:text-left">
               Working Hours
             </p>
           </div>
-          <div className="bg-[#121A1D] p-12 text-center space-y-11">
+          <div className="bg-[#121A1D] p-8 md:p-12 text-center space-y-6 md:space-y-8 rounded-lg border border-white/10 flex-1 max-w-md">
             {isLoading ? (
-              <div className="space-y-1">
-                <p className="font-semibold text-sm">Loading...</p>
+              <div className="space-y-2">
+                <div className="animate-pulse">
+                  <div className="h-4 bg-white/20 rounded w-3/4 mx-auto mb-2"></div>
+                  <div className="h-4 bg-white/20 rounded w-2/3 mx-auto"></div>
+                </div>
               </div>
             ) : isError ? (
               <div className="space-y-1">
-                <p className="font-semibold text-sm">Error loading hours</p>
+                <p className="font-semibold text-sm text-white/70">Error loading hours</p>
               </div>
             ) : data?.setting?.openingHours ? (
-            <div className="space-y-1">
-                <p className="text-xs whitespace-pre-line">{data.setting.openingHours}</p>
+            <div className="space-y-2">
+                <p className="text-sm md:text-base whitespace-pre-line text-white/90 leading-relaxed">{data.setting.openingHours}</p>
             </div>
             ) : (
-            <div className="space-y-1">
-                <p className="text-xs">Sunday to Tuesday: 9:00 AM - 10:00 PM</p>
-                <p className="text-xs">Friday to Saturday: 9:00 AM - 10:00 PM</p>
+            <div className="space-y-2">
+                <p className="text-sm md:text-base text-white/90">Sunday to Tuesday: 9:00 AM - 10:00 PM</p>
+                <p className="text-sm md:text-base text-white/90">Friday to Saturday: 9:00 AM - 10:00 PM</p>
             </div>
             )}
           </div>
